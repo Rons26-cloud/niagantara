@@ -1,1 +1,34 @@
-import { Body,Controller,Get,Headers,Param,Patch,Post,Req,UseGuards } from '@nestjs/common'; import { AuthGuard } from '../../common/guards/auth.guard.js'; import { StoresService } from './stores.service.js'; @Controller('stores') @UseGuards(AuthGuard) export class StoresController{constructor(private readonly service:StoresService){} @Get() list(@Req()r:any,@Headers('x-company-id') c:string){return this.service.list(r.user.id,c)} @Get(':id') get(@Req()r:any,@Param('id')id:string){return this.service.get(r.user.id,id)} @Post() create(@Req()r:any,@Headers('x-company-id')c:string,@Body()dto:{name:string}){return this.service.create(r.user.id,c,dto)} @Patch(':id') update(@Req()r:any,@Param('id')id:string,@Body()dto:{name?:string}){return this.service.update(r.user.id,id,dto)}}
+import { Body, Controller, Get, Headers, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { RequirePermission } from '../../common/decorators/permission.decorator.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { StoresService } from './stores.service.js';
+
+@Controller('stores')
+@UseGuards(AuthGuard, TenantGuard, PermissionGuard)
+export class StoresController {
+  constructor(private readonly service: StoresService) {}
+
+  @Get()
+  @RequirePermission('store.read')
+  list(@Req() request: any, @Headers('x-company-id') companyId: string) { return this.service.list(request.user.id, companyId); }
+
+  @Get(':id')
+  @RequirePermission('store.read')
+  get(@Req() request: any, @Headers('x-company-id') companyId: string, @Param('id') id: string) {
+    return this.service.get(request.user.id, companyId, id);
+  }
+
+  @Post()
+  @RequirePermission('store.manage')
+  create(@Req() request: any, @Headers('x-company-id') companyId: string, @Body() dto: { name: string }) {
+    return this.service.create(request.user.id, companyId, dto);
+  }
+
+  @Patch(':id')
+  @RequirePermission('store.manage')
+  update(@Req() request: any, @Headers('x-company-id') companyId: string, @Param('id') id: string, @Body() dto: { name?: string }) {
+    return this.service.update(request.user.id, companyId, id, dto);
+  }
+}

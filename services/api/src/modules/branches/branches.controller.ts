@@ -1,1 +1,37 @@
-import { Body,Controller,Get,Headers,Param,Patch,Post,Req,UseGuards } from '@nestjs/common'; import { AuthGuard } from '../../common/guards/auth.guard.js'; import { BranchesService } from './branches.service.js'; @Controller('branches') @UseGuards(AuthGuard) export class BranchesController{constructor(private readonly service:BranchesService){} @Get() list(@Req()r:any,@Headers('x-company-id')c:string){return this.service.list(r.user.id,c)} @Get(':id') get(@Req()r:any,@Param('id')id:string){return this.service.get(r.user.id,id)} @Post() create(@Req()r:any,@Headers('x-company-id')c:string,@Body()dto:{storeId:string;name:string;code:string}){return this.service.create(r.user.id,c,dto)} @Patch(':id') update(@Req()r:any,@Param('id')id:string,@Body()dto:{name?:string;status?:string}){return this.service.update(r.user.id,id,dto)}}
+import { Body, Controller, Get, Headers, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { RequirePermission } from '../../common/decorators/permission.decorator.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { BranchGuard } from '../../common/guards/branch.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { BranchesService } from './branches.service.js';
+
+@Controller('branches')
+@UseGuards(AuthGuard, TenantGuard, PermissionGuard)
+export class BranchesController {
+  constructor(private readonly service: BranchesService) {}
+
+  @Get()
+  @RequirePermission('branch.read')
+  list(@Req() request: any, @Headers('x-company-id') companyId: string) { return this.service.list(request.user.id, companyId); }
+
+  @Get(':id')
+  @UseGuards(BranchGuard)
+  @RequirePermission('branch.read')
+  get(@Req() request: any, @Headers('x-company-id') companyId: string, @Param('id') id: string) {
+    return this.service.get(request.user.id, companyId, id);
+  }
+
+  @Post()
+  @RequirePermission('branch.manage')
+  create(@Req() request: any, @Headers('x-company-id') companyId: string, @Body() dto: { storeId: string; name: string; code: string }) {
+    return this.service.create(request.user.id, companyId, dto);
+  }
+
+  @Patch(':id')
+  @UseGuards(BranchGuard)
+  @RequirePermission('branch.manage')
+  update(@Req() request: any, @Headers('x-company-id') companyId: string, @Param('id') id: string, @Body() dto: { name?: string; status?: string }) {
+    return this.service.update(request.user.id, companyId, id, dto);
+  }
+}
