@@ -5,10 +5,14 @@ import { validateServerEnvironment } from '../../config/environment.js';
 @Injectable()
 export class SupabaseService {
   readonly client: SupabaseClient;
+  readonly authClient: SupabaseClient;
 
   constructor() {
     const environment = validateServerEnvironment();
     this.client = createClient(environment.supabaseUrl, environment.supabaseServiceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    this.authClient = createClient(environment.supabaseUrl, environment.supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
   }

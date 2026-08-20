@@ -19,7 +19,7 @@ test('register forwards company/profile input to atomic database provisioning', 
       return { data: { company: { id: 'company-a' } }, error: null };
     },
   };
-  const result = await new AuthService({ client } as any).register(registration);
+  const result = await new AuthService({ client, authClient: client } as any).register(registration);
   assert.equal(rpcArguments.p_company_name, 'Company A');
   assert.equal(rpcArguments.p_full_name, 'Owner A');
   assert.equal(result.provisioningStatus, 'completed');
@@ -35,6 +35,6 @@ test('register compensates by deleting Auth user when database provisioning fail
     },
     rpc: async () => ({ data: null, error: new Error('database unavailable') }),
   };
-  await assert.rejects(() => new AuthService({ client } as any).register(registration), ServiceUnavailableException);
+  await assert.rejects(() => new AuthService({ client, authClient: client } as any).register(registration), ServiceUnavailableException);
   assert.equal(deletedUserId, 'user-a');
 });

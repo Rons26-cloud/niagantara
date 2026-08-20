@@ -12,7 +12,7 @@ export class AuthService {
   constructor(private readonly supabase: SupabaseService) {}
 
   async register(dto: RegisterDto) {
-    const { data: authData, error: authError } = await this.supabase.client.auth.signUp({
+    const { data: authData, error: authError } = await this.supabase.authClient.auth.signUp({
       email: dto.email,
       password: dto.password,
       options: { data: { full_name: dto.fullName ?? null } },
@@ -57,7 +57,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const { data, error } = await this.supabase.client.auth.signInWithPassword(dto);
+    const { data, error } = await this.supabase.authClient.auth.signInWithPassword(dto);
     if (error || !data.user) {
       throw new UnauthorizedException({ code: 'INVALID_CREDENTIALS', message: 'Invalid email or password.' });
     }
