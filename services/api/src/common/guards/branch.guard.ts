@@ -1,0 +1,1 @@
+import { CanActivate,ExecutionContext,Injectable } from '@nestjs/common'; @Injectable() export class BranchGuard implements CanActivate { canActivate(ctx:ExecutionContext){const req=ctx.switchToHttp().getRequest(); const id=req.params.branchId??req.headers['x-branch-id']; if(id) req.tenant={...(req.tenant??{}),branchId:id}; return true;}}

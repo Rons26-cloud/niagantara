@@ -1,0 +1,4 @@
+create table public.security_events (id uuid primary key default gen_random_uuid(), company_id uuid references public.companies(id) on delete set null, actor_user_id uuid references public.profiles(id) on delete set null, event_type text not null, severity text not null default 'info' check (severity in ('info','warning','critical')), ip_address inet, user_agent text, metadata jsonb not null default '{}'::jsonb, request_id text, created_at timestamptz not null default now());
+create index security_events_lookup_idx on public.security_events(event_type,created_at desc);
+alter table public.security_events enable row level security;
+create policy security_events_member_read on public.security_events for select using (actor_user_id=auth.uid() or public.is_company_member(company_id));

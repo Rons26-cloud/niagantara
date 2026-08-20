@@ -1,0 +1,4 @@
+create table public.audit_logs (id uuid primary key default gen_random_uuid(), company_id uuid references public.companies(id) on delete set null, branch_id uuid references public.branches(id) on delete set null, actor_user_id uuid references public.profiles(id) on delete set null, action text not null, resource_type text not null, resource_id uuid, metadata jsonb not null default '{}'::jsonb, request_id text, created_at timestamptz not null default now());
+create index audit_logs_tenant_idx on public.audit_logs(company_id,created_at desc);
+alter table public.audit_logs enable row level security;
+create policy audit_logs_member_read on public.audit_logs for select using (actor_user_id=auth.uid() or public.is_company_member(company_id));

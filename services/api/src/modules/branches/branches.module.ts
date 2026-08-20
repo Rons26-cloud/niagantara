@@ -1,0 +1,1 @@
+import { Module } from '@nestjs/common'; import { BranchesController } from './branches.controller.js'; import { BranchesService } from './branches.service.js'; import { AuditModule } from '../audit/audit.module.js'; @Module({imports:[AuditModule],controllers:[BranchesController],providers:[BranchesService]}) export class BranchesModule {}

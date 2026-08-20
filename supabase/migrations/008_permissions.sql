@@ -1,0 +1,1 @@
+create table public.permissions (id uuid primary key default gen_random_uuid(), permission_key text not null unique, display_name text not null);

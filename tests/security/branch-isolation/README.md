@@ -1,0 +1,1 @@
+Local-ready RLS test scenario. Execute against Supabase local/remote after linking a project; do not mark PASS without database execution.

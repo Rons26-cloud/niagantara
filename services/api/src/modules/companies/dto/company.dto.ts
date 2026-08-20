@@ -1,0 +1,1 @@
+import { IsOptional,IsString,MinLength } from 'class-validator'; export class CreateCompanyDto{@IsString() @MinLength(2) name!:string; @IsOptional() @IsString() legalName?:string} export class UpdateCompanyDto{@IsOptional() @IsString() @MinLength(2) name?:string; @IsOptional() @IsString() legalName?:string}

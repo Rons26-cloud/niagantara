@@ -1,0 +1,1 @@
+create table public.roles (id uuid primary key default gen_random_uuid(), scope text not null check (scope in ('platform','company','branch')), role_key text not null, display_name text not null, unique(scope,role_key));

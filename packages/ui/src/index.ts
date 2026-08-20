@@ -1,0 +1,1 @@
+export const NIAGANTARA_WORDMARK = 'NIAGANTARA';

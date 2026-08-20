@@ -1,0 +1,1 @@
+import { Module } from '@nestjs/common'; import { SecurityEventsService } from './security-events.service.js'; @Module({providers:[SecurityEventsService],exports:[SecurityEventsService]}) export class SecurityEventsModule {}

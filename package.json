@@ -1,0 +1,28 @@
+{
+  "name": "niagantara-v2",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "corepack pnpm -r --if-present run build",
+    "lint": "corepack pnpm -r --if-present run lint",
+    "typecheck": "corepack pnpm -r --if-present run typecheck",
+    "test": "corepack pnpm -r --if-present run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev:web": "corepack pnpm --filter @niagantara/web dev",
+    "dev:dashboard": "corepack pnpm --filter @niagantara/dashboard dev",
+    "dev:master": "corepack pnpm --filter @niagantara/master dev",
+    "dev:pos": "corepack pnpm --filter @niagantara/pos dev",
+    "dev:api": "corepack pnpm --filter @niagantara/api dev",
+    "dev:worker": "corepack pnpm --filter @niagantara/worker dev"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2"
+  }
+}

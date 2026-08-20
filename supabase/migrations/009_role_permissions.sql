@@ -1,0 +1,1 @@
+create table public.role_permissions (role_id uuid not null references public.roles(id) on delete cascade, permission_id uuid not null references public.permissions(id) on delete cascade, primary key(role_id,permission_id));

@@ -1,0 +1,1 @@
+RLS scenarios: Company A/B and Branch A/B isolation. These are intentionally marked pending until Supabase local or remote credentials are configured.
