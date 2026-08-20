@@ -9,6 +9,7 @@ export class EnvironmentConfigurationError extends Error {
 
 export interface ServerEnvironment {
   supabaseUrl: string;
+  supabaseAnonKey: string;
   supabaseServiceRoleKey: string;
   host: string;
   port: number;
@@ -42,6 +43,7 @@ function parsePort(value: string | undefined): number {
 export function validateServerEnvironment(source: NodeJS.ProcessEnv = process.env): ServerEnvironment {
   return {
     supabaseUrl: parseUrl(requireValue(source, 'SUPABASE_URL'), 'SUPABASE_URL'),
+    supabaseAnonKey: requireValue(source, 'SUPABASE_ANON_KEY'),
     supabaseServiceRoleKey: requireValue(source, 'SUPABASE_SERVICE_ROLE_KEY'),
     host: source.HOST?.trim() || '0.0.0.0',
     port: parsePort(source.PORT?.trim()),

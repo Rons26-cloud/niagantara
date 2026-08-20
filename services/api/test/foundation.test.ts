@@ -16,8 +16,8 @@ function chain(result: { data?: any; error?: any }) {
 
 test('environment validation requires server-only Supabase values', () => {
   assert.throws(() => validateServerEnvironment({}), EnvironmentConfigurationError);
-  assert.throws(() => validateServerEnvironment({ SUPABASE_URL: 'https://example.supabase.co' }), /SUPABASE_SERVICE_ROLE_KEY is required/);
-  const env = validateServerEnvironment({ SUPABASE_URL: 'https://example.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'test-placeholder', PORT: '4100' });
+  assert.throws(() => validateServerEnvironment({ SUPABASE_URL: 'https://example.supabase.co' }), /SUPABASE_ANON_KEY is required/);
+  const env = validateServerEnvironment({ SUPABASE_URL: 'https://example.supabase.co', SUPABASE_ANON_KEY: 'public-test-placeholder', SUPABASE_SERVICE_ROLE_KEY: 'secret-test-placeholder', PORT: '4100' });
   assert.equal(env.port, 4100);
   assert.equal(env.host, '0.0.0.0');
 });

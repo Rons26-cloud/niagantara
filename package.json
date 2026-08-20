@@ -12,6 +12,7 @@
     "test": "corepack pnpm -r --if-present run test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "smtp:check": "node scripts/check-smtp-config.mjs",
     "dev:web": "corepack pnpm --filter @niagantara/web dev",
     "dev:dashboard": "corepack pnpm --filter @niagantara/dashboard dev",
     "dev:master": "corepack pnpm --filter @niagantara/master dev",
