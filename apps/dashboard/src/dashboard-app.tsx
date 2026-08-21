@@ -6,6 +6,9 @@ import {
   SalesPage as Sales,
   ShiftPage as Shifts,
 } from './phase3-pages';
+import { CrudPage } from './phase4-pages';
+import { AttendancePage, PurchasesPage } from './phase4-operations';
+import { ExpensesPage, FinancePage, Phase4Summary } from './phase4-finance';
 type Ctx = {
   companies: any[];
   active_company: string | null;
@@ -22,6 +25,15 @@ const nav = [
   ['categories', 'Categories'],
   ['barcode', 'Barcode'],
   ['inventory', 'Inventory'],
+  ['purchases', 'Purchases'],
+  ['suppliers', 'Suppliers'],
+  ['customers', 'Customers'],
+  ['employees', 'Employees'],
+  ['attendance', 'Attendance'],
+  ['expenses', 'Expenses'],
+  ['payables', 'Payables'],
+  ['receivables', 'Receivables'],
+  ['reports', 'Finance Reports'],
   ['warehouses', 'Warehouses'],
   ['branches', 'Branches'],
   ['stores', 'Store Management'],
@@ -32,6 +44,15 @@ const navPermission: Record<string, string | undefined> = {
   pos: 'pos.access',
   sales: 'sale.read',
   shifts: 'shift.read',
+  purchases: 'purchase.read',
+  suppliers: 'supplier.read',
+  customers: 'customer.read',
+  employees: 'employee.read',
+  attendance: 'attendance.read',
+  expenses: 'expense.read',
+  payables: 'payable.read',
+  receivables: 'receivable.read',
+  reports: 'finance.read',
 };
 export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
@@ -152,6 +173,12 @@ function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
   if (page === 'pos') return <Pos company={c} token={token} ctx={ctx} />;
   if (page === 'sales') return <Sales company={c} token={token} ctx={ctx} />;
   if (page === 'shifts') return <Shifts company={c} token={token} ctx={ctx} />;
+  if (page === 'suppliers' || page === 'customers' || page === 'employees') return <CrudPage kind={page} company={c} token={token} ctx={ctx} />;
+  if (page === 'purchases') return <PurchasesPage company={c} token={token} ctx={ctx} />;
+  if (page === 'attendance') return <AttendancePage company={c} token={token} ctx={ctx} />;
+  if (page === 'expenses') return <ExpensesPage company={c} token={token} ctx={ctx} />;
+  if (page === 'payables' || page === 'receivables') return <FinancePage view={page} company={c} token={token} ctx={ctx} />;
+  if (page === 'reports') return <FinancePage view="reports" company={c} token={token} ctx={ctx} />;
   if (page === 'products')
     return (
       <Resource
@@ -285,6 +312,7 @@ function Dashboard({
     );
   return (
     <>
+      <Phase4Summary company={company} token={token} permissions={ctx.permissions} />
       <section className="metrics">
         <Metric
           label="Revenue hari ini"

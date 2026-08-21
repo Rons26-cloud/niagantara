@@ -14,6 +14,13 @@ import { InventoryModule } from './modules/inventory/inventory.module.js';
 import { PosModule } from './modules/pos/pos.module.js';
 import { SalesModule } from './modules/sales/sales.module.js';
 import { ShiftsModule } from './modules/shifts/shifts.module.js';
+import { SuppliersModule } from './modules/suppliers/suppliers.module.js';
+import { PurchasesModule } from './modules/purchases/purchases.module.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
+import { EmployeesModule } from './modules/employees/employees.module.js';
+import { AttendanceModule } from './modules/attendance/attendance.module.js';
+import { ExpensesModule } from './modules/expenses/expenses.module.js';
+import { FinanceModule } from './modules/finance/finance.module.js';
 @Controller('health')
 class HealthController {
   @Get() health() {
@@ -37,6 +44,13 @@ class HealthController {
     PosModule,
     SalesModule,
     ShiftsModule,
+    SuppliersModule,
+    PurchasesModule,
+    CustomersModule,
+    EmployeesModule,
+    AttendanceModule,
+    ExpensesModule,
+    FinanceModule,
   ],
   controllers: [HealthController],
 })

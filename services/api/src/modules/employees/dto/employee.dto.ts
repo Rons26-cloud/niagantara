@@ -1,0 +1,1 @@
+export type EmployeeInput={employeeCode:string;userId?:string;name:string;phone?:string;email?:string;jobTitle?:string;employmentStatus?:string;hireDate?:string;primaryBranchId?:string};export type AssignmentInput={branchId:string;isPrimary?:boolean};export type WorkShiftInput={employeeId:string;branchId:string;scheduledStart:string;scheduledEnd:string;notes?:string};

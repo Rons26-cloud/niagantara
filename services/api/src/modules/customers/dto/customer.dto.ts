@@ -1,0 +1,1 @@
+export type CustomerInput={customerCode:string;name:string;phone?:string;email?:string;address?:string;notes?:string;status?:'active'|'inactive'};export type CustomerQuery={search?:string;status?:string;limit?:number};

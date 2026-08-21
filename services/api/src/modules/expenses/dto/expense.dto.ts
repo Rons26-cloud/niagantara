@@ -1,0 +1,1 @@
+export type ExpenseInput={storeId?:string;branchId?:string;categoryId:string;amount:number;expenseDate:string;description:string;paymentMethod:string;reference?:string;idempotencyKey:string};export type CategoryInput={name:string;description?:string};export type ExpenseQuery={branchId?:string;categoryId?:string;from?:string;to?:string};
