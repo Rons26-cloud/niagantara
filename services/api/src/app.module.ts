@@ -1,4 +1,4 @@
-import { Controller, Get, Module } from '@nestjs/common';
+import { Controller, Get, Module, ServiceUnavailableException } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { CompaniesModule } from './modules/companies/companies.module.js';
 import { StoresModule } from './modules/stores/stores.module.js';
@@ -22,10 +22,19 @@ import { AttendanceModule } from './modules/attendance/attendance.module.js';
 import { ExpensesModule } from './modules/expenses/expenses.module.js';
 import { FinanceModule } from './modules/finance/finance.module.js';
 import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module.js';
+import { SupabaseService } from './integrations/supabase/supabase.service.js';
+import { validateServerEnvironment } from './config/environment.js';
 @Controller('health')
 class HealthController {
+  constructor(private readonly supabase: SupabaseService) {}
   @Get() health() {
-    return { status: 'ok', service: 'niagantara-api', version: 'v1' };
+    const env=validateServerEnvironment();
+    return { status: 'ok', service: env.serviceName, api_version: 'v1', app_version: env.appVersion, build_sha: env.buildSha, environment: env.appEnv };
+  }
+  @Get('readiness')
+  async readiness() {
+    const env=validateServerEnvironment();const database=await this.supabase.readiness();if(!database)throw new ServiceUnavailableException({code:'NOT_READY',message:'A critical dependency is unavailable.'});
+    return { status: database?'ready':'not_ready', database: database?'reachable':'unreachable', service: env.serviceName, app_version: env.appVersion, build_sha: env.buildSha, environment: env.appEnv };
   }
 }
 @Module({

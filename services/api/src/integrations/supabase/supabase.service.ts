@@ -26,4 +26,9 @@ export class SupabaseService {
       auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
     });
   }
+
+  async readiness(): Promise<boolean> {
+    const { error } = await this.client.from('companies').select('id', { head: true, count: 'exact' }).limit(1);
+    return !error;
+  }
 }

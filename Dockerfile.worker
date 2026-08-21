@@ -1,0 +1,16 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+RUN corepack enable
+COPY . .
+RUN corepack pnpm install --frozen-lockfile && corepack pnpm --filter @niagantara/worker build
+
+FROM node:22-alpine AS runtime
+ENV NODE_ENV=production APP_ENV=production
+WORKDIR /app
+RUN addgroup -S niagantara && adduser -S niagantara -G niagantara
+COPY --from=build --chown=niagantara:niagantara /app/node_modules ./node_modules
+COPY --from=build --chown=niagantara:niagantara /app/services/worker/node_modules ./services/worker/node_modules
+COPY --from=build --chown=niagantara:niagantara /app/services/worker/dist ./services/worker/dist
+COPY --from=build --chown=niagantara:niagantara /app/services/worker/package.json ./services/worker/package.json
+USER niagantara
+CMD ["node","services/worker/dist/main.js"]

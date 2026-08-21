@@ -11,3 +11,5 @@ Use a verified sender domain with SPF, DKIM, and DMARC. Rotate compromised crede
 - Server requests must derive company, store, and branch access from the authenticated membership, not untrusted IDs from the client.
 - Security-sensitive mutations will be validated, authorized, transactional, and audited.
 - Copy `.env.example` to a local environment file; never commit actual secrets.
+
+Production reports include a build SHA and request ID, never authentication material. Rotate suspected credentials at the provider and deployment secret store, revoke affected sessions/connections, review security/audit events, and retain only redacted incident evidence. See `docs/RECOVERY.md`.

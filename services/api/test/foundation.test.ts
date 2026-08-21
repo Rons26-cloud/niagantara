@@ -43,6 +43,6 @@ test('ApiExceptionFilter redacts unknown exception details', () => {
   const response = { status: () => ({ send: (body: unknown) => { payload = body; } }) };
   const host = { switchToHttp: () => ({ getResponse: () => response }) } as any;
   new ApiExceptionFilter().catch(new Error('database password leaked'), host);
-  assert.deepEqual(payload, { statusCode: 500, code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' });
+  assert.deepEqual(payload, { statusCode: 500, code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.', request_id: null });
   assert.equal(JSON.stringify(payload).includes('password'), false);
 });

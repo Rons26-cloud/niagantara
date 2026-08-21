@@ -15,4 +15,4 @@ corepack pnpm typecheck
 corepack pnpm test
 ```
 
-Phase 0 establishes the monorepo and application foundations. Product modules are intentionally added incrementally behind authenticated, tenant-aware boundaries.
+Production preparation is documented in `docs/DEPLOYMENT.md`. Supabase remains the source of truth; Google Sheets is a tenant-scoped reporting layer. Static web applications can run at the edge, while the Nest API and queue worker require Node-compatible process hosting.
