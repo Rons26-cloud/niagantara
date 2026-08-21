@@ -208,16 +208,17 @@ export class AuthService {
       .eq('user_id', userId)
       .eq('status', 'active');
     const memberships = companies ?? [];
-    const companyIds = [...new Set(memberships.map((membership: { company_id: string }) => membership.company_id))];
-    const roleKeys = [...new Set(memberships.map((membership: { role_key: string }) => membership.role_key))];
+    const activeMembership = memberships[0] as { company_id: string; role_key: string } | undefined;
+    const activeCompanyId = activeMembership?.company_id ?? null;
+    const activeRoleKey = activeMembership?.role_key ?? null;
 
     let permissions: string[] = [];
-    if (roleKeys.length > 0) {
+    if (activeRoleKey) {
       const { data: roleRows } = await this.supabase.client
         .from('roles')
         .select('id,role_key')
         .eq('scope', 'company')
-        .in('role_key', roleKeys);
+        .eq('role_key', activeRoleKey);
       const roleIds = (roleRows ?? []).map((role: { id: string }) => role.id);
       if (roleIds.length > 0) {
         const { data: assignments } = await this.supabase.client
@@ -234,12 +235,20 @@ export class AuthService {
       }
     }
 
+    let stores: unknown[] = [];
     let accessibleBranches: unknown[] = [];
-    if (companyIds.length > 0) {
+    if (activeCompanyId) {
+      const { data: storeRows } = await this.supabase.client
+        .from('stores')
+        .select('id,company_id,name')
+        .eq('company_id', activeCompanyId);
+      stores = storeRows ?? [];
+    }
+    if (activeCompanyId && ['owner', 'company_admin'].includes(activeRoleKey ?? '')) {
       const { data: branches } = await this.supabase.client
         .from('branches')
         .select('id,company_id,store_id,name,code,status')
-        .in('company_id', companyIds)
+        .eq('company_id', activeCompanyId)
         .eq('status', 'active');
       accessibleBranches = branches ?? [];
     }
@@ -248,9 +257,10 @@ export class AuthService {
       user: { id: userId },
       profile,
       companies: memberships,
-      active_company: companyIds[0] ?? null,
-      roles: roleKeys,
+      active_company: activeCompanyId,
+      roles: activeRoleKey ? [activeRoleKey] : [],
       permissions,
+      stores,
       accessible_branches: accessibleBranches,
     };
   }
