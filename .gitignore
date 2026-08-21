@@ -3,6 +3,7 @@ dist/
 build/
 .turbo/
 coverage/
+supabase/.temp/
 .env
 .env.*
 *.log
