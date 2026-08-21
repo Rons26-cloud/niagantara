@@ -212,6 +212,17 @@ export class AuthService {
     const activeCompanyId = activeMembership?.company_id ?? null;
     const activeRoleKey = activeMembership?.role_key ?? null;
 
+    let branchMemberships: { branch_id: string; role_key: string }[] = [];
+    if (activeCompanyId) {
+      const { data } = await this.supabase.client
+        .from('branch_members')
+        .select('branch_id,role_key')
+        .eq('company_id', activeCompanyId)
+        .eq('user_id', userId)
+        .eq('status', 'active');
+      branchMemberships = data ?? [];
+    }
+
     let permissions: string[] = [];
     if (activeRoleKey) {
       const { data: roleRows } = await this.supabase.client
@@ -234,6 +245,28 @@ export class AuthService {
         }))].sort();
       }
     }
+    const branchRoleKeys = [...new Set(branchMemberships.map((membership) => membership.role_key))];
+    if (branchRoleKeys.length > 0) {
+      const { data: branchRoles } = await this.supabase.client
+        .from('roles')
+        .select('id,role_key')
+        .eq('scope', 'branch')
+        .in('role_key', branchRoleKeys);
+      const branchRoleIds = (branchRoles ?? []).map((role: { id: string }) => role.id);
+      if (branchRoleIds.length > 0) {
+        const { data: assignments } = await this.supabase.client
+          .from('role_permissions')
+          .select('permission:permissions(permission_key)')
+          .in('role_id', branchRoleIds);
+        const branchPermissions = (assignments ?? []).flatMap((assignment: {
+          permission: { permission_key: string } | { permission_key: string }[] | null;
+        }) => {
+          if (Array.isArray(assignment.permission)) return assignment.permission.map((item) => item.permission_key);
+          return assignment.permission?.permission_key ? [assignment.permission.permission_key] : [];
+        });
+        permissions = [...new Set([...permissions, ...branchPermissions])].sort();
+      }
+    }
 
     let stores: unknown[] = [];
     let accessibleBranches: unknown[] = [];
@@ -251,6 +284,13 @@ export class AuthService {
         .eq('company_id', activeCompanyId)
         .eq('status', 'active');
       accessibleBranches = branches ?? [];
+    } else if (branchMemberships.length > 0) {
+      const { data: branches } = await this.supabase.client
+        .from('branches')
+        .select('id,company_id,store_id,name,code,status')
+        .in('id', branchMemberships.map((membership) => membership.branch_id))
+        .eq('status', 'active');
+      accessibleBranches = branches ?? [];
     }
 
     return {
@@ -258,7 +298,7 @@ export class AuthService {
       profile,
       companies: memberships,
       active_company: activeCompanyId,
-      roles: activeRoleKey ? [activeRoleKey] : [],
+      roles: [...new Set([...(activeRoleKey ? [activeRoleKey] : []), ...branchRoleKeys])],
       permissions,
       stores,
       accessible_branches: accessibleBranches,

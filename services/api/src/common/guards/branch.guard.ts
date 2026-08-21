@@ -20,6 +20,21 @@ export class BranchGuard implements CanActivate {
     if (error || !data || data.company_id !== companyId) {
       throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'Branch does not belong to the active company.' });
     }
+    const companyRole = request.authz?.companyRole as string | undefined;
+    if (!['owner', 'company_admin'].includes(companyRole ?? '')) {
+      const { data: assignment, error: assignmentError } = await this.supabase.client
+        .from('branch_members')
+        .select('id,role_key')
+        .eq('company_id', companyId)
+        .eq('branch_id', branchId)
+        .eq('user_id', request.user.id)
+        .eq('status', 'active')
+        .maybeSingle();
+      if (assignmentError || !assignment) {
+        throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'You do not have access to this branch.' });
+      }
+      request.authz = { ...request.authz, branchRole: assignment.role_key };
+    }
     request.tenant = { ...request.tenant, branchId };
     return true;
   }

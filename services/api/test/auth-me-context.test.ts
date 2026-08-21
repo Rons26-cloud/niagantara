@@ -24,7 +24,8 @@ function queryResult(data: unknown) {
 test('auth/me returns owner permissions and accessible active branches', async () => {
   const tables: Record<string, unknown> = {
     profiles: { id: 'u1', status: 'active' },
-    company_members: [{ company_id: 'c1', role_key: 'owner', status: 'active' }],
+    company_members: [{ company_id: 'c1', user_id: 'u1', role_key: 'owner', status: 'active' }],
+    branch_members: [],
     roles: [{ id: 'r1', scope: 'company', role_key: 'owner' }],
     role_permissions: [
       { role_id: 'r1', permission: { permission_key: 'company.read' } },
@@ -53,7 +54,8 @@ test('auth/me returns owner permissions and accessible active branches', async (
 test('branch-scoped employee receives no company-wide branches without an explicit assignment', async () => {
   const tables: Record<string, unknown> = {
     profiles: { id: 'u2', status: 'active' },
-    company_members: [{ company_id: 'c1', role_key: 'employee', status: 'active' }],
+    company_members: [{ company_id: 'c1', user_id: 'u2', role_key: 'employee', status: 'active' }],
+    branch_members: [],
     roles: [{ id: 'r2', scope: 'company', role_key: 'employee' }],
     role_permissions: [],
     stores: [{ id: 's1', company_id: 'c1', name: 'Main' }],

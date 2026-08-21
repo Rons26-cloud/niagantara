@@ -39,8 +39,39 @@ export class TenantGuard implements CanActivate {
       })
       .filter((permission): permission is string => Boolean(permission));
 
+    const { data: branchMemberships } = await this.supabase.client
+      .from('branch_members')
+      .select('branch_id,role_key')
+      .eq('company_id', companyId)
+      .eq('user_id', request.user.id)
+      .eq('status', 'active');
+    const branchRoleKeys = [...new Set((branchMemberships ?? []).map((member: { role_key: string }) => member.role_key))];
+    if (branchRoleKeys.length > 0) {
+      const { data: branchRoles } = await this.supabase.client
+        .from('roles')
+        .select('id')
+        .eq('scope', 'branch')
+        .in('role_key', branchRoleKeys);
+      const roleIds = (branchRoles ?? []).map((item: { id: string }) => item.id);
+      if (roleIds.length > 0) {
+        const { data: branchAssignments } = await this.supabase.client
+          .from('role_permissions')
+          .select('permission:permissions(permission_key)')
+          .in('role_id', roleIds);
+        for (const assignment of branchAssignments ?? []) {
+          const value = Array.isArray(assignment.permission) ? assignment.permission[0] : assignment.permission;
+          if (value?.permission_key && !permissions.includes(value.permission_key)) permissions.push(value.permission_key);
+        }
+      }
+    }
+
     request.tenant = { ...(request.tenant ?? {}), companyId };
-    request.authz = { ...(request.authz ?? {}), companyRole: membership.role_key, permissions };
+    request.authz = {
+      ...(request.authz ?? {}),
+      companyRole: membership.role_key,
+      branchIds: (branchMemberships ?? []).map((member: { branch_id: string }) => member.branch_id),
+      permissions,
+    };
     return true;
   }
 }
