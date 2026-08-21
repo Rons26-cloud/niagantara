@@ -1,1 +1,43 @@
-import { Controller,Get,Module } from '@nestjs/common'; import { AuthModule } from './modules/auth/auth.module.js'; import { CompaniesModule } from './modules/companies/companies.module.js'; import { StoresModule } from './modules/stores/stores.module.js'; import { BranchesModule } from './modules/branches/branches.module.js'; import { AuditModule } from './modules/audit/audit.module.js'; import { SecurityEventsModule } from './modules/security-events/security-events.module.js'; import { SupabaseModule } from './integrations/supabase/supabase.module.js'; import { ProductsModule } from './modules/products/products.module.js'; import { CategoriesModule } from './modules/categories/categories.module.js'; import { BarcodesModule } from './modules/barcodes/barcodes.module.js'; import { WarehousesModule } from './modules/warehouses/warehouses.module.js'; import { InventoryModule } from './modules/inventory/inventory.module.js'; @Controller('health') class HealthController{@Get() health(){return {status:'ok',service:'niagantara-api',version:'v1'}}} @Module({imports:[SupabaseModule,AuditModule,SecurityEventsModule,AuthModule,CompaniesModule,StoresModule,BranchesModule,ProductsModule,CategoriesModule,BarcodesModule,WarehousesModule,InventoryModule],controllers:[HealthController]}) export class AppModule {}
+import { Controller, Get, Module } from '@nestjs/common';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { CompaniesModule } from './modules/companies/companies.module.js';
+import { StoresModule } from './modules/stores/stores.module.js';
+import { BranchesModule } from './modules/branches/branches.module.js';
+import { AuditModule } from './modules/audit/audit.module.js';
+import { SecurityEventsModule } from './modules/security-events/security-events.module.js';
+import { SupabaseModule } from './integrations/supabase/supabase.module.js';
+import { ProductsModule } from './modules/products/products.module.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
+import { BarcodesModule } from './modules/barcodes/barcodes.module.js';
+import { WarehousesModule } from './modules/warehouses/warehouses.module.js';
+import { InventoryModule } from './modules/inventory/inventory.module.js';
+import { PosModule } from './modules/pos/pos.module.js';
+import { SalesModule } from './modules/sales/sales.module.js';
+import { ShiftsModule } from './modules/shifts/shifts.module.js';
+@Controller('health')
+class HealthController {
+  @Get() health() {
+    return { status: 'ok', service: 'niagantara-api', version: 'v1' };
+  }
+}
+@Module({
+  imports: [
+    SupabaseModule,
+    AuditModule,
+    SecurityEventsModule,
+    AuthModule,
+    CompaniesModule,
+    StoresModule,
+    BranchesModule,
+    ProductsModule,
+    CategoriesModule,
+    BarcodesModule,
+    WarehousesModule,
+    InventoryModule,
+    PosModule,
+    SalesModule,
+    ShiftsModule,
+  ],
+  controllers: [HealthController],
+})
+export class AppModule {}

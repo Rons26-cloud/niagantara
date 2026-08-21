@@ -1,6 +1,11 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ApiError, api } from './api';
 import { useAuth } from './auth/auth-context';
+import {
+  PosPage as Pos,
+  SalesPage as Sales,
+  ShiftPage as Shifts,
+} from './phase3-pages';
 type Ctx = {
   companies: any[];
   active_company: string | null;
@@ -10,6 +15,9 @@ type Ctx = {
 };
 const nav = [
   ['dashboard', 'Dashboard'],
+  ['pos', 'POS / Kasir'],
+  ['sales', 'Sales'],
+  ['shifts', 'Cashier Shift'],
   ['products', 'Products'],
   ['categories', 'Categories'],
   ['barcode', 'Barcode'],
@@ -20,6 +28,11 @@ const nav = [
   ['tutorial', 'Tutorial'],
   ['settings', 'Settings'],
 ] as const;
+const navPermission: Record<string, string | undefined> = {
+  pos: 'pos.access',
+  sales: 'sale.read',
+  shifts: 'shift.read',
+};
 export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
   const [ctx, setCtx] = useState<Ctx | null>(null);
@@ -73,15 +86,21 @@ export function DashboardApp() {
           </div>
         </div>
         <nav>
-          {nav.map(([id, label]) => (
-            <button
-              key={id}
-              className={page === id ? 'active' : ''}
-              onClick={() => go(id)}
-            >
-              {label}
-            </button>
-          ))}
+          {nav
+            .filter(
+              ([id]) =>
+                !navPermission[id] ||
+                ctx.permissions.includes(navPermission[id]!),
+            )
+            .map(([id, label]) => (
+              <button
+                key={id}
+                className={page === id ? 'active' : ''}
+                onClick={() => go(id)}
+              >
+                {label}
+              </button>
+            ))}
         </nav>
         <button
           className="logout"
@@ -130,6 +149,9 @@ function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
   const c = ctx.active_company!;
   if (page === 'dashboard')
     return <Dashboard company={c} token={token} ctx={ctx} />;
+  if (page === 'pos') return <Pos company={c} token={token} ctx={ctx} />;
+  if (page === 'sales') return <Sales company={c} token={token} ctx={ctx} />;
+  if (page === 'shifts') return <Shifts company={c} token={token} ctx={ctx} />;
   if (page === 'products')
     return (
       <Resource
@@ -211,23 +233,50 @@ function Dashboard({
   token: string;
   ctx: Ctx;
 }) {
-  const [products, setProducts] = useState<any[]>([]);
+  const [sales, setSales] = useState<any[]>([]);
   const [low, setLow] = useState<any[]>([]);
-  const [moves, setMoves] = useState<any[]>([]);
   const [error, setError] = useState(false);
   useEffect(() => {
     Promise.all([
-      api<any[]>('/products', token, company),
+      api<any[]>(
+        `/sales?from=${new Date().toISOString().slice(0, 10)}`,
+        token,
+        company,
+      ),
       api<any[]>('/inventory/low-stock', token, company),
-      api<any[]>('/inventory/movements', token, company),
     ])
-      .then(([p, l, m]) => {
-        setProducts(p);
+      .then(([s, l]) => {
+        setSales(s);
         setLow(l);
-        setMoves(m);
       })
       .catch(() => setError(true));
   }, [company, token]);
+  const paid = sales.filter((sale) =>
+    ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'].includes(sale.status),
+  );
+  const revenue = paid.reduce(
+    (sum, sale) =>
+      sum + Number(sale.grand_total) - Number(sale.refunded_total ?? 0),
+    0,
+  );
+  const topProducts = [
+    ...paid
+      .flatMap((sale) => sale.items ?? [])
+      .reduce((map: Map<string, any>, item: any) => {
+        const current = map.get(item.product_id) ?? {
+          product: item.product_name,
+          quantity: 0,
+          revenue: 0,
+        };
+        current.quantity += Number(item.quantity);
+        current.revenue += Number(item.line_total);
+        map.set(item.product_id, current);
+        return map;
+      }, new Map())
+      .values(),
+  ]
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 5);
   if (error)
     return (
       <section className="panel error">
@@ -239,13 +288,13 @@ function Dashboard({
       <section className="metrics">
         <Metric
           label="Revenue hari ini"
-          value="—"
-          note="Belum ada sumber transaksi"
+          value={`Rp ${revenue.toLocaleString('id-ID')}`}
+          note="Net paid sales"
         />
         <Metric
-          label="Products"
-          value={String(products.length)}
-          note="Catalog berizin"
+          label="Transactions today"
+          value={String(paid.length)}
+          note="Paid transactions"
         />
         <Metric
           label="Low stock"
@@ -253,17 +302,25 @@ function Dashboard({
           note="quantity ≤ minimum"
         />
         <Metric
-          label="Branches"
-          value={String(ctx.accessible_branches.length)}
-          note="Scope berizin"
+          label="Average transaction"
+          value={`Rp ${(paid.length ? revenue / paid.length : 0).toLocaleString('id-ID')}`}
+          note="Authorized scope"
         />
       </section>
       <section className="panel">
-        <h2>Recent activity</h2>
-        {moves.length ? (
-          <DataRows rows={moves.slice(0, 8)} />
+        <h2>Top products today</h2>
+        {topProducts.length ? (
+          <DataRows rows={topProducts} />
         ) : (
-          <p className="muted">Belum ada movement inventory.</p>
+          <p className="muted">Belum ada produk terjual.</p>
+        )}
+      </section>
+      <section className="panel">
+        <h2>Recent sales</h2>
+        {sales.length ? (
+          <DataRows rows={sales.slice(0, 8)} />
+        ) : (
+          <p className="muted">Belum ada sales hari ini.</p>
         )}
       </section>
     </>
