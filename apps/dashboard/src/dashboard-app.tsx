@@ -9,6 +9,7 @@ import {
 import { CrudPage } from './phase4-pages';
 import { AttendancePage, PurchasesPage } from './phase4-operations';
 import { ExpensesPage, FinancePage, Phase4Summary } from './phase4-finance';
+import { GoogleSheetsPage, SheetsTutorial } from './phase5-sheets';
 type Ctx = {
   companies: any[];
   active_company: string | null;
@@ -34,6 +35,7 @@ const nav = [
   ['payables', 'Payables'],
   ['receivables', 'Receivables'],
   ['reports', 'Finance Reports'],
+  ['sheets', 'Google Sheets'],
   ['warehouses', 'Warehouses'],
   ['branches', 'Branches'],
   ['stores', 'Store Management'],
@@ -53,6 +55,7 @@ const navPermission: Record<string, string | undefined> = {
   payables: 'payable.read',
   receivables: 'receivable.read',
   reports: 'finance.read',
+  sheets: 'sheet.read',
 };
 export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
@@ -179,6 +182,8 @@ function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
   if (page === 'expenses') return <ExpensesPage company={c} token={token} ctx={ctx} />;
   if (page === 'payables' || page === 'receivables') return <FinancePage view={page} company={c} token={token} ctx={ctx} />;
   if (page === 'reports') return <FinancePage view="reports" company={c} token={token} ctx={ctx} />;
+  if (page === 'sheets') return <GoogleSheetsPage company={c} token={token} canManage={ctx.permissions.includes('sheet.manage')} />;
+  if (page === 'tutorial') return <SheetsTutorial />;
   if (page === 'products')
     return (
       <Resource

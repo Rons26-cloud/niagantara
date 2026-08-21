@@ -167,6 +167,10 @@ importers:
         version: 5.9.3
 
   services/worker:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.112.3
+        version: 2.112.3
     devDependencies:
       '@types/node':
         specifier: ^22.0.0

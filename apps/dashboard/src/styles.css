@@ -589,3 +589,4 @@ nav a:hover {
     display: none;
   }
 }
+.sync-pill{padding:.35rem .65rem;border-radius:999px;background:#e2e8f0;text-transform:uppercase;font-size:.72rem;font-weight:800}.sync-pill.active{background:#dcfce7;color:#166534}.sync-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 0;border-bottom:1px solid #e2e8f0}.sync-row span,.sheet-definition small{display:block}.sheet-definition{border:1px solid #e2e8f0;border-radius:12px;padding:1rem;margin-top:1rem}.sheet-definition ol{display:grid;gap:.45rem}.sheet-definition li{display:flex;align-items:center;gap:.5rem}.sheet-definition li span{margin-right:auto}.sheet-definition input{border:1px solid #cbd5e1;border-radius:8px;padding:.5rem}.tutorial li{margin:.75rem 0;line-height:1.5}

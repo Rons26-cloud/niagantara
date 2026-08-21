@@ -13,6 +13,10 @@ export interface ServerEnvironment {
   supabaseServiceRoleKey: string;
   host: string;
   port: number;
+  googleClientId?: string;
+  googleClientSecret?: string;
+  googleRedirectUri?: string;
+  googleTokenEncryptionKey?: string;
 }
 
 function requireValue(source: NodeJS.ProcessEnv, name: string): string {
@@ -47,5 +51,9 @@ export function validateServerEnvironment(source: NodeJS.ProcessEnv = process.en
     supabaseServiceRoleKey: requireValue(source, 'SUPABASE_SERVICE_ROLE_KEY'),
     host: source.HOST?.trim() || '0.0.0.0',
     port: parsePort(source.PORT?.trim()),
+    googleClientId: source.GOOGLE_CLIENT_ID?.trim(),
+    googleClientSecret: source.GOOGLE_CLIENT_SECRET?.trim(),
+    googleRedirectUri: source.GOOGLE_REDIRECT_URI?.trim(),
+    googleTokenEncryptionKey: source.GOOGLE_TOKEN_ENCRYPTION_KEY?.trim(),
   };
 }

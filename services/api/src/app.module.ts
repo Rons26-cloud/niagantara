@@ -21,6 +21,7 @@ import { EmployeesModule } from './modules/employees/employees.module.js';
 import { AttendanceModule } from './modules/attendance/attendance.module.js';
 import { ExpensesModule } from './modules/expenses/expenses.module.js';
 import { FinanceModule } from './modules/finance/finance.module.js';
+import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module.js';
 @Controller('health')
 class HealthController {
   @Get() health() {
@@ -51,6 +52,7 @@ class HealthController {
     AttendanceModule,
     ExpensesModule,
     FinanceModule,
+    GoogleSheetsModule,
   ],
   controllers: [HealthController],
 })
