@@ -5,6 +5,7 @@ build/
 coverage/
 supabase/.temp/
 .env
+.railway-api.env.tmp
 .env.*
 *.log
 *.local
