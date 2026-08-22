@@ -9,7 +9,7 @@ import { configureRuntimeHardening } from './common/runtime/runtime-hardening.js
 
 async function bootstrap() {
   const environment = validateServerEnvironment();
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ bodyLimit: environment.bodyLimitBytes, trustProxy: environment.trustProxy, requestTimeout: environment.requestTimeoutMs }));
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ bodyLimit: environment.bodyLimitBytes, trustProxy: environment.trustProxy ? 1 : false, requestTimeout: environment.requestTimeoutMs }));
   app.setGlobalPrefix('api/v1');
   configureRuntimeHardening(app,environment);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));

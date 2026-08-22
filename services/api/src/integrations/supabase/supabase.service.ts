@@ -28,7 +28,7 @@ export class SupabaseService {
   }
 
   async readiness(): Promise<boolean> {
-    const { error } = await this.client.from('companies').select('id', { head: true, count: 'exact' }).limit(1);
+    const { error } = await this.client.from('companies').select('id').limit(1);
     return !error;
   }
 }
