@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { login, useAuth, PLATFORM_ROLES } from './auth';
+import { login, useAuth, PLATFORM_ROLES, type SessionUser } from './auth';
 import {
   Alert,
   BrandLogo,
@@ -269,7 +269,7 @@ function GapPanel({ title }: { title: string }) {
 function MasterLogin({
   onLogin,
 }: {
-  onLogin: (u: any, token: string) => void;
+  onLogin: (u: SessionUser, token: string) => void;
 }) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');

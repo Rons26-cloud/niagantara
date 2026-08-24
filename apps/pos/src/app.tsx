@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { ApiError } from './api';
-import { login, useAuth } from './auth';
+import { login, useAuth, type SessionUser } from './auth';
 import {
   BrandLogo,
   Button,
@@ -138,7 +138,7 @@ async function api2<T>(path: string, token: string): Promise<T> {
 function PosLogin({
   onLogin,
 }: {
-  onLogin: (u: any, token: string) => void;
+  onLogin: (u: SessionUser, token: string) => void;
 }) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
