@@ -1,0 +1,157 @@
+import { BrandLogo, useTranslation } from '@niagantara/ui';
+
+type W = ReturnType<typeof useTranslation>['translations']['website'];
+
+export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
+  const d = w.demoLabels;
+  return (
+    <div className={`dashboard${small ? ' dashboard-small' : ''}`} aria-label={d.preview}>
+      <div className="dash-top">
+        <span aria-hidden="true">● ● ●</span>
+        <b>{d.overview}⌄</b>
+        <small>NIAGANTARA</small>
+        <i aria-hidden="true">A</i>
+      </div>
+      <div className="dash-body">
+        <aside aria-hidden="true">
+          <div className="mini-logo">N</div>
+          <a className="active" tabIndex={-1}>▦ <span>{d.overview}</span></a>
+          <a tabIndex={-1}>◫ <span>{w.features.items[2].title}</span></a>
+          <a tabIndex={-1}>◌ <span>{w.features.items[3].title}</span></a>
+          <a tabIndex={-1}>◈ <span>{w.features.items[1].title}</span></a>
+          <a tabIndex={-1}>⌁ <span>{w.solutions.inventory.pills[0]}</span></a>
+        </aside>
+        <div className="dash-content">
+          <div className="dash-heading">
+            <div>
+              <small>{d.welcomeBack}</small>
+              <h3>{d.summary}</h3>
+            </div>
+            <button tabIndex={-1}>{d.last7Days}⌄</button>
+          </div>
+          <div className="stat-row">
+            <div><small>{d.totalSales}</small><b>Rp 48.620.000</b><em>↗ 12,8%</em></div>
+            <div><small>{d.totalTransactions}</small><b>1.248</b><em>↗ 8,4%</em></div>
+            <div><small>{d.totalProducts}</small><b>684</b><em>{d.active}</em></div>
+            <div><small>{d.totalCustomers}</small><b>2.431</b><em>↗ 6,2%</em></div>
+          </div>
+          <div className="dash-grid">
+            <div className="chart-card">
+              <div className="card-title"><b>{d.salesChart}</b><small>{d.sales} <i aria-hidden="true">●</i> {d.profit}</small></div>
+              <div className="chart">
+                <svg viewBox="0 0 500 150" preserveAspectRatio="none" role="img" aria-label={d.salesChart}>
+                  <defs>
+                    <linearGradient id="fill" x1="0" x2="0" y1="0" y2="1">
+                      <stop stopColor="#2563eb" stopOpacity=".25" />
+                      <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M0 120C45 112 55 84 90 104S137 74 174 90S222 48 259 70S302 38 342 55S385 20 420 35S465 13 500 18V150H0Z" fill="url(#fill)" />
+                  <path d="M0 120C45 112 55 84 90 104S137 74 174 90S222 48 259 70S302 38 342 55S385 20 420 35S465 13 500 18" fill="none" stroke="#2563eb" strokeWidth="3" />
+                </svg>
+              </div>
+              <div className="axis"><span>15</span><span>17</span><span>19</span><span>21</span><span>22</span></div>
+            </div>
+            <div className="distribution">
+              <div className="card-title"><b>{d.distribution}</b><small>•••</small></div>
+              <div className="donut"><b>Rp 48,6M</b><small>{d.total}</small></div>
+              <p><i className="blue-dot" />{d.sales}<b>52%</b></p>
+              <p><i className="cyan-dot" />{d.profit}<b>28%</b></p>
+              <p><i className="purple-dot" />{w.finance.expenses}<b>20%</b></p>
+            </div>
+          </div>
+          <div className="dash-lower">
+            <div>
+              <div className="card-title"><b>{d.recentActivity}</b><small>•••</small></div>
+              {[['K', 'Kopi Arabika 1kg', '12', '+8%'], ['O', 'Oat Latte', '31', '+14%'], ['T', 'Teh Melati Premium', '24', '+5%']].map(([l, n, s, g]) => (
+                <p key={n}><i className="product blue-bg">{l}</i><span><b>{n}</b><small>{s} {w.solutions.inventory.unit}</small></span><strong>{g}</strong></p>
+              ))}
+            </div>
+            <div>
+              <div className="card-title"><b>{d.bestSellers}</b><small>•••</small></div>
+              <p><i className="product orange-bg">P</i><span><b>Kopi Arabika</b><small>{d.sales}</small></span><strong>Rp 18,2M</strong></p>
+              <p><i className="product cyan-bg">R</i><span><b>Roti Sourdough</b><small>{d.sales}</small></span><strong>Rp 9,4M</strong></p>
+              <p><i className="product purple-bg">S</i><span><b>Susu Oat Barista</b><small>{d.sales}</small></span><strong>Rp 7,1M</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PosPreview({ w }: { w: W }) {
+  const d = w.demoLabels;
+  return (
+    <div className="pos-preview" aria-hidden="true">
+      <div className="pos-head">
+        <BrandLogo compact href="#" />
+        <span>Toko Pusat⌄</span>
+        <i>A</i>
+      </div>
+      <div className="pos-body">
+        <div className="pos-products">
+          <div className="pos-tabs"><b>{d.allProducts}</b><span>{d.drinks}</span><span>{d.foods}</span></div>
+          <div className="search">⌕ {d.searchOrScan}</div>
+          <div className="product-grid">
+            {[['K', 'Kopi Arabika', 'Rp 42.000', 'blue-bg'], ['O', 'Oat Latte', 'Rp 35.000', 'purple-bg'], ['T', 'Teh Melati', 'Rp 18.000', 'cyan-bg'], ['R', 'Roti Sourdough', 'Rp 28.000', 'orange-bg']].map(([letter, name, price, color]) => (
+              <div key={name}><i className={`product-image ${color}`}>{letter}</i><b>{name}</b><small>{price}</small></div>
+            ))}
+          </div>
+        </div>
+        <div className="cart">
+          <div className="card-title"><b>{d.order} #2481</b><small>{d.remove}</small></div>
+          <p><i className="product blue-bg">K</i><span><b>Kopi Arabika</b><small>1 × Rp 42.000</small></span><strong>Rp 42.000</strong></p>
+          <p><i className="product cyan-bg">T</i><span><b>Teh Melati</b><small>2 × Rp 18.000</small></span><strong>Rp 36.000</strong></p>
+          <div className="cart-total"><span>{d.subtotal}</span><b>Rp 78.000</b></div>
+          <button>{d.pay} Rp 78.000 <span>→</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function InventoryPreview({ w }: { w: W }) {
+  const inv = w.solutions.inventory;
+  const d = w.demoLabels;
+  return (
+    <div className="inventory">
+      <div className="inventory-heading">
+        <div><small>{w.features.items[1].title}</small><h3>{inv.heading}</h3></div>
+        <button>{inv.addProduct}</button>
+      </div>
+      <div className="inventory-tools">
+        <span>⌕ {inv.searchPlaceholder}</span>
+        <button>{inv.allCategories}⌄</button>
+        <button>{inv.filter} ▾</button>
+      </div>
+      <div className="table-scroll">
+        <table>
+          <thead><tr>{inv.tableHeaders.map((h) => <th key={h}>{h}</th>)}</tr></thead>
+          <tbody>
+            {[['K', 'Kopi Arabika 1kg', 'Biji Kopi', '120', '50', d.stockSafe, 'good'], ['S', 'Susu Oat Barista', 'Susu & Creamer', '24', '30', d.almostOut, 'warn'], ['T', 'Teh Melati Premium', 'Teh', '86', '25', d.stockSafe, 'good']].map(([letter, name, category, stock, min, status, kind]) => (
+              <tr key={name}>
+                <td><i className={`product table-product ${letter === 'S' ? 'cyan-bg' : letter === 'T' ? 'purple-bg' : 'blue-bg'}`}>{letter}</i><b>{name}</b></td>
+                <td>{category}</td>
+                <td><strong>{stock}</strong> {inv.unit}</td>
+                <td>{min} {inv.unit}</td>
+                <td><span className={`status ${kind}`}>{status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export function Metric({ icon, name, value, change }: { icon: string; name: string; value: string; change: string }) {
+  return (
+    <div className="metric">
+      <span className="feature-icon" aria-hidden="true">{icon}</span>
+      <small>{name}</small>
+      <b>{value}</b>
+      <em>{change}</em>
+    </div>
+  );
+}

@@ -1,0 +1,491 @@
+/**
+ * Theme Overrides for NIAGANTARA Web App
+ * Applies design tokens to existing styles
+ */
+
+/* Import design tokens */
+@import '@niagantara/ui/design-tokens.css';
+@import '@niagantara/ui/components.css';
+
+/* Override hardcoded colors with design tokens */
+:root {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.navbar {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-inner nav a,
+.login {
+  color: var(--text-secondary);
+}
+
+.nav-inner nav a:hover,
+.login:hover {
+  color: var(--brand-blue);
+}
+
+/* Override button backgrounds */
+.nav-cta,
+.button {
+  background: var(--brand-blue);
+}
+
+.nav-cta:hover,
+.button:hover {
+  background: #1d4ed8;
+}
+
+/* Ensure text colors adapt to theme */
+.hero-copy h1 {
+  color: var(--text-primary);
+}
+
+.hero-copy p {
+  color: var(--text-secondary);
+}
+
+/* Card backgrounds */
+.card-title,
+.panel,
+.pos-preview,
+.inventory {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+/* Form elements */
+input,
+select,
+textarea {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Table styling */
+table {
+  color: var(--text-primary);
+}
+
+thead {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+tbody tr {
+  border-color: var(--border-color);
+}
+
+/* Status badges */
+.status {
+  color: var(--text-primary);
+}
+
+/* Footer styling */
+footer {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* Mobile adjustments */
+@media (max-width: 820px) {
+  .nav-inner nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+/* ============================================================
+   Accessibility
+   ============================================================ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--brand-blue);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 0 0 10px 0;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+[data-theme="blue"] :focus-visible {
+  outline-color: var(--accent-primary);
+}
+
+/* ============================================================
+   Blue / Dark theme — adaptive surfaces & readable text
+   ============================================================ */
+[data-theme="blue"] {
+  color-scheme: dark;
+}
+
+/* Global text/backgrounds */
+[data-theme="blue"] body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Hero */
+[data-theme="blue"] .hero {
+  background:
+    radial-gradient(circle at 80% 35%, rgba(37, 99, 235, 0.18), transparent 31%),
+    linear-gradient(var(--bg-primary), #0b1220);
+}
+
+/* Navbar */
+[data-theme="blue"] .navbar {
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom-color: rgba(51, 65, 85, 0.7);
+}
+
+/* Logo strip */
+[data-theme="blue"] .logo-strip {
+  background: var(--bg-secondary);
+  border-top-color: var(--border-color);
+  border-bottom-color: var(--border-color);
+}
+[data-theme="blue"] .logo-strip span,
+[data-theme="blue"] .logo-strip b {
+  color: var(--text-muted);
+}
+
+/* Sections alternate correctly */
+[data-theme="blue"] .features,
+[data-theme="blue"] .solution,
+[data-theme="blue"] .branches,
+[data-theme="blue"] .sheets,
+[data-theme="blue"] .steps,
+[data-theme="blue"] .mobile {
+  background: var(--bg-secondary);
+}
+
+[data-theme="blue"] .showcase {
+  background: linear-gradient(var(--bg-primary), #0e1a33, var(--bg-primary));
+}
+
+[data-theme="blue"] .finance,
+[data-theme="blue"] .security,
+[data-theme="blue"] .pricing,
+[data-theme="blue"] .faq,
+[data-theme="blue"] .inventory-section {
+  background: var(--bg-primary);
+}
+
+[data-theme="blue"] .inventory-section .inventory {
+  background: var(--surface);
+}
+
+/* Dashboard preview mockup */
+[data-theme="blue"] .dashboard {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: 0 25px 55px rgba(0, 0, 0, 0.45), 0 5px 16px rgba(0, 0, 0, 0.3);
+}
+[data-theme="blue"] .dash-top {
+  border-bottom-color: var(--border-color);
+  color: var(--text-muted);
+}
+[data-theme="blue"] .dash-top > span { color: var(--text-muted); }
+[data-theme="blue"] .dash-body aside {
+  background: #16213a;
+  border-right-color: var(--border-color);
+}
+[data-theme="blue"] .dash-body aside a { color: var(--text-muted); }
+[data-theme="blue"] .dash-body aside a.active {
+  background: rgba(59, 130, 246, 0.18);
+  color: var(--accent-secondary);
+}
+[data-theme="blue"] .stat-row > div,
+[data-theme="blue"] .chart-card,
+[data-theme="blue"] .distribution,
+[data-theme="blue"] .dash-lower > div {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .stat-row b,
+[data-theme="blue"] .dash-heading h3 { color: var(--text-primary); }
+[data-theme="blue"] .stat-row small,
+[data-theme="blue"] .card-title small,
+[data-theme="blue"] .axis,
+[data-theme="blue"] .donut small,
+[data-theme="blue"] .dash-lower p,
+[data-theme="blue"] .dash-lower p small { color: var(--text-muted); }
+[data-theme="blue"] .stat-row em,
+[data-theme="blue"] .dash-lower p > strong { color: #34d399; }
+[data-theme="blue"] .dash-heading button,
+[data-theme="blue"] .inventory-tools button {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+[data-theme="blue"] .donut:before { background: var(--surface-elevated); }
+
+/* Floating hero cards */
+[data-theme="blue"] .float {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .float small { color: var(--text-muted); }
+[data-theme="blue"] .float b { color: var(--text-primary); }
+
+/* Feature cards */
+[data-theme="blue"] .feature-card {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .feature-card:hover {
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
+  border-color: rgba(59, 130, 246, 0.55);
+}
+[data-theme="blue"] .feature-card p { color: var(--text-muted); }
+[data-theme="blue"] .feature-icon { background: rgba(59, 130, 246, 0.16); }
+[data-theme="blue"] .feature-card:nth-child(3n) .feature-icon { background: rgba(6, 182, 212, 0.16); }
+[data-theme="blue"] .feature-card:nth-child(3n+2) .feature-icon { background: rgba(139, 92, 246, 0.16); }
+
+/* POS preview */
+[data-theme="blue"] .pos-preview {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+[data-theme="blue"] .pos-head,
+[data-theme="blue"] .cart p,
+[data-theme="blue"] .cart { border-color: var(--border-color); }
+[data-theme="blue"] .pos-head { color: var(--text-secondary); }
+[data-theme="blue"] .pos-tabs,
+[data-theme="blue"] .search { color: var(--text-muted); }
+[data-theme="blue"] .search { background: var(--surface-elevated); border-color: var(--border-color); }
+[data-theme="blue"] .product-grid > div {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .product-grid b { color: var(--text-primary); }
+[data-theme="blue"] .cart { background: #16213a; }
+[data-theme="blue"] .cart button { background: var(--accent-primary); }
+
+/* Inventory table */
+[data-theme="blue"] th { color: var(--text-muted); border-bottom-color: var(--border-color); }
+[data-theme="blue"] td { color: var(--text-secondary); border-bottom-color: var(--border-color); }
+[data-theme="blue"] td:first-child { color: var(--text-primary); }
+
+/* Branch hierarchy + orbit */
+[data-theme="blue"] .hierarchy-card {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+  color: var(--accent-secondary);
+}
+[data-theme="blue"] .hierarchy-card span,
+[data-theme="blue"] .hierarchy-card b { color: var(--text-primary); }
+[data-theme="blue"] .hierarchy-card.company {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: var(--accent-primary);
+}
+[data-theme="blue"] .hierarchy-card small,
+[data-theme="blue"] .orbit-card small { color: var(--text-muted); }
+[data-theme="blue"] .orbit-ring { border-color: rgba(96, 165, 250, 0.4); }
+[data-theme="blue"] .orbit-ring.inner { border-color: rgba(167, 139, 250, 0.4); }
+[data-theme="blue"] .orbit-card {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .orbit-card b { color: var(--text-primary); }
+
+/* Finance */
+[data-theme="blue"] .finance-main,
+[data-theme="blue"] .metric,
+[data-theme="blue"] .reports {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .finance-main {
+  background: linear-gradient(140deg, rgba(59, 130, 246, 0.14), var(--surface));
+}
+[data-theme="blue"] .finance-main small,
+[data-theme="blue"] .metric small,
+[data-theme="blue"] .reports p { color: var(--text-secondary); }
+[data-theme="blue"] .finance-main b,
+[data-theme="blue"] .metric b { color: var(--text-primary); }
+[data-theme="blue"] .finance-main em,
+[data-theme="blue"] .metric em { color: #34d399; }
+[data-theme="blue"] .reports p b { color: var(--accent-primary); }
+[data-theme="blue"] .bars i { background: linear-gradient(#3b82f6, #1e3a8a); }
+
+/* Google Sheets card */
+[data-theme="blue"] .sheets-card {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+}
+[data-theme="blue"] .sheets-head { border-bottom-color: var(--border-color); }
+[data-theme="blue"] .sheets-head i { background: rgba(16, 185, 129, 0.16); }
+[data-theme="blue"] .sheet > small {
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+}
+[data-theme="blue"] .sheet > div { border-color: var(--border-color); }
+[data-theme="blue"] .sheet span {
+  color: var(--text-muted);
+  border-right-color: var(--border-color);
+  border-bottom-color: var(--border-color);
+}
+[data-theme="blue"] .sync { color: var(--text-muted); border-top-color: var(--border-color); }
+[data-theme="blue"] .sync b { color: var(--text-secondary); }
+
+/* Security panel */
+[data-theme="blue"] .security-panel {
+  background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), var(--surface));
+  border-color: rgba(59, 130, 246, 0.35);
+}
+[data-theme="blue"] .security-panel > div > p { color: var(--text-secondary); }
+[data-theme="blue"] .security-grid > div {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .security-grid small { color: var(--text-muted); }
+
+/* Devices mockups */
+[data-theme="blue"] .device-desktop {
+  border-color: var(--border-color);
+  background: var(--surface);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.45);
+}
+[data-theme="blue"] .phone {
+  border-color: var(--navy);
+  background: var(--bg-primary);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+}
+[data-theme="blue"] .phone-notch { background: var(--navy); }
+[data-theme="blue"] .phone > div:not(.phone-notch):not(.phone-bars) {
+  background: var(--surface-elevated);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .phone-bars { background: rgba(59, 130, 246, 0.14); }
+[data-theme="blue"] .phone-bars i { background: linear-gradient(#3b82f6, #93c5fd); }
+
+/* Pricing */
+[data-theme="blue"] .price {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .price.featured {
+  border-color: var(--accent-primary);
+  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.18);
+}
+[data-theme="blue"] .price h3,
+[data-theme="blue"] .price>b { color: var(--text-primary); }
+[data-theme="blue"] .price p { color: var(--text-muted); }
+[data-theme="blue"] .price.featured>strong {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--accent-secondary);
+}
+
+/* Steps */
+[data-theme="blue"] .step-grid>div:not(:last-child):after { color: rgba(96, 165, 250, 0.5); }
+[data-theme="blue"] .step-grid>div>b { color: rgba(96, 165, 250, 0.5); }
+[data-theme="blue"] .step-grid p { color: var(--text-muted); }
+
+/* FAQ */
+[data-theme="blue"] .faq-item button { color: var(--text-primary); }
+[data-theme="blue"] .faq-item { border-top-color: var(--border-color); }
+[data-theme="blue"] .faq-item:last-child { border-bottom-color: var(--border-color); }
+[data-theme="blue"] .faq-item p { color: var(--text-secondary); }
+
+/* CTA band stays deep navy — brighten accents for contrast */
+[data-theme="blue"] .cta>.container {
+  background: linear-gradient(135deg, #0b1220, #101c38);
+  border: 1px solid var(--border-color);
+}
+
+/* Footer */
+[data-theme="blue"] .footer {
+  background: var(--bg-secondary);
+  border-top-color: var(--border-color);
+}
+[data-theme="blue"] .footer p,
+[data-theme="blue"] .footer small { color: var(--text-muted); }
+[data-theme="blue"] .footer-grid>div:not(:first-child) a { color: var(--text-secondary); }
+[data-theme="blue"] .footer-grid>div:not(:first-child) a:hover { color: var(--accent-secondary); }
+
+/* Legal pages */
+[data-theme="blue"] .legal p { color: var(--text-secondary); }
+[data-theme="blue"] .legal h2 { color: var(--text-primary); }
+[data-theme="blue"] .back { color: var(--accent-primary); }
+
+/* Buttons on dark */
+[data-theme="blue"] .button-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+[data-theme="blue"] .button-secondary:hover { color: var(--accent-secondary); }
+
+/* Trust row */
+[data-theme="blue"] .trust span { color: var(--text-muted); }
+
+/* Hero heading accent brighter for contrast on navy */
+[data-theme="blue"] .hero h1 span,
+[data-theme="blue"] h2 span { color: #60a5fa; }
+
+/* Mobile nav sheet */
+@media (max-width: 820px) {
+  [data-theme="blue"] .nav-inner nav {
+    background: var(--surface);
+    border-bottom-color: var(--border-color);
+    box-shadow: 0 16px 25px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Active nav item */
+.nav-inner nav a.active {
+  color: var(--brand-blue);
+}
+
+[data-theme="blue"] .nav-inner nav a.active {
+  color: var(--accent-secondary);
+}
+
+/* Compact, app-like mobile spacing for the public site */
+@media (max-width: 820px) {
+  .section {
+    padding: 56px 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .section {
+    padding: 44px 0;
+  }
+
+  .hero {
+    padding: 40px 0 44px;
+  }
+
+  .hero-visual {
+    min-height: 300px;
+    padding-top: 32px;
+  }
+
+  .heading {
+    margin-bottom: 30px;
+  }
+}

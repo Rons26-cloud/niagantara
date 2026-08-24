@@ -1,5 +1,46 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { initTheme } from '@niagantara/ui/theme';
+import {
+  BrandLogo,
+  ThemeSwitcher,
+  LanguageSwitcher,
+  useTranslation,
+} from '@niagantara/ui';
 import './styles.css';
-function App() { return <div className="master"><div className="badge">N</div><p className="eyebrow">MASTER CONTROL</p><h1>NIAGANTARA</h1><p>Platform governance, security, rollout, dan company control.</p><div className="status">Phase 5 integration visibility enabled</div><section className="integration"><h2>Google Sheets reporting</h2><p>Company-scoped OAuth · durable sync queue · recovery history · Supabase source of truth</p><span>No Google credentials or spreadsheet contents are exposed to Master UI.</span></section></div>; }
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+import './theme-overrides.css';
+
+initTheme();
+
+function App() {
+  const { t } = useTranslation();
+  return (
+    <div className="master">
+      <div className="master-header">
+        <BrandLogo />
+        <div className="master-controls">
+          <ThemeSwitcher />
+          <LanguageSwitcher compact />
+        </div>
+      </div>
+      <main className="master-body">
+        <div className="badge" aria-hidden="true">N</div>
+        <p className="eyebrow">{t('master.control')}</p>
+        <h1>NIAGANTARA</h1>
+        <p className="tagline">{t('master.tagline')}</p>
+        <div className="status">{t('master.phaseStatus')}</div>
+        <section className="integration">
+          <h2>{t('master.sheets.title')}</h2>
+          <p>{t('master.sheets.text')}</p>
+          <span>{t('master.sheets.note')}</span>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

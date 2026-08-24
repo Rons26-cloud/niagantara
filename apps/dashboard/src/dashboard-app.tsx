@@ -10,6 +10,7 @@ import { CrudPage } from './phase4-pages';
 import { AttendancePage, PurchasesPage } from './phase4-operations';
 import { ExpensesPage, FinancePage, Phase4Summary } from './phase4-finance';
 import { GoogleSheetsPage, SheetsTutorial } from './phase5-sheets';
+import { BrandLogo, ThemeSwitcher, LanguageSwitcher, useTranslation } from '@niagantara/ui';
 type Ctx = {
   companies: any[];
   active_company: string | null;
@@ -59,8 +60,10 @@ const navPermission: Record<string, string | undefined> = {
 };
 export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
+  const { t } = useTranslation();
   const [ctx, setCtx] = useState<Ctx | null>(null);
   const [page, setPage] = useState(location.hash.slice(1) || 'dashboard');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState('loading');
   useEffect(() => {
     if (!accessToken) return;
@@ -78,54 +81,84 @@ export function DashboardApp() {
   if (!accessToken)
     return (
       <State
-        text="Login diperlukan"
+        text={t('auth.loginRequired')}
         action={() => location.assign('/auth/login')}
       />
     );
   if (status === 'loading')
-    return <State text="Memuat konteks perusahaan..." />;
-  if (status === 'denied') return <State text="Permission denied" />;
+    return <State text={t('dashboard.loadingContext')} />;
+  if (status === 'denied') return <State text={t('dashboard.permissionDenied')} />;
   if (status === 'error')
     return (
       <State
-        text="Dashboard tidak dapat dimuat"
+        text={t('dashboard.loadError')}
         action={() => location.reload()}
       />
     );
-  if (!ctx?.active_company) return <State text="Belum ada perusahaan aktif" />;
+  if (!ctx?.active_company) return <State text={t('dashboard.noCompany')} />;
   const branch = ctx.accessible_branches[0];
   const store =
     ctx.stores.find((s) => s.id === branch?.store_id) ?? ctx.stores[0];
   const go = (id: string) => {
     location.hash = id;
     setPage(id);
+    setMenuOpen(false);
   };
+  const allowedNav = nav.filter(
+    ([id]) =>
+      !navPermission[id] || ctx.permissions.includes(navPermission[id]!),
+  );
+  const title = t(`pages.${page}`) !== `pages.${page}`
+    ? t(`pages.${page}`)
+    : nav.find((x) => x[0] === page)?.[1] ?? page;
+  const primaryNav = ['dashboard', 'pos', 'products', 'inventory', 'reports']
+    .filter(
+      (id) =>
+        allowedNav.some(([navId]) => navId === id),
+    );
   return (
-    <div className="shell">
+    <div className={`shell${menuOpen ? ' nav-open' : ''}`}>
+      <div className="mobile-topbar">
+        <BrandLogo compact />
+        <span className="mobile-page-title">{title}</span>
+        <button
+          className="mobile-menu-btn"
+          aria-expanded={menuOpen}
+          aria-label={t('nav.menu')}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+      {menuOpen && (
+        <button
+          className="drawer-overlay"
+          aria-label={t('common.close')}
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
       <aside className="sidebar">
         <div className="brand">
-          <span>N</span>
-          <div>
-            NIAGANTARA<small>OPERATIONS</small>
-          </div>
+          <BrandLogo compact />
         </div>
         <nav>
-          {nav
-            .filter(
-              ([id]) =>
-                !navPermission[id] ||
-                ctx.permissions.includes(navPermission[id]!),
-            )
-            .map(([id, label]) => (
-              <button
-                key={id}
-                className={page === id ? 'active' : ''}
-                onClick={() => go(id)}
-              >
-                {label}
-              </button>
-            ))}
+          {allowedNav.map(([id, label]) => (
+            <button
+              key={id}
+              className={page === id ? 'active' : ''}
+              aria-current={page === id ? 'page' : undefined}
+              onClick={() => go(id)}
+            >
+              {t(`pages.${id}`) || label}
+            </button>
+          ))}
         </nav>
+        <div className="sidebar-controls">
+          <ThemeSwitcher />
+          <LanguageSwitcher compact />
+        </div>
         <button
           className="logout"
           onClick={() => {
@@ -133,38 +166,57 @@ export function DashboardApp() {
             location.assign('/auth/login');
           }}
         >
-          Keluar
+          {t('auth.logout')}
         </button>
       </aside>
       <main className="workspace">
         <header>
           <div>
             <p className="eyebrow">USER DASHBOARD</p>
-            <h1>{nav.find((x) => x[0] === page)?.[1]}</h1>
+            <h1>{title}</h1>
           </div>
           <div className="context">
             <span>
-              Company <b>{ctx.companies[0]?.company_id ?? '—'}</b>
+              {t('context.company')} <b>{ctx.companies[0]?.company_id ?? '—'}</b>
             </span>
             <span>
-              Store <b>{store?.name ?? 'Belum dipilih'}</b>
+              {t('context.store')} <b>{store?.name ?? t('context.notSelected')}</b>
             </span>
             <span>
-              Branch <b>{branch?.name ?? 'Semua branch berizin'}</b>
+              {t('context.branch')} <b>{branch?.name ?? t('context.allBranches')}</b>
             </span>
           </div>
         </header>
         <Page page={page} ctx={ctx} token={accessToken} />
       </main>
+      <nav className="mobile-tabbar" aria-label={t('nav.primary')}>
+        {primaryNav.map((id) => (
+          <button
+            key={id}
+            className={page === id ? 'active' : ''}
+            aria-current={page === id ? 'page' : undefined}
+            onClick={() => go(id)}
+          >
+            {t(`pages.${id}`)}
+          </button>
+        ))}
+        <button
+          className={menuOpen ? 'active' : ''}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? t('common.close') : t('nav.more')}
+        </button>
+      </nav>
     </div>
   );
 }
 function State({ text, action }: { text: string; action?: () => void }) {
+  const { t } = useTranslation();
   return (
     <main className="state">
       <div>
         <h1>{text}</h1>
-        {action && <button onClick={action}>Coba lagi</button>}
+        {action && <button onClick={action}>{t('dashboard.tryAgain')}</button>}
       </div>
     </main>
   );

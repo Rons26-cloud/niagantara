@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { initTheme } from '@niagantara/ui/theme';
 import './styles.css';
+import './theme-overrides.css';
 import {
   ForgotPasswordPage,
   ResetPasswordPage,
@@ -9,6 +11,9 @@ import {
 import { AuthProvider } from './auth/auth-context';
 import { DashboardApp } from './dashboard-app';
 import { LoginPage } from './login-page';
+
+// Initialize theme on app load
+initTheme();
 const recoveryRoutes = {
   '/auth/forgot-password': ForgotPasswordPage,
   '/auth/verify-recovery': VerifyRecoveryPage,
