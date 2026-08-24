@@ -15,18 +15,28 @@ document.documentElement.lang = getLanguage();
 const routes: Record<string, () => JSX.Element> = {
   '/': HomePage,
   '/index.html': HomePage,
-  '/features': FeaturesPage,
-  '/solutions': SolutionsPage,
-  '/pricing': PricingPage,
-  '/about': AboutPage,
+  '/fitur': FeaturesPage,
+  '/solusi': SolutionsPage,
+  '/harga': PricingPage,
+  '/tentang': AboutPage,
   '/faq': FaqPage,
-  '/contact': ContactPage,
+  '/kontak': ContactPage,
   '/privacy': PrivacyPage,
   '/terms': TermsPage,
 };
 
+/** Legacy English slugs kept working; canonicals point to Indonesian paths. */
+const legacyAliases: Record<string, string> = {
+  '/features': '/fitur',
+  '/solutions': '/solusi',
+  '/pricing': '/harga',
+  '/about': '/tentang',
+  '/contact': '/kontak',
+};
+
 function App() {
-  const path = usePath();
+  const rawPath = usePath();
+  const path = legacyAliases[rawPath] ?? rawPath;
   const Page = routes[path] ?? NotFound;
   return (
     <NavigateProvider value={navigate}>

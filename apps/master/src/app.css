@@ -1,0 +1,218 @@
+:root {
+  color-scheme: light dark;
+}
+.mshell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+.msidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 14px;
+  background: var(--surface);
+  border-right: 1px solid var(--border-color);
+}
+.msidebar p.eyebrow {
+  letter-spacing: 0.16em;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--brand-cyan);
+  margin: 4px 0 8px;
+}
+.msidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.msidebar-brand .brand {
+  padding: 2px 4px;
+}
+.msidebar-brand .msidebar-mark {
+  display: none;
+}
+.msidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+.mnav-group {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin: 14px 8px 6px;
+}
+.msidebar nav a {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.msidebar nav a:hover {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+.msidebar nav a.active {
+  background: var(--brand-blue);
+  color: #fff;
+}
+.msidebar__foot {
+  margin-top: auto;
+  display: grid;
+  gap: 10px;
+}
+.msidebar__controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.role-chip {
+  justify-self: start;
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--brand-purple);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mworkspace {
+  padding: 26px clamp(14px, 3vw, 40px);
+  max-width: 1200px;
+}
+.mpage-head h1 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.mpage-head p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.mkpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.mgap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.mgap {
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  opacity: 0.85;
+}
+.mgap h2 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.mgap p {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.mchecked {
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.mlogin {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  background: var(--bg-primary);
+  padding: 24px;
+  text-align: center;
+}
+.mlogin form {
+  width: min(340px, 90vw);
+  display: grid;
+  gap: 12px;
+  text-align: left;
+  margin-top: 10px;
+}
+.mlogin .hint {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  max-width: 340px;
+}
+
+/* Official logo keeps its own colors; on the dark theme it sits on a light
+   plate so every element of the artwork stays visible. */
+[data-theme='blue'] .mlogin .brand {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+@media (max-width: 860px) {
+  .msidebar-brand {
+    align-self: auto;
+  }
+  .msidebar-brand .brand.msidebar-full {
+    display: none;
+  }
+  .msidebar-brand .msidebar-mark {
+    display: block;
+    height: 28px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .mshell {
+    grid-template-columns: 1fr;
+  }
+  .msidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .msidebar nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .msidebar nav::-webkit-scrollbar {
+    display: none;
+  }
+  .msidebar nav a {
+    white-space: nowrap;
+  }
+  .mnav-group {
+    display: none;
+  }
+  .msidebar__foot {
+    margin: 0 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+  .mworkspace {
+    padding: 18px 14px;
+  }
+}

@@ -144,12 +144,7 @@ footer {
   color: var(--text-primary);
 }
 
-/* Hero */
-[data-theme="blue"] .hero {
-  background:
-    radial-gradient(circle at 80% 35%, rgba(37, 99, 235, 0.18), transparent 31%),
-    linear-gradient(var(--bg-primary), #0b1220);
-}
+/* Hero — now a premium navy block in BOTH themes (see bottom of this file) */
 
 /* Navbar */
 [data-theme="blue"] .navbar {
@@ -488,4 +483,47 @@ footer {
   .heading {
     margin-bottom: 30px;
   }
+}
+
+/* Official logo on dark blue-theme surfaces: lighten the surrounding plate,
+   never the logo itself. */
+[data-theme="blue"] .navbar .brand,
+[data-theme="blue"] .footer .brand,
+[data-theme="blue"] .legal .brand {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+/* Premium navy hero — applies in both themes; this block is last so it wins
+   over the adaptive-text rules higher up in this file. */
+.hero {
+  background:
+    radial-gradient(circle at 82% 28%, rgba(37, 99, 235, 0.35), transparent 46%),
+    radial-gradient(circle at 6% 92%, rgba(34, 211, 238, 0.16), transparent 42%),
+    linear-gradient(160deg, #101a30, #0b1220);
+  color: #cbd5e1;
+}
+.hero .eyebrow {
+  color: #7dd3fc;
+}
+.hero h1 {
+  color: #f8fafc;
+}
+.hero h1 span {
+  color: #60a5fa;
+}
+.hero .hero-copy > p {
+  color: #94a3b8;
+}
+.hero .trust span {
+  color: #94a3b8;
+}
+.hero .button-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+.hero .button-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
 }

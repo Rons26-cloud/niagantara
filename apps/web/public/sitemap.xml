@@ -7,25 +7,25 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://niagantara.com/features</loc>
+    <loc>https://niagantara.com/fitur</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://niagantara.com/solutions</loc>
+    <loc>https://niagantara.com/solusi</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://niagantara.com/pricing</loc>
+    <loc>https://niagantara.com/harga</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://niagantara.com/about</loc>
+    <loc>https://niagantara.com/tentang</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -37,7 +37,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://niagantara.com/contact</loc>
+    <loc>https://niagantara.com/kontak</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

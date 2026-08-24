@@ -8,3 +8,4 @@ export * from './theme';
 export * from './components/BrandLogo';
 export * from './components/ThemeSwitcher';
 export * from './components/LanguageSwitcher';
+export * from './components/primitives';

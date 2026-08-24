@@ -1,1 +1,0 @@
-export function hasMasterAccess(role?:string){return role==='super_master'||role==='master_admin'||role==='support'||role==='auditor';}

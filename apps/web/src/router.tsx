@@ -59,14 +59,14 @@ export function Link({
 
 const routeTitles: Record<string, string> = {
   '/': 'NIAGANTARA — Business Control Platform',
-  '/features': 'Features',
-  '/solutions': 'Solutions',
-  '/pricing': 'Pricing',
-  '/about': 'About',
+  '/fitur': 'Fitur',
+  '/solusi': 'Solusi',
+  '/harga': 'Harga',
+  '/tentang': 'Tentang',
   '/faq': 'FAQ',
-  '/contact': 'Contact',
-  '/privacy': 'Privacy Policy',
-  '/terms': 'Terms & Conditions',
+  '/kontak': 'Kontak',
+  '/privacy': 'Kebijakan Privasi',
+  '/terms': 'Syarat & Ketentuan',
 };
 
 /** Keeps document title + canonical URL in sync with the active route. */

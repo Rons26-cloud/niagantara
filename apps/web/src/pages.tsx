@@ -20,8 +20,8 @@ export function HeroSection() {
           <h1 dangerouslySetInnerHTML={{ __html: w.hero.title }} />
           <p>{w.hero.subtitle}</p>
           <div className="actions">
-            <Button to="/contact">{w.hero.cta}</Button>
-            <Button secondary to="/features">{w.hero.demo} <small>▶</small></Button>
+            <Button to="/kontak">{w.hero.cta}</Button>
+            <Button secondary to="/fitur">{w.hero.demo} <small>▶</small></Button>
           </div>
           <div className="trust">
             {w.hero.trust.map((x) => <span key={x}>✓ {x}</span>)}
@@ -58,7 +58,7 @@ export function FeaturesSection({ heading = true }: { heading?: boolean }) {
               <Icon>{f.icon}</Icon>
               <h3>{f.title}</h3>
               <p>{f.text}</p>
-              <Link to="/features">{w.features.learnMore} <span aria-hidden="true">↗</span></Link>
+              <Link to="/fitur">{w.features.learnMore} <span aria-hidden="true">↗</span></Link>
             </article>
           ))}
         </div>
@@ -90,7 +90,7 @@ export function PosSolutionSection() {
           <h2 dangerouslySetInnerHTML={{ __html: s.title }} />
           <p>{s.text}</p>
           <ul>{s.bullets.map((b) => <li key={b}>✓ {b}</li>)}</ul>
-          <Button to="/contact">{s.cta}</Button>
+          <Button to="/kontak">{s.cta}</Button>
         </div>
         <PosPreview w={w} />
       </div>
@@ -110,7 +110,7 @@ export function InventorySolutionSection() {
           <h2 dangerouslySetInnerHTML={{ __html: s.title }} />
           <p>{s.text}</p>
           <div className="pills">{s.pills.map((p) => <span key={p}>{p}</span>)}</div>
-          <Link className="text-link" to="/features">{s.link} <span aria-hidden="true">→</span></Link>
+          <Link className="text-link" to="/fitur">{s.link} <span aria-hidden="true">→</span></Link>
         </div>
       </div>
     </section>
@@ -138,10 +138,10 @@ export function BranchesSection() {
         </div>
         <div className="orbit" aria-hidden="true">
           <div className="orbit-ring" /><div className="orbit-ring inner" />
-          <div className="orbit-center"><span className="brand-mark large"><span>N</span><i /><b /><em /></span><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
-          <div className="orbit-card one"><b>Rp 18,2M</b><small>{w.finance.monthlyRevenue}</small></div>
-          <div className="orbit-card two"><b>12</b><small>Cabang aktif</small></div>
-          <div className="orbit-card three"><b>2.431</b><small>Pelanggan</small></div>
+          <div className="orbit-center"><img className="orbit-logo" src="/brand-mark.png" alt="" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
+          <div className="orbit-card one"><b>POS</b><small>Kasir</small></div>
+          <div className="orbit-card two"><b>Stok</b><small>Inventory</small></div>
+          <div className="orbit-card three"><b>Laporan</b><small>Finance</small></div>
         </div>
       </div>
     </section>
@@ -239,7 +239,7 @@ export function MobileSection() {
             <div className="phone-notch" />
             <small>{w.mobileSection.welcome}</small>
             <h4>{w.mobileSection.summary}</h4>
-            <div><small>{w.hero.todaySales}</small><b>Rp 48,62M</b><em>↗ 12,8%</em></div>
+            <div><small>{w.hero.todaySales}</small><b>Rp 4.860.000</b><em>↗ 12,8%</em></div>
             <div className="phone-bars">{[28, 45, 38, 67, 58, 82, 72].map((height, i) => <i key={i} style={{ height: `${height}%` }} />)}</div>
             <footer>⌂　 <b>▦</b>　◫　♙</footer>
           </div>
@@ -325,7 +325,7 @@ export function CtaSection() {
         <p>{t('website.cta.subtitle')}</p>
         <div className="actions">
           <a className="button" href="mailto:support@niagantara.com">{t('website.cta.tryFree')}<span aria-hidden="true">→</span></a>
-          <Button secondary to="/contact">{t('website.cta.signIn')}</Button>
+          <Button secondary to="/kontak">{t('website.cta.signIn')}</Button>
         </div>
       </div>
     </section>

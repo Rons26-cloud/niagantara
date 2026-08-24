@@ -10,12 +10,12 @@ export function Navbar() {
   const path = usePath();
   const items: [string, string][] = [
     ['/', t('nav.home')],
-    ['/features', t('nav.features')],
-    ['/solutions', t('nav.solutions')],
-    ['/pricing', t('nav.pricing')],
-    ['/about', t('nav.about')],
+    ['/fitur', t('nav.features')],
+    ['/solusi', t('nav.solutions')],
+    ['/harga', t('nav.pricing')],
+    ['/tentang', t('nav.about')],
     ['/faq', t('nav.faq')],
-    ['/contact', t('nav.contact')],
+    ['/kontak', t('nav.contact')],
   ];
   return (
     <header className="navbar">
@@ -40,8 +40,8 @@ export function Navbar() {
           <a className="login" href="https://niagantara-app.pages.dev">
             {t('auth.login')}
           </a>
-          <Link className="nav-cta" to="/contact">
-            {t('website.hero.cta')} <span>→</span>
+          <Link className="nav-cta" to="/harga">
+            {t('nav.trial')} <span>→</span>
           </Link>
         </div>
         <button
@@ -71,16 +71,16 @@ export function Footer() {
         </div>
         <div>
           <h4>{t('website.footer.productsHeading')}</h4>
-          <Link to="/solutions">{t('website.footer.pos')}</Link>
-          <Link to="/solutions">{t('website.footer.inventory')}</Link>
-          <Link to="/features">{t('website.footer.finance')}</Link>
-          <Link to="/features">{t('website.footer.reports')}</Link>
-          <Link to="/solutions">{t('website.footer.sheets')}</Link>
+          <Link to="/solusi">{t('website.footer.pos')}</Link>
+          <Link to="/solusi">{t('website.footer.inventory')}</Link>
+          <Link to="/fitur">{t('website.footer.finance')}</Link>
+          <Link to="/fitur">{t('website.footer.reports')}</Link>
+          <Link to="/solusi">{t('website.footer.sheets')}</Link>
         </div>
         <div>
           <h4>{t('website.footer.companyHeading')}</h4>
-          <Link to="/about">{t('website.footer.about')}</Link>
-          <Link to="/contact">{t('website.footer.contact')}</Link>
+          <Link to="/tentang">{t('website.footer.about')}</Link>
+          <Link to="/kontak">{t('website.footer.contact')}</Link>
         </div>
         <div>
           <h4>{t('website.footer.helpHeading')}</h4>

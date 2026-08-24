@@ -14,7 +14,7 @@ export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
       </div>
       <div className="dash-body">
         <aside aria-hidden="true">
-          <div className="mini-logo">N</div>
+          <img className="mini-logo" src="/brand-mark.png" alt="" />
           <a className="active" tabIndex={-1}>▦ <span>{d.overview}</span></a>
           <a tabIndex={-1}>◫ <span>{w.features.items[2].title}</span></a>
           <a tabIndex={-1}>◌ <span>{w.features.items[3].title}</span></a>

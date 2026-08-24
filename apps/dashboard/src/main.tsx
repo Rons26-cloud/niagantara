@@ -1,6 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initTheme } from '@niagantara/ui/theme';
+import '@niagantara/ui/design-tokens.css';
+import '@niagantara/ui/components.css';
+import '@niagantara/ui/ui.css';
 import './styles.css';
 import './theme-overrides.css';
 import {

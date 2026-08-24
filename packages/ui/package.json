@@ -10,7 +10,8 @@
     "./theme": "./src/theme.ts",
     "./i18n": "./src/i18n.ts",
     "./design-tokens.css": "./src/design-tokens.css",
-    "./components.css": "./src/components.css"
+    "./components.css": "./src/components.css",
+    "./ui.css": "./src/ui.css"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

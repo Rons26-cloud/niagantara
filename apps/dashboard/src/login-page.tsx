@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { login } from './api';
 import { useAuth } from './auth/auth-context';
+import { BrandLogo } from '@niagantara/ui';
 export function LoginPage() {
   const { setSession } = useAuth();
   const [email, setEmail] = useState('');
@@ -27,8 +28,7 @@ export function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <div className="auth-brand">N</div>
-        <p className="eyebrow">NIAGANTARA</p>
+        <BrandLogo className="auth-brand" />
         <h1>Masuk dashboard</h1>
         <p className="muted">Gunakan akun perusahaan yang aktif.</p>
         <form onSubmit={submit}>

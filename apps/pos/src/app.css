@@ -1,0 +1,346 @@
+.pos-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+.pos-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-color);
+}
+.pos-branch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.pos-branch select {
+  max-width: 180px;
+}
+.pos-topbar__controls {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pos-main {
+  flex: 1;
+  width: min(1280px, calc(100% - 24px));
+  margin: 14px auto;
+}
+
+/* POS operational grid (shared classes rendered by @niagantara/pos-core) */
+.pos-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.pos-grid .panel {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.pos-grid .search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pos-grid .search input {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 15px;
+  min-width: 0;
+}
+.pos-grid .search button,
+.pos-grid .cart > button {
+  border: none;
+  border-radius: 10px;
+  background: var(--brand-blue);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.pos-grid .search button[type='button'] {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.pos-grid .product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 9px;
+  margin-top: 12px;
+}
+.pos-grid .product-card {
+  text-align: left;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  padding: 12px;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  min-height: 84px;
+}
+.pos-grid .product-card:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+}
+.pos-grid .product-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pos-grid .product-card span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.pos-grid .product-card em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sticky mobile pay bar */
+.pos-mobile-cta {
+  display: none;
+}
+
+/* Receipt overlay (stays paper-white in every theme) */
+.receipt-paper {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  margin: auto;
+  width: min(340px, 92vw);
+  height: fit-content;
+  max-height: 86dvh;
+  overflow-y: auto;
+  background: #fff;
+  color: #0f172a;
+  padding: 22px 18px;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35);
+  text-align: center;
+  font-size: 13px;
+}
+.receipt-logo {
+  height: 34px;
+  margin: 0 auto 8px;
+}
+.receipt-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  margin: 4px 0;
+}
+.receipt-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.receipt-actions button {
+  border: 0;
+  border-radius: 9px;
+  background: var(--brand-blue);
+  color: #fff;
+  font-weight: 700;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.receipt-actions button + button {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-paper,
+  .receipt-paper * {
+    visibility: visible;
+  }
+  .receipt-paper {
+    position: absolute;
+    inset: 0;
+    max-height: none;
+    box-shadow: none;
+    width: 100%;
+    border-radius: 0;
+  }
+}
+.pos-grid .product-card small {
+  color: var(--brand-cyan);
+  font-weight: 700;
+}
+.pos-grid .cart {
+  position: sticky;
+  top: 74px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.pos-grid .cart h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+.pos-grid .cart-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-color);
+  font-size: 13.5px;
+  color: var(--text-primary);
+}
+.pos-grid .cart-line input,
+.pos-grid .cart-line select {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  width: 100%;
+}
+.pos-grid .cart-line button {
+  border: none;
+  background: transparent;
+  color: var(--danger, #ef4444);
+  cursor: pointer;
+  font-size: 12px;
+  text-align: right;
+}
+.pos-grid .cart > strong {
+  font-size: 20px;
+  text-align: right;
+  color: var(--text-primary);
+}
+.pos-grid .cart > button {
+  width: 100%;
+  padding: 13px;
+  font-size: 15px;
+}
+.pos-grid .cart > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pos-grid .cart > p {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  min-height: 1em;
+}
+.pos-grid .cart > input,
+.pos-grid .cart > select {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+/* Login */
+.pos-login {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  background: var(--bg-primary);
+  padding: 24px;
+}
+.pos-login form {
+  width: min(340px, 90vw);
+  display: grid;
+  gap: 12px;
+}
+.pos-login__error {
+  color: var(--danger, #ef4444);
+  font-size: 13px;
+}
+
+/* Official logo keeps its own colors; on the dark theme it sits on a light
+   plate so every element of the artwork stays visible. */
+[data-theme='blue'] .pos-login .brand {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+/* Mobile: touch-first single column with sticky pay bar */
+@media (max-width: 760px) {
+  .pos-grid {
+    grid-template-columns: 1fr;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0));
+  }
+  .pos-mobile-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
+    background: var(--surface);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -8px 22px rgba(2, 6, 23, 0.14);
+  }
+  .pos-mobile-cta span {
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pos-mobile-cta b {
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .pos-mobile-cta small {
+    color: var(--text-muted);
+  }
+  .pos-mobile-cta button {
+    border: none;
+    border-radius: 10px;
+    background: var(--brand-blue);
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 26px;
+    cursor: pointer;
+  }
+  .pos-mobile-cta button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .pos-topbar {
+    flex-wrap: wrap;
+  }
+  .pos-branch {
+    order: 3;
+    width: 100%;
+  }
+}

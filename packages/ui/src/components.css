@@ -12,74 +12,53 @@
   color: inherit;
 }
 
-.brand-mark {
-  position: relative;
-  width: 37px;
-  height: 37px;
-  border-radius: 11px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(145deg, var(--brand-blue), #1d4ed8);
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
-  overflow: hidden;
+/* Official logo asset (single source of truth: assets/brand/niagantara-logo.png).
+   Height is fixed, width stays automatic — the logo is never stretched. */
+.brand-mark,
+.brand-logo-img {
+  display: inline-flex;
+  align-items: center;
 }
 
-/* Official logo asset (rendered when /logo.svg exists) */
-.brand-mark .brand-logo-img {
-  position: absolute;
-  inset: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
+.brand-logo-img {
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
-  border-radius: inherit;
+  object-position: left center;
+  user-select: none;
 }
 
-.brand-mark:has(.brand-logo-img) {
-  background: transparent;
-  box-shadow: none;
+/* Contrast container for placements on dark/navy surfaces. The official
+   artwork keeps its original colors; this chip guarantees both its azure
+   and light elements stay visible in every theme. */
+.brand-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 12px;
 }
 
-.brand-mark > span {
-  font: italic 800 21px var(--font-display);
+/* Tablet: slightly more compact lockup. */
+@media (max-width: 960px) {
+  .navbar .brand-logo-img {
+    height: 30px !important;
+  }
 }
 
-.brand-mark i,
-.brand-mark b,
-.brand-mark em {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #a5f3fc;
-}
+/* Mobile: compact presentation where necessary. */
+@media (max-width: 640px) {
+  .navbar .brand-logo-img {
+    height: 24px !important;
+  }
 
-.brand-mark i {
-  right: 7px;
-  top: 8px;
-}
-
-.brand-mark b {
-  right: 5px;
-  bottom: 8px;
-}
-
-.brand-mark em {
-  left: 7px;
-  bottom: 8px;
+  .brand--compact .brand-logo-img {
+    height: 26px !important;
+  }
 }
 
 .brand-copy {
   display: grid;
   line-height: 1;
-}
-
-.brand-copy strong {
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  font-family: var(--font-display);
-  font-weight: 800;
-  color: var(--text-primary);
 }
 
 .brand-copy small {

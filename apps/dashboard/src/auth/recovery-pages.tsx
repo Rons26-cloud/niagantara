@@ -1,5 +1,6 @@
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
 import { RecoveryApiError, requestRecovery, saveNewPassword, verifyRecovery } from './recovery-api';
+import { BrandLogo } from '@niagantara/ui';
 
 const EMAIL_KEY = 'niagantara.recovery.v1.email';
 const ACCESS_KEY = 'niagantara.recovery.v1.access';
@@ -149,7 +150,7 @@ export function ResetPasswordPage() {
 }
 
 function AuthShell({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
-  return <main className="auth-page"><section className="auth-card"><div className="auth-brand">N</div><p className="eyebrow">NIAGANTARA SECURITY</p><h1>{title}</h1><p className="muted">{subtitle}</p>{children}</section></main>;
+  return <main className="auth-page"><section className="auth-card"><BrandLogo className="auth-brand" /><p className="eyebrow">NIAGANTARA SECURITY</p><h1>{title}</h1><p className="muted">{subtitle}</p>{children}</section></main>;
 }
 
 function Status({ text }: { text: string }) {

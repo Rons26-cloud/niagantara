@@ -1,65 +1,87 @@
 /**
- * BrandLogo Component
- * Renders the OFFICIAL NIAGANTARA logo asset.
- *
- * Drop the official logo file at `/logo.svg` (or /logo.png) in each app's
- * `public/` directory (or pass a custom `src`). Until the official asset is
- * present, the previous interim mark renders as a graceful fallback so no
- * broken image ever shows.
+ * BrandLogo / BrandMark Components
+ * Render the OFFICIAL NIAGANTARA brand assets — single source of truth:
+ * assets/brand/niagantara-logo.png (shipped per app as /logo.png).
+ * BrandMark uses the compact symbol derivative cropped from that same
+ * official file (shipped as /brand-mark.png). The artwork itself is never
+ * redrawn, recolored, stretched, or cropped: height is fixed and width
+ * stays automatic (object-fit: contain), so the intrinsic aspect ratio of
+ * the official PNG always holds. Surrounding surfaces provide contrast in
+ * light and dark themes.
  */
 
-import { useState } from 'react';
-
-interface BrandLogoProps {
-  compact?: boolean;
+interface BrandProps {
   className?: string;
   href?: string;
   ariaLabel?: string;
-  /** Path or URL of the official logo asset. Defaults to /logo.svg */
+  /** Path or URL of the official logo asset. Full lockup defaults to /logo.png */
   src?: string;
+  /** Loading behavior for the underlying image. */
+  loading?: 'eager' | 'lazy';
 }
 
+/** Compact official symbol. Derived from the official logo — never recreated. */
+export function BrandMark({
+  size = 30,
+  className = '',
+  src = '/brand-mark.png',
+  loading = 'eager',
+}: {
+  size?: number;
+  className?: string;
+  src?: string;
+  loading?: 'eager' | 'lazy';
+}) {
+  return (
+    <img
+      className={`brand-logo-img ${className}`.trim()}
+      src={src}
+      alt=""
+      style={{ height: size }}
+      loading={loading}
+      decoding="async"
+      draggable={false}
+    />
+  );
+}
+
+/**
+ * Full brand lockup from the official asset. `compact` swaps the complete
+ * horizontal logo for the official mark wherever space is tight (collapsed
+ * sidebars, mobile headers) — the wordmark is never squeezed into tiny areas.
+ */
 export function BrandLogo({
   compact = false,
   className = '',
   href = '/',
   ariaLabel = 'NIAGANTARA — Business Control Platform',
-  src = '/logo.svg',
-}: BrandLogoProps) {
-  const [assetMissing, setAssetMissing] = useState(false);
-
+  src = '/logo.png',
+  loading = 'eager',
+}: BrandProps & { compact?: boolean }) {
   return (
     <a
-      className={`brand ${className}`.trim()}
+      className={`brand${compact ? ' brand--compact' : ''} ${className}`.trim()}
       href={href}
       aria-label={ariaLabel}
     >
-      <span className="brand-mark" aria-hidden={assetMissing || undefined}>
-        {!assetMissing && (
+      {compact ? (
+        <BrandMark size={30} loading={loading} />
+      ) : (
+        <>
           <img
             className="brand-logo-img"
             src={src}
-            alt=""
-            width={36}
-            height={36}
-            loading="eager"
+            alt="NIAGANTARA"
+            style={{ height: 34 }}
+            loading={loading}
             decoding="async"
-            onError={() => setAssetMissing(true)}
+            draggable={false}
           />
-        )}
-        {assetMissing && (
-          <>
-            <span>N</span>
-            <i />
-            <b />
-            <em />
-          </>
-        )}
-      </span>
-      <span className="brand-copy">
-        <strong>NIAGANTARA</strong>
-        {!compact && <small>BUSINESS CONTROL PLATFORM</small>}
-      </span>
+          <span className="brand-copy">
+            <small>BUSINESS CONTROL PLATFORM</small>
+          </span>
+        </>
+      )}
     </a>
   );
 }

@@ -8,16 +8,27 @@ import {
 } from './phase3-pages';
 import { CrudPage } from './phase4-pages';
 import { AttendancePage, PurchasesPage } from './phase4-operations';
-import { ExpensesPage, FinancePage, Phase4Summary } from './phase4-finance';
+import { ExpensesPage, FinancePage } from './phase4-finance';
 import { GoogleSheetsPage, SheetsTutorial } from './phase5-sheets';
-import { BrandLogo, ThemeSwitcher, LanguageSwitcher, useTranslation } from '@niagantara/ui';
-type Ctx = {
-  companies: any[];
-  active_company: string | null;
-  permissions: string[];
-  stores: any[];
-  accessible_branches: any[];
-};
+import {
+  BrandLogo,
+  BrandMark,
+  ThemeSwitcher,
+  LanguageSwitcher,
+  useTranslation,
+  Badge,
+} from '@niagantara/ui';
+import {
+  DashboardHome,
+  HelpPage,
+  Onboarding,
+  SettingsPage,
+  TransferForm,
+  loadStoredBranch,
+  storeBranch,
+  type OrgCtx,
+} from './enhancements';
+type Ctx = OrgCtx;
 const nav = [
   ['dashboard', 'Dashboard'],
   ['pos', 'POS / Kasir'],
@@ -40,9 +51,19 @@ const nav = [
   ['warehouses', 'Warehouses'],
   ['branches', 'Branches'],
   ['stores', 'Store Management'],
-  ['tutorial', 'Tutorial'],
+  ['help', 'Help'],
   ['settings', 'Settings'],
 ] as const;
+const NAV_GROUPS: [string, string[]][] = [
+  ['main', ['dashboard', 'pos']],
+  ['catalog', ['products', 'categories', 'barcode', 'inventory']],
+  ['sales', ['sales', 'shifts', 'customers']],
+  ['purchasing', ['purchases', 'suppliers']],
+  ['finance', ['expenses', 'payables', 'receivables', 'reports']],
+  ['integration', ['sheets']],
+  ['company', ['warehouses', 'branches', 'stores']],
+  ['team', ['employees', 'attendance']],
+];
 const navPermission: Record<string, string | undefined> = {
   pos: 'pos.access',
   sales: 'sale.read',
@@ -62,14 +83,22 @@ export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
   const { t } = useTranslation();
   const [ctx, setCtx] = useState<Ctx | null>(null);
+  const [companyNames, setCompanyNames] = useState<Record<string, string>>({});
+  const [branchId, setBranchId] = useState<string | null>(loadStoredBranch());
   const [page, setPage] = useState(location.hash.slice(1) || 'dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState('loading');
   useEffect(() => {
     if (!accessToken) return;
-    api<Ctx>('/auth/me', accessToken)
-      .then((v) => {
-        setCtx(v);
+    Promise.all([
+      api<Ctx>('/auth/me', accessToken),
+      api<any[]>('/companies', accessToken).catch(() => []),
+    ])
+      .then(([me, companies]) => {
+        setCtx(me);
+        setCompanyNames(
+          Object.fromEntries((companies ?? []).map((c: any) => [c.id, c.name])),
+        );
         setStatus('ready');
       })
       .catch((e) =>
@@ -78,6 +107,14 @@ export function DashboardApp() {
         ),
       );
   }, [accessToken]);
+  useEffect(() => {
+    const onHash = () => {
+      setPage(location.hash.slice(1) || 'dashboard');
+      setMenuOpen(false);
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   if (!accessToken)
     return (
       <State
@@ -96,9 +133,17 @@ export function DashboardApp() {
       />
     );
   if (!ctx?.active_company) return <State text={t('dashboard.noCompany')} />;
-  const branch = ctx.accessible_branches[0];
-  const store =
-    ctx.stores.find((s) => s.id === branch?.store_id) ?? ctx.stores[0];
+  const selectedBranch =
+    ctx.accessible_branches.find((b: any) => b.id === branchId) ??
+    ctx.accessible_branches[0];
+  const activeStore =
+    ctx.stores.find((s: any) => s.id === selectedBranch?.store_id) ??
+    ctx.stores[0];
+  const scopedCtx: Ctx = {
+    ...ctx,
+    stores: activeStore ? [activeStore] : ctx.stores,
+    accessible_branches: selectedBranch ? [selectedBranch] : ctx.accessible_branches,
+  };
   const go = (id: string) => {
     location.hash = id;
     setPage(id);
@@ -111,16 +156,21 @@ export function DashboardApp() {
   const title = t(`pages.${page}`) !== `pages.${page}`
     ? t(`pages.${page}`)
     : nav.find((x) => x[0] === page)?.[1] ?? page;
-  const primaryNav = ['dashboard', 'pos', 'products', 'inventory', 'reports']
+  const primaryNav = ['dashboard', 'pos', 'sales', 'reports']
     .filter(
       (id) =>
         allowedNav.some(([navId]) => navId === id),
-    );
+    )
+    .slice(0, 4);
+  const companyName = companyNames[ctx.active_company] ?? ctx.active_company;
   return (
     <div className={`shell${menuOpen ? ' nav-open' : ''}`}>
       <div className="mobile-topbar">
-        <BrandLogo compact />
-        <span className="mobile-page-title">{title}</span>
+        <BrandMark size={30} />
+        <div className="mobile-titles">
+          <span className="mobile-page-title">{title}</span>
+          <small className="mobile-brand-sub">{companyName}</small>
+        </div>
         <button
           className="mobile-menu-btn"
           aria-expanded={menuOpen}
@@ -140,20 +190,45 @@ export function DashboardApp() {
         />
       )}
       <aside className="sidebar">
-        <div className="brand">
-          <BrandLogo compact />
+        <div className="brand brand-chip">
+          <BrandLogo className="sidebar-brand-full" />
+          <BrandMark size={32} className="sidebar-brand-collapsed" />
         </div>
         <nav>
-          {allowedNav.map(([id, label]) => (
-            <button
-              key={id}
-              className={page === id ? 'active' : ''}
-              aria-current={page === id ? 'page' : undefined}
-              onClick={() => go(id)}
-            >
-              {t(`pages.${id}`) || label}
-            </button>
-          ))}
+          {NAV_GROUPS.map(([group, ids]) => {
+            const items = ids
+              .map((id) => allowedNav.find(([navId]) => navId === id))
+              .filter((x): x is (typeof allowedNav)[number] => !!x);
+            if (!items.length) return null;
+            return (
+              <div className="nav-group" key={group}>
+                <span className="nav-group-label">{t(`dashboard.navGroups.${group}`)}</span>
+                {items.map(([id, label]) => (
+                  <button
+                    key={id}
+                    className={page === id ? 'active' : ''}
+                    aria-current={page === id ? 'page' : undefined}
+                    onClick={() => go(id)}
+                  >
+                    {t(`pages.${id}`) || label}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
+          {['settings', 'help']
+            .map((id) => allowedNav.find(([navId]) => navId === id))
+            .filter((x): x is (typeof allowedNav)[number] => !!x)
+            .map(([id, label]) => (
+              <button
+                key={id}
+                className={page === id ? 'active' : ''}
+                aria-current={page === id ? 'page' : undefined}
+                onClick={() => go(id)}
+              >
+                {t(`pages.${id}`) || label}
+              </button>
+            ))}
         </nav>
         <div className="sidebar-controls">
           <ThemeSwitcher />
@@ -175,19 +250,58 @@ export function DashboardApp() {
             <p className="eyebrow">USER DASHBOARD</p>
             <h1>{title}</h1>
           </div>
-          <div className="context">
-            <span>
-              {t('context.company')} <b>{ctx.companies[0]?.company_id ?? '—'}</b>
+          <div className="context context--switchable">
+            <span className="ctx-company" title={companyName}>
+              {t('context.company')} <b>{companyName}</b>
             </span>
-            <span>
-              {t('context.store')} <b>{store?.name ?? t('context.notSelected')}</b>
-            </span>
-            <span>
-              {t('context.branch')} <b>{branch?.name ?? t('context.allBranches')}</b>
-            </span>
+            {ctx.stores.length > 0 && (
+              <label className="ctx-select">
+                {t('context.store')}
+                <select
+                  value={activeStore?.id ?? ''}
+                  onChange={(e) => {
+                    const storeBranches = ctx.accessible_branches.filter(
+                      (b: any) => b.store_id === e.target.value,
+                    );
+                    setBranchId(storeBranches[0]?.id ?? '');
+                    storeBranch(storeBranches[0]?.id ?? '');
+                  }}
+                >
+                  {ctx.stores.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {ctx.accessible_branches.length > 0 && (
+              <label className="ctx-select">
+                {t('context.branch')}
+                <select
+                  value={selectedBranch?.id ?? ''}
+                  onChange={(e) => {
+                    setBranchId(e.target.value);
+                    storeBranch(e.target.value);
+                  }}
+                >
+                  {ctx.accessible_branches.map((b: any) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
         </header>
-        <Page page={page} ctx={ctx} token={accessToken} />
+        <Page
+          page={page}
+          ctx={scopedCtx}
+          token={accessToken}
+          companyName={companyName}
+          title={title}
+        />
       </main>
       <nav className="mobile-tabbar" aria-label={t('nav.primary')}>
         {primaryNav.map((id) => (
@@ -221,10 +335,40 @@ function State({ text, action }: { text: string; action?: () => void }) {
     </main>
   );
 }
-function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
+function Page({
+  page,
+  ctx,
+  token,
+  companyName,
+  title,
+}: {
+  page: string;
+  ctx: Ctx;
+  token: string;
+  companyName: string;
+  title: string;
+}) {
+  const { t } = useTranslation();
   const c = ctx.active_company!;
+  const branch = ctx.accessible_branches[0];
   if (page === 'dashboard')
-    return <Dashboard company={c} token={token} ctx={ctx} />;
+    return (
+      <>
+        {ctx.stores.length === 0 && ctx.accessible_branches.length === 0 && (
+          <Onboarding ctx={ctx} go={(p) => go2(p)} />
+        )}
+        <DashboardHome
+          company={c}
+          token={token}
+          ctx={ctx}
+          branch={branch}
+          go={go2}
+        />
+      </>
+    );
+  function go2(id: string) {
+    location.hash = id;
+  }
   if (page === 'pos') return <Pos company={c} token={token} ctx={ctx} />;
   if (page === 'sales') return <Sales company={c} token={token} ctx={ctx} />;
   if (page === 'shifts') return <Shifts company={c} token={token} ctx={ctx} />;
@@ -235,6 +379,9 @@ function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
   if (page === 'payables' || page === 'receivables') return <FinancePage view={page} company={c} token={token} ctx={ctx} />;
   if (page === 'reports') return <FinancePage view="reports" company={c} token={token} ctx={ctx} />;
   if (page === 'sheets') return <GoogleSheetsPage company={c} token={token} canManage={ctx.permissions.includes('sheet.manage')} />;
+  if (page === 'help') return <HelpPage />;
+  if (page === 'settings')
+    return <SettingsPage ctx={ctx} companyName={companyName} />;
   if (page === 'tutorial') return <SheetsTutorial />;
   if (page === 'products')
     return (
@@ -301,131 +448,9 @@ function Page({ page, ctx, token }: { page: string; ctx: Ctx; token: string }) {
   if (page === 'barcode') return <Barcode company={c} token={token} />;
   return (
     <section className="panel empty">
-      <h2>{page === 'tutorial' ? 'Tutorial' : 'Settings'}</h2>
-      <p>
-        Tidak ada data contoh. Modul ini belum memiliki konfigurasi Phase 2.
-      </p>
+      <h2>{title}</h2>
+      <p className="muted">{t('messages.loadError')}</p>
     </section>
-  );
-}
-function Dashboard({
-  company,
-  token,
-  ctx,
-}: {
-  company: string;
-  token: string;
-  ctx: Ctx;
-}) {
-  const [sales, setSales] = useState<any[]>([]);
-  const [low, setLow] = useState<any[]>([]);
-  const [error, setError] = useState(false);
-  useEffect(() => {
-    Promise.all([
-      api<any[]>(
-        `/sales?from=${new Date().toISOString().slice(0, 10)}`,
-        token,
-        company,
-      ),
-      api<any[]>('/inventory/low-stock', token, company),
-    ])
-      .then(([s, l]) => {
-        setSales(s);
-        setLow(l);
-      })
-      .catch(() => setError(true));
-  }, [company, token]);
-  const paid = sales.filter((sale) =>
-    ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'].includes(sale.status),
-  );
-  const revenue = paid.reduce(
-    (sum, sale) =>
-      sum + Number(sale.grand_total) - Number(sale.refunded_total ?? 0),
-    0,
-  );
-  const topProducts = [
-    ...paid
-      .flatMap((sale) => sale.items ?? [])
-      .reduce((map: Map<string, any>, item: any) => {
-        const current = map.get(item.product_id) ?? {
-          product: item.product_name,
-          quantity: 0,
-          revenue: 0,
-        };
-        current.quantity += Number(item.quantity);
-        current.revenue += Number(item.line_total);
-        map.set(item.product_id, current);
-        return map;
-      }, new Map())
-      .values(),
-  ]
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 5);
-  if (error)
-    return (
-      <section className="panel error">
-        Data operasional tidak dapat dimuat.
-      </section>
-    );
-  return (
-    <>
-      <Phase4Summary company={company} token={token} permissions={ctx.permissions} />
-      <section className="metrics">
-        <Metric
-          label="Revenue hari ini"
-          value={`Rp ${revenue.toLocaleString('id-ID')}`}
-          note="Net paid sales"
-        />
-        <Metric
-          label="Transactions today"
-          value={String(paid.length)}
-          note="Paid transactions"
-        />
-        <Metric
-          label="Low stock"
-          value={String(low.length)}
-          note="quantity ≤ minimum"
-        />
-        <Metric
-          label="Average transaction"
-          value={`Rp ${(paid.length ? revenue / paid.length : 0).toLocaleString('id-ID')}`}
-          note="Authorized scope"
-        />
-      </section>
-      <section className="panel">
-        <h2>Top products today</h2>
-        {topProducts.length ? (
-          <DataRows rows={topProducts} />
-        ) : (
-          <p className="muted">Belum ada produk terjual.</p>
-        )}
-      </section>
-      <section className="panel">
-        <h2>Recent sales</h2>
-        {sales.length ? (
-          <DataRows rows={sales.slice(0, 8)} />
-        ) : (
-          <p className="muted">Belum ada sales hari ini.</p>
-        )}
-      </section>
-    </>
-  );
-}
-function Metric({
-  label,
-  value,
-  note,
-}: {
-  label: string;
-  value: string;
-  note: string;
-}) {
-  return (
-    <article>
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <small>{note}</small>
-    </article>
   );
 }
 function Resource({
@@ -530,6 +555,7 @@ function Inventory({
 }) {
   const [rows, setRows] = useState<any[]>([]);
   const [moves, setMoves] = useState<any[]>([]);
+  const [warehouses, setWarehouses] = useState<any[]>([]);
   const [status, setStatus] = useState('');
   const [form, setForm] = useState({
     branchId: ctx.accessible_branches[0]?.id ?? '',
@@ -543,10 +569,12 @@ function Inventory({
     Promise.all([
       api<any[]>('/inventory', token, company),
       api<any[]>('/inventory/movements', token, company),
+      api<any[]>('/warehouses', token, company).catch(() => []),
     ])
-      .then(([a, b]) => {
+      .then(([a, b, w]) => {
         setRows(a);
         setMoves(b);
+        setWarehouses(w);
       })
       .catch(() => setStatus('Inventory tidak dapat dimuat.'));
   useEffect(() => {
@@ -597,6 +625,14 @@ function Inventory({
             <p>{status}</p>
           </form>
         </section>
+      )}
+      {ctx.permissions.includes('inventory.transfer') && warehouses.length > 1 && (
+        <TransferForm
+          company={company}
+          token={token}
+          warehouses={warehouses}
+          onDone={load}
+        />
       )}
       <section className="panel">
         <h2>Movement history</h2>
