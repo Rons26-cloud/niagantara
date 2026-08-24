@@ -243,6 +243,7 @@ export const id = {
   website: {
     eyebrow: 'PLATFORM OPERASIONAL BISNIS MODERN',
     stripLabel: 'DIRANCANG UNTUK OPERASIONAL YANG LEBIH TERKENDALI',
+    seeMore: 'Lihat Selengkapnya',
     hero: {
       title: 'Semua Bisnis Anda<br /><span>Dalam Satu Kendali</span>',
       subtitle: 'Kelola penjualan, POS, stok, keuangan, cabang, pelanggan, dan laporan bisnis dalam satu platform terintegrasi.',

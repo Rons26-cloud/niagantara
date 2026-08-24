@@ -243,6 +243,7 @@ export const en = {
   website: {
     eyebrow: 'MODERN BUSINESS OPERATIONS PLATFORM',
     stripLabel: 'DESIGNED FOR MORE CONTROLLED OPERATIONS',
+    seeMore: 'See more',
     hero: {
       title: 'All Your Business<br /><span>In One Control</span>',
       subtitle: 'Manage sales, POS, inventory, finance, branches, customers, and business reporting in one integrated platform.',

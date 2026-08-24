@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { BrandLogo, ThemeSwitcher, LanguageSwitcher, useTranslation } from '@niagantara/ui';
+import {
+  BrandLogo,
+  BrandMark,
+  ThemeSwitcher,
+  LanguageSwitcher,
+  useTranslation,
+} from '@niagantara/ui';
 import { Link, usePath } from './router';
 
 export function Navbar() {
   const [menu, setMenu] = useState(false);
   const close = () => setMenu(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
   const path = usePath();
   const items: [string, string][] = [
@@ -17,11 +24,31 @@ export function Navbar() {
     ['/faq', t('nav.faq')],
     ['/kontak', t('nav.contact')],
   ];
+
+  /* Drawer behaviour: lock body scroll, close on Escape, focus the close button. */
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [menu]);
+
   return (
     <header className="navbar">
       <div className="container nav-inner">
-        <BrandLogo href="/" />
-        <nav className={menu ? 'nav-open' : ''} aria-label={t('nav.primary')}>
+        <BrandLogo href="/" className="nav-brand-full" />
+        <Link to="/" className="brand navbar-brand" ariaLabel={t('brand.name')}>
+          <BrandMark size={30} />
+          <span className="brand-word">NIAGANTARA</span>
+        </Link>
+        <nav aria-label={t('nav.primary')}>
           {items.map(([to, label]) => (
             <Link
               key={to}
@@ -48,12 +75,66 @@ export function Navbar() {
           className="menu"
           onClick={() => setMenu(!menu)}
           aria-expanded={menu}
-          aria-label={t('nav.menu')}
+          aria-controls="site-drawer"
+          aria-label={menu ? t('common.close') : t('nav.menu')}
         >
           <span />
           <span />
           <span />
         </button>
+      </div>
+
+      {/* Mobile drawer — hidden entirely on desktop. */}
+      <div className={`drawer-root${menu ? ' open' : ''}`}>
+        <div className="drawer-backdrop" onClick={close} aria-hidden="true" />
+        <aside
+          id="site-drawer"
+          className="drawer"
+          role="dialog"
+          aria-modal={menu || undefined}
+          aria-label={t('nav.primary')}
+          inert={!menu}
+        >
+          <div className="drawer-head">
+            <BrandMark size={26} />
+            <strong className="drawer-title">NIAGANTARA</strong>
+            <button
+              ref={closeButtonRef}
+              className="drawer-close"
+              onClick={close}
+              aria-label={t('common.close')}
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="drawer-nav" aria-label={t('nav.primary')}>
+            {items.map(([to, label]) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={close}
+                ariaCurrent={path === to ? 'page' : undefined}
+                className={path === to ? 'active' : undefined}
+              >
+                {label}
+                <span aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </nav>
+          <div className="drawer-foot">
+            <a className="drawer-login" href="https://niagantara-app.pages.dev">
+              {t('auth.login')}
+            </a>
+            <Link className="button drawer-cta" to="/harga" onClick={close}>
+              {t('nav.trial')}
+              <span aria-hidden="true">→</span>
+            </Link>
+            <div className="drawer-controls">
+              <ThemeSwitcher />
+              <LanguageSwitcher compact />
+            </div>
+          </div>
+        </aside>
       </div>
     </header>
   );

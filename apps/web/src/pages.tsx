@@ -10,6 +10,16 @@ function useW(): W {
   return useTranslation().translations.website;
 }
 
+/** Mobile-only "see the dedicated page" affordance (hidden on desktop via CSS). */
+function MoreLink({ to }: { to: string }) {
+  const w = useW();
+  return (
+    <Link className="section-more" to={to}>
+      {w.seeMore} <span aria-hidden="true">→</span>
+    </Link>
+  );
+}
+
 export function HeroSection() {
   const w = useW();
   return (
@@ -30,7 +40,9 @@ export function HeroSection() {
         <div className="hero-visual">
           <div className="float sales"><i>↗</i><span><small>{w.hero.todaySales}</small><b>Rp 8.420.000</b></span><em>+12,8%</em></div>
           <div className="float stock"><i>◫</i><span><small>{w.hero.lowStock}</small><b>12 {w.hero.productsUnit}</b></span><em>{w.hero.needsAttention}</em></div>
-          <Dashboard w={w} />
+          <div className="hero-scale">
+            <Dashboard w={w} />
+          </div>
         </div>
       </div>
     </section>
@@ -62,6 +74,7 @@ export function FeaturesSection({ heading = true }: { heading?: boolean }) {
             </article>
           ))}
         </div>
+        <MoreLink to="/fitur" />
       </div>
     </section>
   );
@@ -91,6 +104,7 @@ export function PosSolutionSection() {
           <p>{s.text}</p>
           <ul>{s.bullets.map((b) => <li key={b}>✓ {b}</li>)}</ul>
           <Button to="/kontak">{s.cta}</Button>
+          <MoreLink to="/solusi" />
         </div>
         <PosPreview w={w} />
       </div>
@@ -135,10 +149,11 @@ export function BranchesSection() {
             </div>
             <p>⌁ {w.branches.mainBranch}　　⌁ Cabang Barat　　⌁ Cabang Selatan</p>
           </div>
+          <MoreLink to="/tentang" />
         </div>
         <div className="orbit" aria-hidden="true">
           <div className="orbit-ring" /><div className="orbit-ring inner" />
-          <div className="orbit-center"><img className="orbit-logo" src="/brand-mark.png" alt="" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
+          <div className="orbit-center"><img className="orbit-logo" src="/brand-mark.png" alt="" loading="lazy" decoding="async" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
           <div className="orbit-card one"><b>POS</b><small>Kasir</small></div>
           <div className="orbit-card two"><b>Stok</b><small>Inventory</small></div>
           <div className="orbit-card three"><b>Laporan</b><small>Finance</small></div>
@@ -208,6 +223,7 @@ export function SecuritySection() {
           <Kicker>{w.security.kicker}</Kicker>
           <h2 dangerouslySetInnerHTML={{ __html: w.security.title }} />
           <p>{w.security.text}</p>
+          <MoreLink to="/tentang" />
         </div>
         <div className="security-grid">
           {w.security.items.map((item, i) => (
@@ -260,6 +276,7 @@ export function PricingSection({ heading = true }: { heading?: boolean }) {
             <Price key={p.name} name={p.name} title={p.title} text={p.text} featured={i === 1} comingSoon={w.pricing.comingSoon} notifyMe={w.pricing.notifyMe} recommended={w.pricing.recommended} />
           ))}
         </div>
+        {heading && <MoreLink to="/harga" />}
       </div>
     </section>
   );
@@ -308,6 +325,7 @@ export function FaqSection() {
               {faq === i && <p>{item.a}</p>}
             </div>
           ))}
+          <MoreLink to="/faq" />
         </div>
       </div>
     </section>
@@ -368,21 +386,23 @@ function Price({
 export function HomePage() {
   return (
     <Shell>
-      <HeroSection />
-      <LogoStrip />
-      <FeaturesSection />
-      <ShowcaseSection />
-      <PosSolutionSection />
-      <InventorySolutionSection />
-      <BranchesSection />
-      <FinanceSection />
-      <SheetsSection />
-      <SecuritySection />
-      <MobileSection />
-      <PricingSection />
-      <StepsSection />
-      <FaqSection />
-      <CtaSection />
+      <div className="home-page">
+        <HeroSection />
+        <LogoStrip />
+        <FeaturesSection />
+        <ShowcaseSection />
+        <PosSolutionSection />
+        <InventorySolutionSection />
+        <BranchesSection />
+        <FinanceSection />
+        <SheetsSection />
+        <SecuritySection />
+        <MobileSection />
+        <PricingSection />
+        <StepsSection />
+        <FaqSection />
+        <CtaSection />
+      </div>
     </Shell>
   );
 }

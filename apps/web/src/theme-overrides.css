@@ -527,3 +527,477 @@ footer {
 .hero .button-secondary:hover {
   background: rgba(255, 255, 255, 0.12);
 }
+
+/* ============================================================
+   MOBILE & TABLET EXPERIENCE (public website)
+   Compact header + drawer · condensed homepage previews ·
+   fluid hero mockup · responsive rhythm. Desktop (>=821px)
+   is untouched: every rule below lives inside media queries,
+   except the three "hidden-by-default" mobile-only primitives.
+   ============================================================ */
+
+/* Mobile-only primitives — never visible on desktop */
+.navbar-brand,
+.drawer-root,
+.section-more {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  /* ---------- Compact sticky header (56-64px zone) ---------- */
+  .nav-inner {
+    height: 60px;
+    gap: 12px;
+  }
+
+  /* Full desktop navigation row is replaced by the drawer */
+  .nav-inner > nav {
+    display: none;
+  }
+
+  /* Compact branding: official BrandMark + short wordmark */
+  .nav-brand-full {
+    display: none;
+  }
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+  .navbar-brand .brand-word {
+    font-family: Manrope, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  [data-theme="blue"] .navbar-brand .brand-word {
+    color: #f8fafc;
+  }
+
+  /* Header right side: theme toggle + hamburger only.
+     Language, Masuk and Coba Gratis live in the drawer. */
+  .nav-actions {
+    margin-left: auto;
+    gap: 10px;
+  }
+  .nav-actions .language-switcher.compact,
+  .nav-actions .login,
+  .nav-actions .nav-cta {
+    display: none;
+  }
+  .nav-actions .theme-switcher {
+    padding: 8px 10px;
+  }
+  .nav-actions .theme-switcher .theme-label {
+    display: none;
+  }
+
+  /* Hamburger — comfortable 44px touch target */
+  .menu {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .menu span {
+    width: 18px;
+    height: 2px;
+    margin: 2px 0;
+    border-radius: 2px;
+    background: var(--text-primary);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .menu[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .menu[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+  .menu[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* ---------- Mobile drawer ---------- */
+  .drawer-root {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+  }
+  .drawer-root.open {
+    pointer-events: auto;
+  }
+  .drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 13, 26, 0.55);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .drawer-root.open .drawer-backdrop {
+    opacity: 1;
+  }
+  .drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 88vw);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -24px 0 48px rgba(2, 6, 17, 0.35);
+    transform: translateX(105%);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0.24, 1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .drawer-root.open .drawer {
+    transform: none;
+  }
+  .drawer-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 0 18px;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+  }
+  [data-theme="blue"] .drawer-head .brand-logo-img {
+    background: #f8fafc;
+    border-radius: 7px;
+    padding: 2px;
+  }
+  .drawer-title {
+    font-family: Manrope, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+  }
+  .drawer-close {
+    margin-left: auto;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1;
+  }
+  .drawer-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 4px;
+  }
+  .drawer-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .drawer-nav a span {
+    color: var(--border-color);
+    font-size: 13px;
+  }
+  .drawer-nav a.active {
+    color: var(--accent-primary);
+    background: rgba(37, 99, 235, 0.08);
+  }
+  [data-theme="blue"] .drawer-nav a.active {
+    color: var(--accent-secondary);
+    background: rgba(59, 130, 246, 0.16);
+  }
+  .drawer-foot {
+    margin-top: auto;
+    display: grid;
+    gap: 10px;
+    padding: 16px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--border-color);
+  }
+  .drawer-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .drawer-cta {
+    width: 100%;
+    gap: 10px;
+  }
+  .drawer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 40px 0 52px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 9vw, 44px);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+    margin: 18px 0 14px;
+  }
+  .hero-copy > p {
+    font-size: 15px;
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .actions .button {
+    width: 100%;
+    max-width: none;
+    gap: 8px;
+    padding: 13px 10px;
+    font-size: 13px;
+  }
+  .trust {
+    gap: 10px 16px;
+    margin-top: 20px;
+  }
+  .trust span {
+    font-size: 11px;
+  }
+  .hero-visual {
+    min-height: 0;
+    padding: 38px 0 0;
+  }
+  .float.sales {
+    top: 10px;
+    left: 4px;
+  }
+  .float.stock {
+    bottom: 6px;
+    right: 2px;
+  }
+
+  /* ---------- Vertical rhythm ---------- */
+  .section {
+    padding: 56px 0;
+  }
+  .heading {
+    margin-bottom: 30px;
+  }
+  .heading h2,
+  .split h2,
+  .sheets-grid h2,
+  .mobile-grid h2,
+  .faq-grid h2 {
+    font-size: clamp(27px, 6.8vw, 38px);
+  }
+  .heading > p,
+  .split > div > p,
+  .sheets-grid > div > p,
+  .mobile-grid > div > p,
+  .faq-grid > div > p {
+    font-size: 15px;
+  }
+  .split li,
+  .mobile-grid li {
+    font-size: 13px;
+  }
+
+  /* ---------- Condensed homepage: previews, not the full document ---------- */
+  .home-page .showcase,
+  .home-page .inventory-section,
+  .home-page .finance,
+  .home-page .steps,
+  .home-page .mobile {
+    display: none;
+  }
+  .home-page .solution .pos-preview {
+    display: none;
+  }
+  .home-page .feature-card:nth-child(n + 7) {
+    display: none;
+  }
+  .home-page .faq-item:nth-child(n + 4) {
+    display: none;
+  }
+  .home-page .section-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-primary);
+  }
+
+  /* ---------- Cards ---------- */
+  .feature-grid {
+    gap: 10px;
+  }
+  .feature-card {
+    min-height: 0;
+    padding: 16px 14px;
+  }
+  .feature-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .feature-card h3 {
+    font-size: 13px;
+  }
+  .feature-card p {
+    font-size: 12px;
+  }
+  .feature-card a {
+    font-size: 11px;
+    margin-top: 12px;
+  }
+
+  /* ---------- Misc compaction ---------- */
+  .logo-strip .container {
+    padding: 18px 0;
+    min-height: 0;
+  }
+  .security-panel {
+    gap: 24px;
+    padding: 26px 20px;
+  }
+  .price {
+    padding: 22px 18px;
+  }
+  .price > b {
+    margin-top: 18px;
+    font-size: 20px;
+  }
+  .price > a {
+    margin-top: 16px;
+  }
+  .faq-item button {
+    padding: 16px 2px;
+    font-size: 14px;
+  }
+  .faq-item p {
+    font-size: 13px;
+  }
+  .cta {
+    padding: 28px 0 56px;
+  }
+  .cta > .container {
+    padding: 38px 20px;
+    border-radius: 16px;
+  }
+
+  /* ---------- Footer: compact stacked columns ---------- */
+  .footer {
+    padding: 42px 0 30px;
+  }
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 18px;
+  }
+  .footer-grid > div:first-child {
+    grid-column: 1 / -1;
+  }
+  .footer h4 {
+    margin: 0 0 10px;
+  }
+  .footer-grid > div:not(:first-child) a {
+    margin: 9px 0;
+    font-size: 12px;
+  }
+  .footer small {
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+  .section {
+    padding: 48px 0;
+  }
+  .hero {
+    padding: 36px 0 44px;
+  }
+
+  /* Fluid dashboard mockup: scales exactly to viewport width via
+     container-query units, with a fixed-scale fallback. The wrapper
+     box keeps the scaled height so no dead vertical space remains. */
+  .hero-visual {
+    container-type: inline-size;
+    aspect-ratio: 760 / 530;
+    padding-top: 0;
+    margin-top: 4px;
+  }
+  .float.sales {
+    top: 4px;
+    left: 0;
+  }
+  .float.stock {
+    bottom: 0;
+    right: 0;
+  }
+  .hero-scale {
+    position: absolute;
+    top: 26px;
+    left: 0;
+    width: 760px;
+    transform: scale(0.56);
+    transform-origin: top left;
+  }
+  @supports (width: 1cqw) {
+    .hero-scale {
+      transform: scale(calc(100cqw / 760));
+    }
+  }
+
+  .legal {
+    padding: 40px 0 64px;
+  }
+  .legal h1 {
+    font-size: clamp(28px, 8vw, 34px);
+  }
+  .actions .button {
+    font-size: 12px;
+    padding: 12px 8px;
+  }
+}
+
+/* Blue theme: drawer surfaces inherit tokens automatically;
+   soften the backdrop slightly for the navy palette. */
+[data-theme="blue"] .drawer-backdrop {
+  background: rgba(2, 6, 17, 0.66);
+}
