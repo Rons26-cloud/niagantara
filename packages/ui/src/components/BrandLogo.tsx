@@ -7,8 +7,10 @@
  * redrawn, recolored, stretched, or cropped: height is fixed and width
  * stays automatic (object-fit: contain), so the intrinsic aspect ratio of
  * the official PNG always holds. Surrounding surfaces provide contrast in
- * light and dark themes.
+ * light and dark themes via theme-aware image swapping.
  */
+
+import { useTheme } from '../theme';
 
 interface BrandProps {
   className?: string;
@@ -16,6 +18,8 @@ interface BrandProps {
   ariaLabel?: string;
   /** Path or URL of the official logo asset. Full lockup defaults to /logo.png */
   src?: string;
+  /** Dark-theme variant of the full lockup logo. */
+  darkSrc?: string;
   /** Loading behavior for the underlying image. */
   loading?: 'eager' | 'lazy';
 }
@@ -25,17 +29,21 @@ export function BrandMark({
   size = 30,
   className = '',
   src = '/brand-mark.png',
+  darkSrc = '/niagantara-mark-dark.png',
   loading = 'eager',
 }: {
   size?: number;
   className?: string;
   src?: string;
+  darkSrc?: string;
   loading?: 'eager' | 'lazy';
 }) {
+  const { theme } = useTheme();
+  const resolved = theme === 'blue' && darkSrc ? darkSrc : src;
   return (
     <img
       className={`brand-logo-img ${className}`.trim()}
-      src={src}
+      src={resolved}
       alt=""
       style={{ height: size }}
       loading={loading}
@@ -56,8 +64,11 @@ export function BrandLogo({
   href = '/',
   ariaLabel = 'NIAGANTARA — Business Control Platform',
   src = '/logo.png',
+  darkSrc = '/niagantara-logo-dark.png',
   loading = 'eager',
 }: BrandProps & { compact?: boolean }) {
+  const { theme } = useTheme();
+  const resolved = theme === 'blue' && darkSrc ? darkSrc : src;
   return (
     <a
       className={`brand${compact ? ' brand--compact' : ''} ${className}`.trim()}
@@ -70,7 +81,7 @@ export function BrandLogo({
         <>
           <img
             className="brand-logo-img"
-            src={src}
+            src={resolved}
             alt="NIAGANTARA"
             style={{ height: 34 }}
             loading={loading}

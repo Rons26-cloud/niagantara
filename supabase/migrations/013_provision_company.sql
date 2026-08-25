@@ -1,3 +1,73 @@
+create or replace function public.get_plan_limits(p_plan text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select case p_plan
+    when 'business' then '{
+      "max_stores": 10,
+      "max_branches": 50,
+      "max_employees": 100,
+      "max_products": 5000,
+      "max_users": 25
+    }'::jsonb
+    when 'enterprise' then '{
+      "max_stores": 999,
+      "max_branches": 999,
+      "max_employees": 9999,
+      "max_products": 99999,
+      "max_users": 999
+    }'::jsonb
+    else '{
+      "max_stores": 2,
+      "max_branches": 5,
+      "max_employees": 10,
+      "max_products": 100,
+      "max_users": 3
+    }'::jsonb
+  end;
+$$;
+
+revoke all on function public.get_plan_limits(text) from public;
+revoke all on function public.get_plan_limits(text) from anon, authenticated;
+grant execute on function public.get_plan_limits(text) to service_role;
+
+comment on function public.get_plan_limits(text) is
+'Returns resource limits for a given subscription plan. Server-only (service_role).';
+
+create or replace function public.check_company_limit(p_user_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_company_count bigint;
+  v_max_companies constant int := 5;
+begin
+  select count(*) into v_company_count
+  from public.company_members as member
+  where member.user_id = p_user_id
+    and member.role_key = 'owner'
+    and member.status = 'active';
+
+  return jsonb_build_object(
+    'current_count', v_company_count,
+    'max_allowed', v_max_companies,
+    'can_create', v_company_count < v_max_companies
+  );
+end;
+$$;
+
+revoke all on function public.check_company_limit(uuid) from public;
+revoke all on function public.check_company_limit(uuid) from anon, authenticated;
+grant execute on function public.check_company_limit(uuid) to service_role;
+
+comment on function public.check_company_limit(uuid) is
+'Server-only RPC. Returns whether a user can create more companies and their current usage.';
+
 create or replace function public.provision_company(
   p_user_id uuid,
   p_company_name text,
@@ -13,6 +83,8 @@ declare
   provisioned_company public.companies;
   main_store public.stores;
   main_branch public.branches;
+  v_company_count bigint;
+  v_max_companies constant int := 5;
 begin
   if p_user_id is null or not exists (
     select 1 from auth.users as auth_user where auth_user.id = p_user_id
@@ -42,8 +114,25 @@ begin
   limit 1;
 
   if provisioned_company.id is null then
-    insert into public.companies (name, legal_name, created_by)
-    values (pg_catalog.btrim(p_company_name), nullif(pg_catalog.btrim(p_legal_name), ''), p_user_id)
+    select count(*) into v_company_count
+    from public.company_members as member
+    where member.user_id = p_user_id
+      and member.role_key = 'owner'
+      and member.status = 'active';
+
+    if v_company_count >= v_max_companies then
+      raise exception 'COMPANY_LIMIT_REACHED: You have reached the maximum of % companies.' using errcode = 'P0002',
+        v_max_companies;
+    end if;
+
+    insert into public.companies (name, legal_name, created_by, plan, plan_limits)
+    values (
+      pg_catalog.btrim(p_company_name),
+      nullif(pg_catalog.btrim(p_legal_name), ''),
+      p_user_id,
+      'free',
+      public.get_plan_limits('free')
+    )
     returning * into provisioned_company;
 
     insert into public.company_members (company_id, user_id, role_key, status)
@@ -67,7 +156,7 @@ begin
       'auth.register',
       'company',
       provisioned_company.id,
-      pg_catalog.jsonb_build_object('provisioned', true, 'database_atomic', true)
+      pg_catalog.jsonb_build_object('provisioned', true, 'database_atomic', true, 'plan', 'free')
     );
   else
     select store.* into main_store

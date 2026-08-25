@@ -279,13 +279,7 @@
   font-size: 13px;
 }
 
-/* Official logo keeps its own colors; on the dark theme it sits on a light
-   plate so every element of the artwork stays visible. */
-[data-theme='blue'] .pos-login .brand {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 6px 10px;
-}
+/* Brand logo on dark theme: theme-aware image swap handles visibility — no white plate. */
 
 /* Mobile: touch-first single column with sticky pay bar */
 @media (max-width: 760px) {

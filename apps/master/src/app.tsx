@@ -112,7 +112,7 @@ export function MasterApp() {
   return (
     <div className="mshell">
       <aside className="msidebar">
-        <div className="msidebar-brand brand-chip">
+        <div className="msidebar-brand sidebar-brand">
           <BrandLogo href="#/dashboard" className="msidebar-full" />
           <BrandMark size={30} className="msidebar-mark" />
         </div>

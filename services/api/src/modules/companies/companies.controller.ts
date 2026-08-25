@@ -29,4 +29,11 @@ export class CompaniesController {
   update(@Req() request: any, @Param('companyId') companyId: string, @Body() dto: UpdateCompanyDto) {
     return this.service.update(request.user.id, companyId, dto);
   }
+
+  @Get(':companyId/plan')
+  @UseGuards(AuthGuard, TenantGuard, PermissionGuard)
+  @RequirePermission('company.read')
+  getPlanLimits(@Req() request: any, @Param('companyId') companyId: string) {
+    return this.service.getPlanLimits(request.user.id, companyId);
+  }
 }

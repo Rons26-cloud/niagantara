@@ -5,9 +5,9 @@ build/
 coverage/
 supabase/.temp/
 .env
-.railway-api.env.tmp
 .env.*
+!.env.example
+.railway-api.env.tmp
 *.log
 *.local
 *.tsbuildinfo
-!.env.example

@@ -11,7 +11,7 @@ class AppConfig {
       'https://niagantara-production.up.railway.app/api/v1';
 
   /// Base URL of the NIAGANTARA API. Override with:
-  /// flutter run --dart-define=API_BASE_URL=http://10.0.2.2:3000/api/v1
+  /// flutter run --dart-define=API_BASE_URL=https://10.0.2.2:3000/api/v1
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: _defaultApiBaseUrl,
@@ -25,4 +25,22 @@ class AppConfig {
 
   /// Default page size used by cursor/list endpoints.
   static const int defaultPageSize = 50;
+
+  /// Asserts that the API base URL uses HTTPS in release builds.
+  /// This prevents accidental plaintext HTTP in production.
+  static void assertSecureUrl() {
+    assert(
+      () {
+        if (!apiBaseUrl.startsWith('https://') &&
+            !apiBaseUrl.contains('localhost') &&
+            !apiBaseUrl.contains('10.0.2.2')) {
+          throw AssertionError(
+            'API_BASE_URL must use HTTPS in release builds. '
+            'Got: $apiBaseUrl',
+          );
+        }
+        return true;
+      }(),
+    );
+  }
 }

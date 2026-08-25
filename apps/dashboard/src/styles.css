@@ -46,6 +46,15 @@ aside {
   letter-spacing: 0.08em;
   margin-top: 0.2rem;
 }
+[data-theme='blue'] .sidebar {
+  background: #0b1220;
+}
+[data-theme='blue'] .sidebar .brand-copy small {
+  color: #94a3b8;
+}
+[data-theme='blue'] .brand small {
+  color: #94a3b8;
+}
 nav {
   display: grid;
   gap: 0.35rem;

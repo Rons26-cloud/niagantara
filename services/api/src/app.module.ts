@@ -24,19 +24,29 @@ import { FinanceModule } from './modules/finance/finance.module.js';
 import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module.js';
 import { SupabaseService } from './integrations/supabase/supabase.service.js';
 import { validateServerEnvironment } from './config/environment.js';
+
 @Controller('health')
 class HealthController {
   constructor(private readonly supabase: SupabaseService) {}
-  @Get() health() {
-    const env=validateServerEnvironment();
-    return { status: 'ok', service: env.serviceName, api_version: 'v1', app_version: env.appVersion, build_sha: env.buildSha, environment: env.appEnv };
+
+  @Get()
+  health() {
+    return { status: 'ok', service: 'niagantara-api', api_version: 'v1' };
   }
+
   @Get('readiness')
   async readiness() {
-    const env=validateServerEnvironment();const database=await this.supabase.readiness();if(!database)throw new ServiceUnavailableException({code:'NOT_READY',message:'A critical dependency is unavailable.'});
-    return { status: database?'ready':'not_ready', database: database?'reachable':'unreachable', service: env.serviceName, app_version: env.appVersion, build_sha: env.buildSha, environment: env.appEnv };
+    const database = await this.supabase.readiness();
+    if (!database) {
+      throw new ServiceUnavailableException({
+        code: 'NOT_READY',
+        message: 'A critical dependency is unavailable.',
+      });
+    }
+    return { status: 'ready', database: 'reachable', service: 'niagantara-api' };
   }
 }
+
 @Module({
   imports: [
     SupabaseModule,

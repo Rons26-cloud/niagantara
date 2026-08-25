@@ -139,6 +139,9 @@
   padding: 0.6rem 0.4rem 1rem;
   border-bottom: 1px solid #1e293b;
 }
+.demo-brand .brand-copy small {
+  color: #94a3b8;
+}
 .demo-sidebar-brand-full {
   height: 30px;
 }

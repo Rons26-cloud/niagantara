@@ -216,7 +216,7 @@ export function DemoShell({
       )}
 
       <aside id="demo-sidebar" className="demo-sidebar" aria-label={t('nav.primary')}>
-        <div className="demo-brand brand-chip">
+        <div className="demo-brand">
           <BrandLogo className="demo-sidebar-brand-full" />
           <BrandMark size={32} className="demo-sidebar-brand-collapsed" />
         </div>

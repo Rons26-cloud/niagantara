@@ -190,7 +190,7 @@ export function DashboardApp() {
         />
       )}
       <aside className="sidebar">
-        <div className="brand brand-chip">
+        <div className="brand sidebar-brand">
           <BrandLogo className="sidebar-brand-full" />
           <BrandMark size={32} className="sidebar-brand-collapsed" />
         </div>

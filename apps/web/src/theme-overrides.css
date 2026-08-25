@@ -486,15 +486,8 @@ footer {
   }
 }
 
-/* Official logo on dark blue-theme surfaces without a dedicated dark
-   variant yet (legal/404 page still uses the canonical asset): lighten
-   the surrounding plate — never the logo itself. Navbar, drawer and
-   footer use niagantara-*-dark.png derivatives instead. */
-[data-theme="blue"] .legal .brand {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 6px 10px;
-}
+/* Brand logo on dark-blue surfaces: theme-aware image swap handles visibility
+   via BrandLogo/BrandMark components — no white plate needed. */
 
 /* Premium navy hero — applies in both themes; this block is last so it wins
    over the adaptive-text rules higher up in this file. */
@@ -678,11 +671,7 @@ footer {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
   }
-  [data-theme="blue"] .drawer-head .brand-logo-img {
-    background: #f8fafc;
-    border-radius: 7px;
-    padding: 2px;
-  }
+  /* Drawer mark uses theme-aware image swap — no white plate needed. */
   .drawer-title {
     font-family: Manrope, sans-serif;
     font-size: 14px;

@@ -156,13 +156,7 @@
   max-width: 340px;
 }
 
-/* Official logo keeps its own colors; on the dark theme it sits on a light
-   plate so every element of the artwork stays visible. */
-[data-theme='blue'] .mlogin .brand {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 6px 10px;
-}
+/* Brand logo on dark theme: theme-aware image swap handles visibility — no white plate. */
 
 @media (max-width: 860px) {
   .msidebar-brand {

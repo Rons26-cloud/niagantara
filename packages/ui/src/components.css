@@ -28,14 +28,12 @@
   user-select: none;
 }
 
-/* Contrast container for placements on dark/navy surfaces. The official
-   artwork keeps its original colors; this chip guarantees both its azure
-   and light elements stay visible in every theme. */
-.brand-chip {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 6px 12px;
+/* Sidebar brand container — theme-aware, no white box. */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
 }
 
 /* Tablet: slightly more compact lockup. */
