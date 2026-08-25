@@ -1,11 +1,36 @@
-import { en } from './locales/en';
 import { id } from './locales/id';
 
 export type Language = 'id' | 'en';
-export type TranslationKey = keyof typeof en;
+export type TranslationKey = keyof typeof id;
 
-const translations = { id, en };
+type LocaleData = typeof id;
+
 const STORAGE_KEY = 'niagantara-language';
+
+interface LocaleStore {
+  id: LocaleData;
+  en: LocaleData;
+}
+
+const loadedLocales: LocaleStore = {
+  id,
+  en: id as unknown as LocaleData,
+};
+let enPromise: Promise<LocaleData> | null = null;
+
+function loadEn(): Promise<LocaleData> {
+  if (!enPromise) {
+    enPromise = import('./locales/en').then((m) => {
+      loadedLocales.en = m.en as unknown as LocaleData;
+      return m.en as unknown as LocaleData;
+    });
+  }
+  return enPromise;
+}
+
+if (typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('en')) {
+  loadEn();
+}
 
 export function getDefaultLanguage(): Language {
   const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
@@ -22,6 +47,7 @@ export function getDefaultLanguage(): Language {
 export function setLanguage(lang: Language): void {
   localStorage.setItem(STORAGE_KEY, lang);
   document.documentElement.lang = lang;
+  if (lang === 'en') loadEn();
   window.dispatchEvent(new CustomEvent('language-change', { detail: { language: lang } }));
 }
 
@@ -29,13 +55,13 @@ export function getLanguage(): Language {
   return localStorage.getItem(STORAGE_KEY) as Language || getDefaultLanguage();
 }
 
-export function getTranslations(lang: Language = getLanguage()) {
-  return translations[lang];
+export function getTranslations(lang: Language = getLanguage()): LocaleData {
+  return loadedLocales[lang] ?? loadedLocales.id;
 }
 
 export function t(key: string, lang: Language = getLanguage()): string {
   const keys = key.split('.');
-  let value: any = translations[lang];
+  let value: any = loadedLocales[lang] ?? loadedLocales.id;
   for (const k of keys) {
     value = value?.[k];
     if (value === undefined) break;
@@ -43,17 +69,25 @@ export function t(key: string, lang: Language = getLanguage()): string {
   return value ?? key;
 }
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useTranslation(lang?: Language) {
   const [language, setLanguageState] = useState<Language>(getDefaultLanguage());
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     const currentLang = lang ?? getLanguage();
     setLanguageState(currentLang);
+    if (currentLang === 'en') {
+      loadEn().then(() => setTick((t) => t + 1));
+    }
 
     const handleLanguageChange = (e: CustomEvent) => {
-      setLanguageState(e.detail.language);
+      const newLang = e.detail.language as Language;
+      setLanguageState(newLang);
+      if (newLang === 'en') {
+        loadEn().then(() => setTick((t) => t + 1));
+      }
     };
 
     window.addEventListener('language-change', handleLanguageChange as EventListener);
@@ -63,7 +97,7 @@ export function useTranslation(lang?: Language) {
   }, [lang]);
 
   const translations = getTranslations(language);
-  const translate = (key: string) => t(key, language);
+  const translate = useCallback((key: string) => t(key, language), [language]);
 
   return {
     language,

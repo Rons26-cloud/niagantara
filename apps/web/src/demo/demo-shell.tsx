@@ -5,7 +5,10 @@ import {
   ThemeSwitcher,
   LanguageSwitcher,
   useTranslation,
+  SidebarIcon,
+  USER_NAV_ICONS,
 } from '@niagantara/ui';
+import { Search, Bell, LogOut } from 'lucide-react';
 import { useDemoStore } from './demo-store';
 import { Link, navigate } from '../router';
 
@@ -165,17 +168,22 @@ export function DemoShell({
     if (query.trim()) navigate('/demo/products');
   };
 
-  const sidebarItem = (id: NavId, label: string) => (
-    <Link
-      key={id}
-      to={`/demo/${id}`}
-      className={currentPage === id ? 'active' : ''}
-      aria-current={currentPage === id ? 'page' : undefined}
-      onClick={() => setMenuOpen(false)}
-    >
-      {pageTitle(id, label, t)}
-    </Link>
-  );
+  const sidebarItem = (id: NavId, label: string) => {
+    const iconKey = id === 'google-sheets' ? 'sheets' : id === 'stock-transfer' ? 'stock-transfer' : id;
+    const Icon = USER_NAV_ICONS[iconKey] ?? USER_NAV_ICONS[id];
+    return (
+      <Link
+        key={id}
+        to={`/demo/${id}`}
+        className={currentPage === id ? 'active' : ''}
+        aria-current={currentPage === id ? 'page' : undefined}
+        onClick={() => setMenuOpen(false)}
+      >
+        {Icon && <SidebarIcon icon={Icon} size={18} />}
+        <span>{pageTitle(id, label, t)}</span>
+      </Link>
+    );
+  };
 
   return (
     <div className={`demo-shell${menuOpen ? ' nav-open' : ''}`}>
@@ -307,10 +315,7 @@ export function DemoShell({
                 goSearch((e.currentTarget.elements.namedItem('q') as HTMLInputElement)?.value ?? '');
               }}
             >
-              <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
-                <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              <Search size={15} aria-hidden="true" />
               <input name="q" type="search" placeholder={`${t('common.search')}…`} aria-label={t('common.search')} />
             </form>
 
@@ -322,16 +327,7 @@ export function DemoShell({
                 aria-label={t('demo.notifications')}
                 onClick={() => setNotifOpen(!notifOpen)}
               >
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                  <path
-                    d="M12 3a6 6 0 0 0-6 6v3.3l-1.4 2.8a1 1 0 0 0 .9 1.4h13a1 1 0 0 0 .9-1.4L18 12.3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Bell size={16} aria-hidden="true" />
                 <span className="demo-dot" aria-hidden="true" />
               </button>
               {notifOpen && (
@@ -365,6 +361,7 @@ export function DemoShell({
         {PRIMARY_NAV.map((id) => {
           const item = navItems.find(([navId]) => navId === id);
           if (!item) return null;
+          const Icon = USER_NAV_ICONS[id];
           return (
             <Link
               key={id}
@@ -373,7 +370,8 @@ export function DemoShell({
               aria-current={currentPage === id ? 'page' : undefined}
               onClick={() => setMenuOpen(false)}
             >
-              {pageTitle(id, item[1], t)}
+              {Icon && <Icon size={20} strokeWidth={2} aria-hidden="true" />}
+              <span>{pageTitle(id, item[1], t)}</span>
             </Link>
           );
         })}

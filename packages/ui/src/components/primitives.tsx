@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { X, ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -328,19 +329,19 @@ export function ErrorState({
 }
 
 export function EmptyState({
-  icon = '◌',
+  icon,
   title,
   description,
   action,
 }: {
-  icon?: string;
+  icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
 }) {
   return (
     <div className="ng-empty">
-      <span aria-hidden="true">{icon}</span>
+      <span className="ng-empty__icon" aria-hidden="true">{icon ?? <Circle size={28} />}</span>
       <h3>{title}</h3>
       {description && <p>{description}</p>}
       {action}
@@ -429,7 +430,7 @@ export function Modal({
         <header className="ng-modal__head">
           <h2>{title}</h2>
           <IconButton label="Close" onClick={onClose}>
-            ✕
+            <X size={16} />
           </IconButton>
         </header>
         <div className="ng-modal__body">{children}</div>
@@ -496,13 +497,13 @@ export function Pagination({
   return (
     <nav className="ng-pagination" aria-label="Pagination">
       <button disabled={page <= 1} onClick={() => onPage(page - 1)}>
-        ‹
+        <ChevronLeft size={16} aria-hidden="true" />
       </button>
       <span>
         {page} / {pageCount}
       </span>
       <button disabled={page >= pageCount} onClick={() => onPage(page + 1)}>
-        ›
+        <ChevronRight size={16} aria-hidden="true" />
       </button>
     </nav>
   );

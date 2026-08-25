@@ -13,6 +13,8 @@ import {
   StatCard,
   ThemeSwitcher,
   useTranslation,
+  SidebarIcon,
+  MASTER_NAV_ICONS,
 } from '@niagantara/ui';
 import '@niagantara/ui/design-tokens.css';
 import '@niagantara/ui/components.css';
@@ -97,17 +99,21 @@ export function MasterApp() {
     setPage(id);
   };
 
-  const navLink = (id: string, icon: string, label: string) => (
-    <a
-      key={id}
-      href={`#/${id}`}
-      className={page === id ? 'active' : ''}
-      aria-current={page === id ? 'page' : undefined}
-      onClick={() => go(id)}
-    >
-      {icon} {label}
-    </a>
-  );
+  const navLink = (id: string, label: string) => {
+    const Icon = MASTER_NAV_ICONS[id];
+    return (
+      <a
+        key={id}
+        href={`#/${id}`}
+        className={page === id ? 'active' : ''}
+        aria-current={page === id ? 'page' : undefined}
+        onClick={() => go(id)}
+      >
+        {Icon && <SidebarIcon icon={Icon} size={18} />}
+        <span>{label}</span>
+      </a>
+    );
+  };
 
   return (
     <div className="mshell">
@@ -119,25 +125,25 @@ export function MasterApp() {
         <p className="eyebrow">{t('master.control')}</p>
         <nav aria-label={t('nav.primary')}>
           <span className="mnav-group">{t('master.dashboardNav')}</span>
-          {navLink('dashboard', '◈', t('pages.dashboard'))}
+          {navLink('dashboard', t('pages.dashboard'))}
           <span className="mnav-group">{t('master.platformNav')}</span>
-          {navLink('companies', '▣', t('master.companies'))}
-          {navLink('users', '◍', t('master.users'))}
-          {navLink('subscription', '▤', t('master.subscription'))}
-          {navLink('billing', '▥', t('master.billing'))}
+          {navLink('companies', t('master.companies'))}
+          {navLink('users', t('master.users'))}
+          {navLink('subscription', t('master.subscription'))}
+          {navLink('billing', t('master.billing'))}
           <span className="mnav-group">{t('master.systemManagement')}</span>
-          {navLink('system-health', '♥', t('master.systemHealth'))}
-          {navLink('releases', '⬒', t('master.releases'))}
-          {navLink('versions', '⬓', t('master.versions'))}
-          {navLink('feature-flags', '⚑', t('master.featureFlags'))}
-          {navLink('rollout', '◔', t('master.rollout'))}
-          {navLink('maintenance', '⚒', t('master.maintenance'))}
-          {navLink('announcements', '✦', t('master.announcements'))}
-          {navLink('mobile-versions', '▦', t('master.mobileVersions'))}
+          {navLink('system-health', t('master.systemHealth'))}
+          {navLink('releases', t('master.releases'))}
+          {navLink('versions', t('master.versions'))}
+          {navLink('feature-flags', t('master.featureFlags'))}
+          {navLink('rollout', t('master.rollout'))}
+          {navLink('maintenance', t('master.maintenance'))}
+          {navLink('announcements', t('master.announcements'))}
+          {navLink('mobile-versions', t('master.mobileVersions'))}
           <span className="mnav-group">{t('master.securityNav')}</span>
-          {navLink('security', '♦', t('master.auditLog'))}
+          {navLink('security', t('master.auditLog'))}
           <span className="mnav-group">{t('master.operationsNav')}</span>
-          {navLink('operations', '⌁', t('master.sheets.title'))}
+          {navLink('operations', t('master.sheets.title'))}
         </nav>
         <div className="msidebar__foot">
           <div className="msidebar__controls">

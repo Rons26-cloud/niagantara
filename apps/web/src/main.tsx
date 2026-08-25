@@ -1,24 +1,29 @@
 import { StrictMode, Suspense, lazy, useEffect } from 'react';
-import type { JSX } from 'react';
+import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initTheme } from '@niagantara/ui/theme';
 import { BrandLogo, getLanguage } from '@niagantara/ui';
 import { NavigateProvider, usePath, Seo, navigate } from './router';
-import { HomePage, FeaturesPage, SolutionsPage, PricingPage, AboutPage, FaqPage, ContactPage } from './pages';
-import { PrivacyPage, TermsPage } from './legal';
+import { HomePage } from './pages';
 import './styles.css';
 import './theme-overrides.css';
 
 initTheme();
 document.documentElement.lang = getLanguage();
 
+const FeaturesPage = lazy(() => import('./pages').then((m) => ({ default: m.FeaturesPage })));
+const SolutionsPage = lazy(() => import('./pages').then((m) => ({ default: m.SolutionsPage })));
+const PricingPage = lazy(() => import('./pages').then((m) => ({ default: m.PricingPage })));
+const AboutPage = lazy(() => import('./pages').then((m) => ({ default: m.AboutPage })));
+const FaqPage = lazy(() => import('./pages').then((m) => ({ default: m.FaqPage })));
+const ContactPage = lazy(() => import('./pages').then((m) => ({ default: m.ContactPage })));
+const PrivacyPage = lazy(() => import('./legal').then((m) => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import('./legal').then((m) => ({ default: m.TermsPage })));
 const DemoApp = lazy(() =>
   import('./demo/demo-app').then((m) => ({ default: m.DemoApp })),
 );
 
-const routes: Record<string, () => JSX.Element> = {
-  '/': HomePage,
-  '/index.html': HomePage,
+const lazyRoutes: Record<string, ComponentType> = {
   '/fitur': FeaturesPage,
   '/solusi': SolutionsPage,
   '/harga': PricingPage,
@@ -27,29 +32,6 @@ const routes: Record<string, () => JSX.Element> = {
   '/kontak': ContactPage,
   '/privacy': PrivacyPage,
   '/terms': TermsPage,
-  '/demo': DemoRoute,
-  '/demo/dashboard': DemoRoute,
-  '/demo/pos': DemoRoute,
-  '/demo/products': DemoRoute,
-  '/demo/categories': DemoRoute,
-  '/demo/inventory': DemoRoute,
-  '/demo/stock-transfer': DemoRoute,
-  '/demo/sales': DemoRoute,
-  '/demo/shifts': DemoRoute,
-  '/demo/customers': DemoRoute,
-  '/demo/suppliers': DemoRoute,
-  '/demo/purchases': DemoRoute,
-  '/demo/employees': DemoRoute,
-  '/demo/attendance': DemoRoute,
-  '/demo/expenses': DemoRoute,
-  '/demo/finance': DemoRoute,
-  '/demo/reports': DemoRoute,
-  '/demo/google-sheets': DemoRoute,
-  '/demo/warehouses': DemoRoute,
-  '/demo/branches': DemoRoute,
-  '/demo/stores': DemoRoute,
-  '/demo/settings': DemoRoute,
-  '/demo/help': DemoRoute,
 };
 
 const legacyAliases: Record<string, string> = {
@@ -63,12 +45,54 @@ const legacyAliases: Record<string, string> = {
 function App() {
   const rawPath = usePath();
   const path = legacyAliases[rawPath] ?? rawPath;
-  const Page = routes[path] ?? NotFound;
+
+  if (path.startsWith('/demo')) {
+    return (
+      <NavigateProvider value={navigate}>
+        <Seo path={path} />
+        <DemoRoute />
+      </NavigateProvider>
+    );
+  }
+
+  if (path === '/' || path === '/index.html') {
+    return (
+      <NavigateProvider value={navigate}>
+        <Seo path={path} />
+        <HomePage />
+      </NavigateProvider>
+    );
+  }
+
+  const LazyPage = lazyRoutes[path];
+  if (LazyPage) {
+    return (
+      <NavigateProvider value={navigate}>
+        <Seo path={path} />
+        <Suspense fallback={<PageFallback />}>
+          <LazyPage />
+        </Suspense>
+      </NavigateProvider>
+    );
+  }
+
   return (
     <NavigateProvider value={navigate}>
       <Seo path={path} />
-      <Page />
+      <NotFound />
     </NavigateProvider>
+  );
+}
+
+function PageFallback() {
+  return (
+    <div className="site">
+      <main className="legal">
+        <div className="container" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <BrandLogo />
+        </div>
+      </main>
+    </div>
   );
 }
 

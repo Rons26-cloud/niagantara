@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { BrandLogo, useTranslation } from '@niagantara/ui';
-import { Shell, Button, Kicker, Heading, ThemeImage } from './chrome';
+import { BrandLogo, useTranslation, FEATURE_ICONS, SidebarIcon } from '@niagantara/ui';
+import { Shell, Button, Kicker, Heading, ThemeImage, LazySection } from './chrome';
 import { Link } from './router';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
+import { LayoutDashboard, Package, TrendingUp, WalletCards, UserCircle, Truck, Users, Building2, BarChart3, Table2, ShieldCheck, Zap, Lock, Eye, Fingerprint, Server, PlayCircle, ArrowRightLeft, Smartphone, CircleDot, CheckCircle2, Plus, Store, GitBranch, Minus, ChevronDown, Home } from 'lucide-react';
 
 type W = ReturnType<typeof useTranslation>['translations']['website'];
 
@@ -37,8 +38,8 @@ export function HeroSection() {
           </div>
         </div>
         <div className="hero-visual">
-          <div className="float sales"><i>↗</i><span><small>{w.hero.todaySales}</small><b>Rp 8.420.000</b></span><em>+12,8%</em></div>
-          <div className="float stock"><i>◫</i><span><small>{w.hero.lowStock}</small><b>12 {w.hero.productsUnit}</b></span><em>{w.hero.needsAttention}</em></div>
+          <div className="float sales"><i><TrendingUp size={16} aria-hidden="true" /></i><span><small>{w.hero.todaySales}</small><b>Rp 8.420.000</b></span><em>+12,8%</em></div>
+          <div className="float stock"><i><Package size={16} aria-hidden="true" /></i><span><small>{w.hero.lowStock}</small><b>12 {w.hero.productsUnit}</b></span><em>{w.hero.needsAttention}</em></div>
           <div className="hero-scale">
             <Dashboard w={w} />
           </div>
@@ -64,9 +65,9 @@ export function FeaturesSection({ heading = true }: { heading?: boolean }) {
       <div className="container">
         {heading && <Heading kicker={w.features.kicker} title={w.features.title} text={w.features.subtitle} />}
         <div className="feature-grid">
-          {w.features.items.map((f) => (
+          {w.features.items.map((f, i) => (
             <article className="feature-card" key={f.title}>
-              <Icon>{f.icon}</Icon>
+              <Icon><SidebarIcon icon={FEATURE_ICONS[i]} size={24} /></Icon>
               <h3>{f.title}</h3>
               <p>{f.text}</p>
               <Link to="/fitur">{w.features.learnMore} <span aria-hidden="true">↗</span></Link>
@@ -140,13 +141,13 @@ export function BranchesSection() {
           <h2 dangerouslySetInnerHTML={{ __html: w.branches.title }} />
           <p>{w.branches.text}</p>
           <div className="hierarchy">
-            <div className="hierarchy-card company">◆ <span><b>Company</b><small>PT Niagantara Indonesia</small></span></div>
+            <div className="hierarchy-card company"><Building2 size={14} aria-hidden="true" /> <span><b>Company</b><small>PT Niagantara Indonesia</small></span></div>
             <i aria-hidden="true" />
             <div className="hierarchy-row">
-              <div className="hierarchy-card">◈ <span><b>Store</b><small>Toko Pusat</small></span></div>
-              <div className="hierarchy-card">◈ <span><b>Store</b><small>Toko Selatan</small></span></div>
+              <div className="hierarchy-card"><Store size={14} aria-hidden="true" /> <span><b>Store</b><small>Toko Pusat</small></span></div>
+              <div className="hierarchy-card"><Store size={14} aria-hidden="true" /> <span><b>Store</b><small>Toko Selatan</small></span></div>
             </div>
-            <p>⌁ {w.branches.mainBranch}　　⌁ Cabang Barat　　⌁ Cabang Selatan</p>
+            <p><GitBranch size={14} aria-hidden="true" /> {w.branches.mainBranch}　　<GitBranch size={14} aria-hidden="true" /> Cabang Barat　　<GitBranch size={14} aria-hidden="true" /> Cabang Selatan</p>
           </div>
           <MoreLink to="/tentang" />
         </div>
@@ -175,13 +176,13 @@ export function FinanceSection({ heading = true }: { heading?: boolean }) {
             <em>↗ 18,4% {w.finance.vsLastMonth}</em>
             <div className="bars" aria-hidden="true">{[35, 54, 48, 74, 63, 88, 78, 100].map((height, i) => <i key={i} style={{ height: `${height}%` }} />)}</div>
           </div>
-          <Metric icon="◌" name={w.finance.netProfit} value="Rp 42.860.000" change="↗ 14,2%" />
-          <Metric icon="↗" name={w.finance.expenses} value="Rp 85.560.000" change={w.finance.thisMonth} />
+          <Metric icon={<WalletCards size={18} />} name={w.finance.netProfit} value="Rp 42.860.000" change="↗ 14,2%" />
+          <Metric icon={<TrendingUp size={18} />} name={w.finance.expenses} value="Rp 85.560.000" change={w.finance.thisMonth} />
           <div className="reports">
             <div className="card-title"><b>{w.finance.availableReports}</b><small>•••</small></div>
-            <p>▰ {w.finance.salesReport} <b>↗</b></p>
-            <p>▰ {w.finance.productPerformance} <b>↗</b></p>
-            <p>▰ {w.finance.branchPerformance} <b>↗</b></p>
+            <p><BarChart3 size={14} aria-hidden="true" /> {w.finance.salesReport} <b>↗</b></p>
+            <p><BarChart3 size={14} aria-hidden="true" /> {w.finance.productPerformance} <b>↗</b></p>
+            <p><BarChart3 size={14} aria-hidden="true" /> {w.finance.branchPerformance} <b>↗</b></p>
           </div>
         </div>
       </div>
@@ -201,7 +202,7 @@ export function SheetsSection() {
           <Link className="text-link" to="/faq">{w.sheets.link} <span aria-hidden="true">→</span></Link>
         </div>
         <div className="sheets-card">
-          <div className="sheets-head"><i aria-hidden="true">▤</i><span><b>Google Sheets</b><small>NIAGANTARA Reporting</small></span><em>● {w.sheets.connected}</em></div>
+          <div className="sheets-head"><i aria-hidden="true"><Table2 size={16} /></i><span><b>Google Sheets</b><small>NIAGANTARA Reporting</small></span><em>● {w.sheets.connected}</em></div>
           <div className="sheet">
             <small>Q3_Business_Report　　•••</small>
             <div>{['Tanggal', 'Penjualan', 'Laba', 'Cabang', '22 Agu', 'Rp 8.420.000', 'Rp 2.840.000', 'Toko Pusat', '21 Agu', 'Rp 7.980.000', 'Rp 2.510.000', 'Selatan'].map((x, i) => <span key={`${x}-${i}`}>{x}</span>)}</div>
@@ -227,7 +228,7 @@ export function SecuritySection() {
         <div className="security-grid">
           {w.security.items.map((item, i) => (
             <div key={item.title}>
-              <Icon>{['◆', '⌁', '♧', '▥', '◈', 'ϟ'][i]}</Icon>
+              <Icon><SidebarIcon icon={[ShieldCheck, Lock, Eye, Fingerprint, Building2, Server][i]} size={20} /></Icon>
               <span><b>{item.title}</b><small>{item.text}</small></span>
             </div>
           ))}
@@ -256,7 +257,7 @@ export function MobileSection() {
             <h4>{w.mobileSection.summary}</h4>
             <div><small>{w.hero.todaySales}</small><b>Rp 4.860.000</b><em>↗ 12,8%</em></div>
             <div className="phone-bars">{[28, 45, 38, 67, 58, 82, 72].map((height, i) => <i key={i} style={{ height: `${height}%` }} />)}</div>
-            <footer>⌂　 <b>▦</b>　◫　♙</footer>
+            <footer><Home size={18} />　 <b><LayoutDashboard size={18} /></b>　<Package size={18} />　<Users size={18} /></footer>
           </div>
         </div>
       </div>
@@ -291,7 +292,7 @@ export function StepsSection({ heading = true }: { heading?: boolean }) {
           {w.steps.items.map((step, i) => (
             <div key={step.title}>
               <b>{String(i + 1).padStart(2, '0')}</b>
-              <Icon>{['♙', '⌁', '◫', 'ϟ'][i]}</Icon>
+              <Icon><SidebarIcon icon={[PlayCircle, ArrowRightLeft, Package, Server][i]} size={22} /></Icon>
               <h3>{step.title}</h3>
               <p>{step.text}</p>
             </div>
@@ -327,7 +328,7 @@ export function FaqSection() {
                     onClick={() => setOpen(expanded ? null : i)}
                   >
                     <span>{item.q}</span>
-                    <span className="faq-icon" aria-hidden="true">{expanded ? '−' : '+'}</span>
+                    <span className="faq-icon" aria-hidden="true">{expanded ? <Minus size={16} /> : <Plus size={16} />}</span>
                   </button>
                 </h3>
                 <div
@@ -366,7 +367,7 @@ export function CtaSection() {
   );
 }
 
-function Icon({ children }: { children: string }) {
+function Icon({ children }: { children: React.ReactNode }) {
   return <span className="feature-icon" aria-hidden="true">{children}</span>;
 }
 
@@ -405,19 +406,19 @@ export function HomePage() {
       <div className="home-page">
         <HeroSection />
         <LogoStrip />
-        <FeaturesSection />
-        <ShowcaseSection />
-        <PosSolutionSection />
-        <InventorySolutionSection />
-        <BranchesSection />
-        <FinanceSection />
-        <SheetsSection />
-        <SecuritySection />
-        <MobileSection />
-        <PricingSection />
-        <StepsSection />
-        <FaqSection />
-        <CtaSection />
+        <LazySection><FeaturesSection /></LazySection>
+        <LazySection><ShowcaseSection /></LazySection>
+        <LazySection><PosSolutionSection /></LazySection>
+        <LazySection><InventorySolutionSection /></LazySection>
+        <LazySection><BranchesSection /></LazySection>
+        <LazySection><FinanceSection /></LazySection>
+        <LazySection><SheetsSection /></LazySection>
+        <LazySection><SecuritySection /></LazySection>
+        <LazySection><MobileSection /></LazySection>
+        <LazySection><PricingSection /></LazySection>
+        <LazySection><StepsSection /></LazySection>
+        <LazySection><FaqSection /></LazySection>
+        <LazySection><CtaSection /></LazySection>
       </div>
     </Shell>
   );

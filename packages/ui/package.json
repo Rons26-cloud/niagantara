@@ -20,6 +20,7 @@
     "test": "node -e \"console.log('ui tests: foundation OK')\""
   },
   "dependencies": {
+    "lucide-react": "^1.34.0",
     "react": "^19.1.1"
   },
   "devDependencies": {

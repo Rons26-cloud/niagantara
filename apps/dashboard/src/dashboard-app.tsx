@@ -17,7 +17,10 @@ import {
   LanguageSwitcher,
   useTranslation,
   Badge,
+  SidebarIcon,
+  USER_NAV_ICONS,
 } from '@niagantara/ui';
+import { LogOut } from 'lucide-react';
 import {
   DashboardHome,
   HelpPage,
@@ -203,32 +206,40 @@ export function DashboardApp() {
             return (
               <div className="nav-group" key={group}>
                 <span className="nav-group-label">{t(`dashboard.navGroups.${group}`)}</span>
-                {items.map(([id, label]) => (
-                  <button
-                    key={id}
-                    className={page === id ? 'active' : ''}
-                    aria-current={page === id ? 'page' : undefined}
-                    onClick={() => go(id)}
-                  >
-                    {t(`pages.${id}`) || label}
-                  </button>
-                ))}
+                {items.map(([id, label]) => {
+                  const Icon = USER_NAV_ICONS[id];
+                  return (
+                    <button
+                      key={id}
+                      className={page === id ? 'active' : ''}
+                      aria-current={page === id ? 'page' : undefined}
+                      onClick={() => go(id)}
+                    >
+                      {Icon && <SidebarIcon icon={Icon} size={18} />}
+                      <span>{t(`pages.${id}`) || label}</span>
+                    </button>
+                  );
+                })}
               </div>
             );
           })}
           {['settings', 'help']
             .map((id) => allowedNav.find(([navId]) => navId === id))
             .filter((x): x is (typeof allowedNav)[number] => !!x)
-            .map(([id, label]) => (
-              <button
-                key={id}
-                className={page === id ? 'active' : ''}
-                aria-current={page === id ? 'page' : undefined}
-                onClick={() => go(id)}
-              >
-                {t(`pages.${id}`) || label}
-              </button>
-            ))}
+            .map(([id, label]) => {
+              const Icon = USER_NAV_ICONS[id];
+              return (
+                <button
+                  key={id}
+                  className={page === id ? 'active' : ''}
+                  aria-current={page === id ? 'page' : undefined}
+                  onClick={() => go(id)}
+                >
+                  {Icon && <SidebarIcon icon={Icon} size={18} />}
+                  <span>{t(`pages.${id}`) || label}</span>
+                </button>
+              );
+            })}
         </nav>
         <div className="sidebar-controls">
           <ThemeSwitcher />
@@ -241,7 +252,8 @@ export function DashboardApp() {
             location.assign('/auth/login');
           }}
         >
-          {t('auth.logout')}
+          <LogOut size={16} />
+          <span>{t('auth.logout')}</span>
         </button>
       </aside>
       <main className="workspace">
@@ -304,16 +316,20 @@ export function DashboardApp() {
         />
       </main>
       <nav className="mobile-tabbar" aria-label={t('nav.primary')}>
-        {primaryNav.map((id) => (
-          <button
-            key={id}
-            className={page === id ? 'active' : ''}
-            aria-current={page === id ? 'page' : undefined}
-            onClick={() => go(id)}
-          >
-            {t(`pages.${id}`)}
-          </button>
-        ))}
+        {primaryNav.map((id) => {
+          const Icon = USER_NAV_ICONS[id];
+          return (
+            <button
+              key={id}
+              className={page === id ? 'active' : ''}
+              aria-current={page === id ? 'page' : undefined}
+              onClick={() => go(id)}
+            >
+              {Icon && <Icon size={20} strokeWidth={2} aria-hidden="true" />}
+              <span>{t(`pages.${id}`)}</span>
+            </button>
+          );
+        })}
         <button
           className={menuOpen ? 'active' : ''}
           onClick={() => setMenuOpen(!menuOpen)}

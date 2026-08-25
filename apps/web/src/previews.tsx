@@ -1,5 +1,6 @@
 import { useTranslation } from '@niagantara/ui';
 import { ThemeImage } from './chrome';
+import { LayoutDashboard, ShoppingBag, WalletCards, Package, Boxes, TrendingUp, Search } from 'lucide-react';
 
 type W = ReturnType<typeof useTranslation>['translations']['website'];
 
@@ -16,11 +17,11 @@ export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
       <div className="dash-body">
         <aside aria-hidden="true">
           <ThemeImage lightSrc="/brand-mark.png" alt="" className="mini-logo" width={576} height={628} loading="lazy" />
-          <a className="active" tabIndex={-1}>▦ <span>{d.overview}</span></a>
-          <a tabIndex={-1}>◫ <span>{w.features.items[2].title}</span></a>
-          <a tabIndex={-1}>◌ <span>{w.features.items[3].title}</span></a>
-          <a tabIndex={-1}>◈ <span>{w.features.items[1].title}</span></a>
-          <a tabIndex={-1}>⌁ <span>{w.solutions.inventory.pills[0]}</span></a>
+          <a className="active" tabIndex={-1}><LayoutDashboard size={14} aria-hidden="true" /> <span>{d.overview}</span></a>
+          <a tabIndex={-1}><ShoppingBag size={14} aria-hidden="true" /> <span>{w.features.items[2].title}</span></a>
+          <a tabIndex={-1}><WalletCards size={14} aria-hidden="true" /> <span>{w.features.items[3].title}</span></a>
+          <a tabIndex={-1}><Package size={14} aria-hidden="true" /> <span>{w.features.items[1].title}</span></a>
+          <a tabIndex={-1}><Boxes size={14} aria-hidden="true" /> <span>{w.solutions.inventory.pills[0]}</span></a>
         </aside>
         <div className="dash-content">
           <div className="dash-heading">
@@ -93,7 +94,7 @@ export function PosPreview({ w }: { w: W }) {
       <div className="pos-body">
         <div className="pos-products">
           <div className="pos-tabs"><b>{d.allProducts}</b><span>{d.drinks}</span><span>{d.foods}</span></div>
-          <div className="search">⌕ {d.searchOrScan}</div>
+          <div className="search"><Search size={14} aria-hidden="true" /> {d.searchOrScan}</div>
           <div className="product-grid">
             {[['K', 'Kopi Arabika', 'Rp 42.000', 'blue-bg'], ['O', 'Oat Latte', 'Rp 35.000', 'purple-bg'], ['T', 'Teh Melati', 'Rp 18.000', 'cyan-bg'], ['R', 'Roti Sourdough', 'Rp 28.000', 'orange-bg']].map(([letter, name, price, color]) => (
               <div key={name}><i className={`product-image ${color}`}>{letter}</i><b>{name}</b><small>{price}</small></div>
@@ -122,7 +123,7 @@ export function InventoryPreview({ w }: { w: W }) {
         <button>{inv.addProduct}</button>
       </div>
       <div className="inventory-tools">
-        <span>⌕ {inv.searchPlaceholder}</span>
+        <span><Search size={14} aria-hidden="true" /> {inv.searchPlaceholder}</span>
         <button>{inv.allCategories}⌄</button>
         <button>{inv.filter} ▾</button>
       </div>
@@ -146,7 +147,7 @@ export function InventoryPreview({ w }: { w: W }) {
   );
 }
 
-export function Metric({ icon, name, value, change }: { icon: string; name: string; value: string; change: string }) {
+export function Metric({ icon, name, value, change }: { icon: React.ReactNode; name: string; value: string; change: string }) {
   return (
     <div className="metric">
       <span className="feature-icon" aria-hidden="true">{icon}</span>

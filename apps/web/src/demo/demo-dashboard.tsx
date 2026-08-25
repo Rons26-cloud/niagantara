@@ -1,6 +1,7 @@
 import { StatCard, Card, Badge, useTranslation } from '@niagantara/ui';
 import { useDemoStore } from './demo-store';
 import { navigate } from '../router';
+import { TrendingUp, Plus, Package, BarChart3, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 const BRANCH_FACTORS: Record<string, { sales: number; profit: number; trx: number }> = {
   'branch-1': { sales: 1, profit: 1, trx: 1 },
@@ -59,11 +60,11 @@ export function DemoDashboard() {
       sold: ((product.minimumStock + 7) * (5 - i)) + 12,
     }));
 
-  const quickActions: { icon: string; label: string; to: string }[] = [
-    { icon: '↗', label: t('demo.newSale'), to: '/demo/pos' },
-    { icon: '+', label: t('demo.addProduct'), to: '/demo/products' },
-    { icon: '◫', label: t('demo.checkStock'), to: '/demo/inventory' },
-    { icon: '▤', label: t('demo.viewReports'), to: '/demo/reports' },
+  const quickActions: { icon: React.ReactNode; label: string; to: string }[] = [
+    { icon: <TrendingUp size={18} />, label: t('demo.newSale'), to: '/demo/pos' },
+    { icon: <Plus size={18} />, label: t('demo.addProduct'), to: '/demo/products' },
+    { icon: <Package size={18} />, label: t('demo.checkStock'), to: '/demo/inventory' },
+    { icon: <BarChart3 size={18} />, label: t('demo.viewReports'), to: '/demo/reports' },
   ];
 
   return (
@@ -139,7 +140,7 @@ export function DemoDashboard() {
           <ul className="demo-mini-list">
             {recentSales.map((sale) => (
               <li key={sale.id}>
-                <span className="demo-rank" aria-hidden="true">↗</span>
+                <span className="demo-rank" aria-hidden="true"><ArrowUpRight size={14} /></span>
                 <span className="demo-mini-main">
                   <b>{sale.invoice}</b>
                   <small>{sale.customer} • {sale.cashier}</small>
@@ -152,7 +153,7 @@ export function DemoDashboard() {
             ))}
             {recentMovements.slice(0, 2).map((mov) => (
               <li key={mov.id}>
-                <span className="demo-rank" aria-hidden="true">◫</span>
+                <span className="demo-rank" aria-hidden="true"><ArrowDownLeft size={14} /></span>
                 <span className="demo-mini-main">
                   <b>{mov.productName}</b>
                   <small>{mov.type} • {mov.date}</small>

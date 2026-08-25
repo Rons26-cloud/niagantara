@@ -339,3 +339,39 @@ export function Heading({
     </div>
   );
 }
+
+export function LazySection({
+  children,
+  rootMargin = '200px 0px',
+  className,
+}: {
+  children: ReactNode;
+  rootMargin?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || visible) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [rootMargin, visible]);
+
+  return (
+    <div ref={ref} className={className}>
+      {visible ? children : <div style={{ minHeight: 400 }} />}
+    </div>
+  );
+}

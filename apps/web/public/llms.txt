@@ -1,0 +1,32 @@
+# NIAGANTARA
+
+NIAGANTARA is a business operations platform for managing POS, inventory, sales, finance, branches, customers, suppliers and reporting.
+
+## Official pages
+
+- [Home](https://niagantara-web.pages.dev/)
+- [Features](https://niagantara-web.pages.dev/fitur)
+- [Solutions](https://niagantara-web.pages.dev/solusi)
+- [Pricing](https://niagantara-web.pages.dev/harga)
+- [About](https://niagantara-web.pages.dev/tentang)
+- [FAQ](https://niagantara-web.pages.dev/faq)
+- [Contact](https://niagantara-web.pages.dev/kontak)
+
+## Product
+
+NIAGANTARA is a Business Control Platform designed for UMKM and multi-branch businesses in Indonesia. It provides integrated tools for point of sale, inventory management, financial tracking, employee management, and business reporting.
+
+### Key features
+
+- Point of Sale (POS) with fast transactions
+- Inventory and stock management with multi-branch transfer
+- Financial recording: income, expenses, cash flow, and profit
+- Sales tracking and business analytics
+- Google Sheets integration for data sync
+- Multi-branch management: company, store, and branch hierarchy
+- Employee and customer management
+- Role-based access control and security
+
+### Technology
+
+Built with React, TypeScript, Vite, and Supabase. Mobile app built with Flutter.

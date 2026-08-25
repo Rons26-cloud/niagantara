@@ -17,6 +17,7 @@ import {
 } from '@niagantara/ui';
 import type { Language, Theme } from '@niagantara/ui';
 import { getLanguage, getTheme, setLanguage, setTheme, useTranslation } from '@niagantara/ui';
+import { Package, ReceiptText, BarChart3, Boxes, MonitorSmartphone } from 'lucide-react';
 
 export type OrgCtx = {
   user: { id: string };
@@ -293,16 +294,16 @@ export function DashboardHome({
         <Card title="Quick actions">
           <div className="quick-actions">
             {can('pos.access') && (
-              <Button onClick={() => go('pos')}>▦ {t('pages.pos')}</Button>
+              <Button onClick={() => go('pos')}><MonitorSmartphone size={14} /> {t('pages.pos')}</Button>
             )}
             {can('sale.read') && (
               <Button variant="secondary" onClick={() => go('sales')}>
-                {t('pages.sales')}
+                <ReceiptText size={14} /> {t('pages.sales')}
               </Button>
             )}
             {can('product.create') && (
               <Button variant="secondary" onClick={() => go('products')}>
-                + {t('pages.products')}
+                <Package size={14} /> {t('pages.products')}
               </Button>
             )}
             {can('expense.create') && (
@@ -343,7 +344,7 @@ export function DashboardHome({
             </ul>
           ) : (
             <EmptyState
-              icon="◫"
+              icon={<Package size={28} />}
               title={sales.error ? 'Data tidak tersedia' : 'Belum ada produk terjual'}
               description={
                 sales.error
@@ -376,7 +377,7 @@ export function DashboardHome({
             </ul>
           ) : (
             <EmptyState
-              icon="◌"
+              icon={<ReceiptText size={28} />}
               title="Belum ada penjualan pada rentang ini"
               description="Ubah filter tanggal atau lakukan transaksi di POS."
             />
@@ -402,7 +403,7 @@ export function DashboardHome({
             </ul>
           ) : (
             <EmptyState
-              icon="◔"
+              icon={<BarChart3 size={28} />}
               title={sales.error ? 'Data tidak tersedia' : 'Belum ada penjualan pada rentang ini'}
             />
           )}
@@ -437,7 +438,7 @@ export function DashboardHome({
               </>
             ) : (
               <EmptyState
-                icon="◫"
+                icon={<Boxes size={28} />}
                 title={
                   lowStock.error ? 'Data tidak tersedia' : t('inventory.stockSafe')
                 }

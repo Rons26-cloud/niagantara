@@ -15,6 +15,7 @@ import {
   useTranslation,
   toast,
 } from '@niagantara/ui';
+import { Table2 } from 'lucide-react';
 import { useDemoStore } from './demo-store';
 import type {
   DemoCustomer,
@@ -1847,7 +1848,7 @@ export function DemoGoogleSheets() {
       <Card title={t('pages.googleSheets')}>
         <div className="demo-sheet-tabs" role="tablist" aria-label={sheet.name}>
           <button className="demo-sheet-tab active" role="tab" aria-selected="true">
-            ▤ {sheet.name}
+            <Table2 size={14} aria-hidden="true" /> {sheet.name}
           </button>
           <button className="demo-sheet-tab" role="tab" aria-selected="false" disabled title={t('demo.mode')}>
             ＋ Q4_Forecast
