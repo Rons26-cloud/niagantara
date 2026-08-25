@@ -108,6 +108,7 @@ export const id = {
     warehouses: 'Gudang',
     branches: 'Cabang',
     stores: 'Manajemen Toko',
+    users: 'Pengguna / Tim',
     tutorial: 'Tutorial',
     settings: 'Pengaturan',
     finance: 'Keuangan',
@@ -119,6 +120,7 @@ export const id = {
   // Common
   common: {
     save: 'Simpan',
+    saving: 'Menyimpan...',
     cancel: 'Batal',
     delete: 'Hapus',
     edit: 'Edit',

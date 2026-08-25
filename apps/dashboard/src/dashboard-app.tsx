@@ -10,6 +10,7 @@ import { CrudPage } from './phase4-pages';
 import { AttendancePage, PurchasesPage } from './phase4-operations';
 import { ExpensesPage, FinancePage } from './phase4-finance';
 import { GoogleSheetsPage, SheetsTutorial } from './phase5-sheets';
+import { UsersPage } from './users-page';
 import {
   BrandLogo,
   BrandMark,
@@ -31,32 +32,36 @@ import {
   storeBranch,
   type OrgCtx,
 } from './enhancements';
+
 type Ctx = OrgCtx;
+
 const nav = [
-  ['dashboard', 'Dashboard'],
+  ['dashboard', 'Dasbor'],
   ['pos', 'POS / Kasir'],
-  ['sales', 'Sales'],
-  ['shifts', 'Cashier Shift'],
-  ['products', 'Products'],
-  ['categories', 'Categories'],
+  ['products', 'Produk'],
+  ['categories', 'Kategori'],
   ['barcode', 'Barcode'],
-  ['inventory', 'Inventory'],
-  ['purchases', 'Purchases'],
-  ['suppliers', 'Suppliers'],
-  ['customers', 'Customers'],
-  ['employees', 'Employees'],
-  ['attendance', 'Attendance'],
-  ['expenses', 'Expenses'],
-  ['payables', 'Payables'],
-  ['receivables', 'Receivables'],
-  ['reports', 'Finance Reports'],
+  ['inventory', 'Stok'],
+  ['sales', 'Penjualan'],
+  ['shifts', 'Shift Kasir'],
+  ['customers', 'Pelanggan'],
+  ['purchases', 'Pembelian'],
+  ['suppliers', 'Supplier'],
+  ['expenses', 'Pengeluaran'],
+  ['payables', 'Hutang'],
+  ['receivables', 'Piutang'],
+  ['reports', 'Laporan Keuangan'],
   ['sheets', 'Google Sheets'],
-  ['warehouses', 'Warehouses'],
-  ['branches', 'Branches'],
-  ['stores', 'Store Management'],
-  ['help', 'Help'],
-  ['settings', 'Settings'],
+  ['warehouses', 'Gudang'],
+  ['branches', 'Cabang'],
+  ['stores', 'Manajemen Toko'],
+  ['employees', 'Karyawan'],
+  ['attendance', 'Absensi'],
+  ['users', 'Pengguna / Tim'],
+  ['settings', 'Pengaturan'],
+  ['help', 'Bantuan'],
 ] as const;
+
 const NAV_GROUPS: [string, string[]][] = [
   ['main', ['dashboard', 'pos']],
   ['catalog', ['products', 'categories', 'barcode', 'inventory']],
@@ -65,8 +70,9 @@ const NAV_GROUPS: [string, string[]][] = [
   ['finance', ['expenses', 'payables', 'receivables', 'reports']],
   ['integration', ['sheets']],
   ['company', ['warehouses', 'branches', 'stores']],
-  ['team', ['employees', 'attendance']],
+  ['team', ['employees', 'attendance', 'users']],
 ];
+
 const navPermission: Record<string, string | undefined> = {
   pos: 'pos.access',
   sales: 'sale.read',
@@ -81,7 +87,9 @@ const navPermission: Record<string, string | undefined> = {
   receivables: 'receivable.read',
   reports: 'finance.read',
   sheets: 'sheet.read',
+  users: 'user.read',
 };
+
 export function DashboardApp() {
   const { accessToken, clearSession } = useAuth();
   const { t } = useTranslation();
@@ -91,6 +99,7 @@ export function DashboardApp() {
   const [page, setPage] = useState(location.hash.slice(1) || 'dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState('loading');
+
   useEffect(() => {
     if (!accessToken) return;
     Promise.all([
@@ -110,6 +119,7 @@ export function DashboardApp() {
         ),
       );
   }, [accessToken]);
+
   useEffect(() => {
     const onHash = () => {
       setPage(location.hash.slice(1) || 'dashboard');
@@ -118,6 +128,7 @@ export function DashboardApp() {
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
+
   if (!accessToken)
     return (
       <State
@@ -125,8 +136,7 @@ export function DashboardApp() {
         action={() => location.assign('/auth/login')}
       />
     );
-  if (status === 'loading')
-    return <State text={t('dashboard.loadingContext')} />;
+  if (status === 'loading') return <State text={t('dashboard.loadingContext')} />;
   if (status === 'denied') return <State text={t('dashboard.permissionDenied')} />;
   if (status === 'error')
     return (
@@ -136,6 +146,7 @@ export function DashboardApp() {
       />
     );
   if (!ctx?.active_company) return <State text={t('dashboard.noCompany')} />;
+
   const selectedBranch =
     ctx.accessible_branches.find((b: any) => b.id === branchId) ??
     ctx.accessible_branches[0];
@@ -145,27 +156,34 @@ export function DashboardApp() {
   const scopedCtx: Ctx = {
     ...ctx,
     stores: activeStore ? [activeStore] : ctx.stores,
-    accessible_branches: selectedBranch ? [selectedBranch] : ctx.accessible_branches,
+    accessible_branches: selectedBranch
+      ? [selectedBranch]
+      : ctx.accessible_branches,
   };
+
   const go = (id: string) => {
     location.hash = id;
     setPage(id);
     setMenuOpen(false);
   };
+
   const allowedNav = nav.filter(
     ([id]) =>
       !navPermission[id] || ctx.permissions.includes(navPermission[id]!),
   );
-  const title = t(`pages.${page}`) !== `pages.${page}`
-    ? t(`pages.${page}`)
-    : nav.find((x) => x[0] === page)?.[1] ?? page;
+
+  const title =
+    t(`pages.${page}`) !== `pages.${page}`
+      ? t(`pages.${page}`)
+      : nav.find((x) => x[0] === page)?.[1] ?? page;
+
   const primaryNav = ['dashboard', 'pos', 'sales', 'reports']
-    .filter(
-      (id) =>
-        allowedNav.some(([navId]) => navId === id),
-    )
+    .filter((id) => allowedNav.some(([navId]) => navId === id))
     .slice(0, 4);
-  const companyName = companyNames[ctx.active_company] ?? ctx.active_company;
+
+  const companyName =
+    companyNames[ctx.active_company] ?? ctx.active_company;
+
   return (
     <div className={`shell${menuOpen ? ' nav-open' : ''}`}>
       <div className="mobile-topbar">
@@ -185,6 +203,7 @@ export function DashboardApp() {
           <span />
         </button>
       </div>
+
       {menuOpen && (
         <button
           className="drawer-overlay"
@@ -192,6 +211,7 @@ export function DashboardApp() {
           onClick={() => setMenuOpen(false)}
         />
       )}
+
       <aside className="sidebar">
         <div className="brand sidebar-brand">
           <BrandLogo className="sidebar-brand-full" />
@@ -201,11 +221,15 @@ export function DashboardApp() {
           {NAV_GROUPS.map(([group, ids]) => {
             const items = ids
               .map((id) => allowedNav.find(([navId]) => navId === id))
-              .filter((x): x is (typeof allowedNav)[number] => !!x);
+              .filter(
+                (x): x is (typeof allowedNav)[number] => !!x,
+              );
             if (!items.length) return null;
             return (
               <div className="nav-group" key={group}>
-                <span className="nav-group-label">{t(`dashboard.navGroups.${group}`)}</span>
+                <span className="nav-group-label">
+                  {t(`dashboard.navGroups.${group}`)}
+                </span>
                 {items.map(([id, label]) => {
                   const Icon = USER_NAV_ICONS[id];
                   return (
@@ -225,7 +249,9 @@ export function DashboardApp() {
           })}
           {['settings', 'help']
             .map((id) => allowedNav.find(([navId]) => navId === id))
-            .filter((x): x is (typeof allowedNav)[number] => !!x)
+            .filter(
+              (x): x is (typeof allowedNav)[number] => !!x,
+            )
             .map(([id, label]) => {
               const Icon = USER_NAV_ICONS[id];
               return (
@@ -256,10 +282,11 @@ export function DashboardApp() {
           <span>{t('auth.logout')}</span>
         </button>
       </aside>
+
       <main className="workspace">
         <header>
           <div>
-            <p className="eyebrow">USER DASHBOARD</p>
+            <p className="eyebrow">DASHBOARD OWNER</p>
             <h1>{title}</h1>
           </div>
           <div className="context context--switchable">
@@ -315,6 +342,7 @@ export function DashboardApp() {
           title={title}
         />
       </main>
+
       <nav className="mobile-tabbar" aria-label={t('nav.primary')}>
         {primaryNav.map((id) => {
           const Icon = USER_NAV_ICONS[id];
@@ -340,17 +368,21 @@ export function DashboardApp() {
     </div>
   );
 }
+
 function State({ text, action }: { text: string; action?: () => void }) {
   const { t } = useTranslation();
   return (
     <main className="state">
       <div>
         <h1>{text}</h1>
-        {action && <button onClick={action}>{t('dashboard.tryAgain')}</button>}
+        {action && (
+          <button onClick={action}>{t('dashboard.tryAgain')}</button>
+        )}
       </div>
     </main>
   );
 }
+
 function Page({
   page,
   ctx,
@@ -367,12 +399,18 @@ function Page({
   const { t } = useTranslation();
   const c = ctx.active_company!;
   const branch = ctx.accessible_branches[0];
+
+  function go2(id: string) {
+    location.hash = id;
+  }
+
   if (page === 'dashboard')
     return (
       <>
-        {ctx.stores.length === 0 && ctx.accessible_branches.length === 0 && (
-          <Onboarding ctx={ctx} go={(p) => go2(p)} />
-        )}
+        {ctx.stores.length === 0 &&
+          ctx.accessible_branches.length === 0 && (
+            <Onboarding ctx={ctx} go={(p) => go2(p)} />
+          )}
         <DashboardHome
           company={c}
           token={token}
@@ -382,19 +420,53 @@ function Page({
         />
       </>
     );
-  function go2(id: string) {
-    location.hash = id;
-  }
   if (page === 'pos') return <Pos company={c} token={token} ctx={ctx} />;
   if (page === 'sales') return <Sales company={c} token={token} ctx={ctx} />;
-  if (page === 'shifts') return <Shifts company={c} token={token} ctx={ctx} />;
-  if (page === 'suppliers' || page === 'customers' || page === 'employees') return <CrudPage kind={page} company={c} token={token} ctx={ctx} />;
-  if (page === 'purchases') return <PurchasesPage company={c} token={token} ctx={ctx} />;
-  if (page === 'attendance') return <AttendancePage company={c} token={token} ctx={ctx} />;
-  if (page === 'expenses') return <ExpensesPage company={c} token={token} ctx={ctx} />;
-  if (page === 'payables' || page === 'receivables') return <FinancePage view={page} company={c} token={token} ctx={ctx} />;
-  if (page === 'reports') return <FinancePage view="reports" company={c} token={token} ctx={ctx} />;
-  if (page === 'sheets') return <GoogleSheetsPage company={c} token={token} canManage={ctx.permissions.includes('sheet.manage')} />;
+  if (page === 'shifts')
+    return <Shifts company={c} token={token} ctx={ctx} />;
+  if (page === 'suppliers' || page === 'customers' || page === 'employees')
+    return (
+      <CrudPage
+        kind={page}
+        company={c}
+        token={token}
+        ctx={ctx}
+      />
+    );
+  if (page === 'purchases')
+    return <PurchasesPage company={c} token={token} ctx={ctx} />;
+  if (page === 'attendance')
+    return <AttendancePage company={c} token={token} ctx={ctx} />;
+  if (page === 'expenses')
+    return <ExpensesPage company={c} token={token} ctx={ctx} />;
+  if (page === 'payables' || page === 'receivables')
+    return (
+      <FinancePage
+        view={page}
+        company={c}
+        token={token}
+        ctx={ctx}
+      />
+    );
+  if (page === 'reports')
+    return (
+      <FinancePage
+        view="reports"
+        company={c}
+        token={token}
+        ctx={ctx}
+      />
+    );
+  if (page === 'sheets')
+    return (
+      <GoogleSheetsPage
+        company={c}
+        token={token}
+        canManage={ctx.permissions.includes('sheet.manage')}
+      />
+    );
+  if (page === 'users')
+    return <UsersPage company={c} token={token} ctx={ctx} />;
   if (page === 'help') return <HelpPage />;
   if (page === 'settings')
     return <SettingsPage ctx={ctx} companyName={companyName} />;
@@ -402,7 +474,7 @@ function Page({
   if (page === 'products')
     return (
       <Resource
-        title="Products"
+        title={t('pages.products')}
         path="/products"
         company={c}
         token={token}
@@ -413,7 +485,7 @@ function Page({
   if (page === 'categories')
     return (
       <Resource
-        title="Categories"
+        title={t('pages.categories')}
         path="/categories"
         company={c}
         token={token}
@@ -424,7 +496,7 @@ function Page({
   if (page === 'warehouses')
     return (
       <Resource
-        title="Warehouses"
+        title={t('pages.warehouses')}
         path="/warehouses"
         company={c}
         token={token}
@@ -439,7 +511,7 @@ function Page({
   if (page === 'stores')
     return (
       <Resource
-        title="Stores"
+        title={t('pages.stores')}
         path="/stores"
         company={c}
         token={token}
@@ -450,7 +522,7 @@ function Page({
   if (page === 'branches')
     return (
       <Resource
-        title="Branches"
+        title={t('pages.branches')}
         path="/branches"
         company={c}
         token={token}
@@ -462,6 +534,7 @@ function Page({
   if (page === 'inventory')
     return <Inventory company={c} token={token} ctx={ctx} />;
   if (page === 'barcode') return <Barcode company={c} token={token} />;
+
   return (
     <section className="panel empty">
       <h2>{title}</h2>
@@ -469,6 +542,7 @@ function Page({
     </section>
   );
 }
+
 function Resource({
   title,
   path,
@@ -486,38 +560,45 @@ function Resource({
   allowed: boolean;
   defaults?: Record<string, string>;
 }) {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<any[]>([]);
   const [form, setForm] = useState<Record<string, string>>(defaults);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
+
   const load = () =>
     api<any[]>(path, token, company)
       .then(setRows)
-      .catch(() => setStatus('Data tidak dapat dimuat.'))
+      .catch(() => setStatus(t('messages.loadError')))
       .finally(() => setLoading(false));
+
   useEffect(() => {
     void load();
   }, [path, token, company]);
+
   async function submit(e: FormEvent) {
     e.preventDefault();
-    setStatus('Menyimpan...');
+    setStatus(t('common.saving'));
     try {
       await api(path, token, company, {
         method: 'POST',
-        headers: { ...(form.branchId ? { 'x-branch-id': form.branchId } : {}) },
+        headers: {
+          ...(form.branchId ? { 'x-branch-id': form.branchId } : {}),
+        },
         body: JSON.stringify(form),
       });
       setForm(defaults);
-      setStatus('Tersimpan.');
+      setStatus(t('messages.saveSuccess'));
       load();
     } catch (e) {
       setStatus(
         e instanceof ApiError && e.status === 403
-          ? 'Permission denied.'
-          : 'Gagal menyimpan.',
+          ? '403 · permission denied'
+          : t('messages.saveError'),
       );
     }
   }
+
   return (
     <>
       <section className="panel">
@@ -526,40 +607,68 @@ function Resource({
           <span>{rows.length} item</span>
         </div>
         {loading ? (
-          <p>Memuat...</p>
+          <div className="ng-skeleton" style={{ height: 200 }} />
         ) : rows.length ? (
-          <DataRows rows={rows} />
+          <div className="table">
+            <div className="tr head">
+              {fields.map((f) => (
+                <span key={f}>{f}</span>
+              ))}
+            </div>
+            {rows.map((r, i) => (
+              <div className="tr" key={r.id ?? i}>
+                {fields.map((f) => (
+                  <span key={f}>
+                    {typeof r[f] === 'boolean'
+                      ? r[f]
+                        ? 'Yes'
+                        : 'No'
+                      : String(r[f] ?? '—')}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         ) : (
-          <p className="muted">Belum ada data.</p>
+          <div className="ng-empty">
+            <h3>{t('dashboard.noData')}</h3>
+          </div>
         )}
       </section>
       {allowed ? (
         <section className="panel">
-          <h2>Create {title}</h2>
+          <h2>
+            {t('common.create')} {title}
+          </h2>
           <form className="inline-form" onSubmit={submit}>
             {fields.map((f) => (
               <label key={f}>
                 {f}
                 <input
                   required={f !== 'description'}
-                  type={f.toLowerCase().includes('price') ? 'number' : 'text'}
+                  type={
+                    f.toLowerCase().includes('price') ? 'number' : 'text'
+                  }
                   value={form[f] ?? ''}
-                  onChange={(e) => setForm({ ...form, [f]: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, [f]: e.target.value })
+                  }
                 />
               </label>
             ))}
-            <button>Simpan</button>
-            <p>{status}</p>
+            <button>{t('common.save')}</button>
+            <p className="muted">{status}</p>
           </form>
         </section>
       ) : (
         <section className="panel denied">
-          Permission denied untuk membuat data.
+          403 · permission denied
         </section>
       )}
     </>
   );
 }
+
 function Inventory({
   company,
   token,
@@ -569,10 +678,12 @@ function Inventory({
   token: string;
   ctx: Ctx;
 }) {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<any[]>([]);
   const [moves, setMoves] = useState<any[]>([]);
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     branchId: ctx.accessible_branches[0]?.id ?? '',
     warehouseId: '',
@@ -581,6 +692,7 @@ function Inventory({
     minimumStock: '0',
     movementType: 'ADJUSTMENT',
   });
+
   const load = () =>
     Promise.all([
       api<any[]>('/inventory', token, company),
@@ -592,10 +704,13 @@ function Inventory({
         setMoves(b);
         setWarehouses(w);
       })
-      .catch(() => setStatus('Inventory tidak dapat dimuat.'));
+      .catch(() => setStatus(t('messages.loadError')))
+      .finally(() => setLoading(false));
+
   useEffect(() => {
     void load();
   }, [company, token]);
+
   async function adjust(e: FormEvent) {
     e.preventDefault();
     try {
@@ -608,21 +723,44 @@ function Inventory({
           minimumStock: Number(form.minimumStock),
         }),
       });
-      setStatus('Stock dan movement tersimpan.');
+      setStatus(t('messages.saveSuccess'));
       load();
     } catch {
-      setStatus('Adjustment ditolak.');
+      setStatus(t('messages.saveError'));
     }
   }
+
   return (
     <>
       <section className="panel">
-        <h2>Inventory per branch / warehouse</h2>
-        {rows.length ? (
-          <DataRows rows={rows} />
+        <h2>{t('pages.inventory')}</h2>
+        {loading ? (
+          <div className="ng-skeleton" style={{ height: 200 }} />
+        ) : rows.length ? (
+          <div className="table">
+            <div className="tr head">
+              {['product', 'branch', 'warehouse', 'quantity', 'minimum_stock'].map(
+                (k) => (
+                  <span key={k}>{k}</span>
+                ),
+              )}
+            </div>
+            {rows.map((r, i) => (
+              <div className="tr" key={r.id ?? i}>
+                <span>{r.product?.name ?? r.product_id ?? '—'}</span>
+                <span>{r.branch?.name ?? '—'}</span>
+                <span>{r.warehouse?.name ?? '—'}</span>
+                <span>{r.quantity}</span>
+                <span>{r.minimum_stock}</span>
+              </div>
+            ))}
+          </div>
         ) : (
-          <p className="muted">Belum ada inventory.</p>
+          <div className="ng-empty">
+            <h3>{t('dashboard.noData')}</h3>
+          </div>
         )}
+        <p className="muted">{status}</p>
       </section>
       {ctx.permissions.includes('inventory.adjust') && (
         <section className="panel">
@@ -633,57 +771,91 @@ function Inventory({
                 {k}
                 <input
                   value={(form as any)[k]}
-                  onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, [k]: e.target.value })
+                  }
                 />
               </label>
             ))}
-            <button>Simpan movement</button>
-            <p>{status}</p>
+            <button>{t('common.save')}</button>
           </form>
         </section>
       )}
-      {ctx.permissions.includes('inventory.transfer') && warehouses.length > 1 && (
-        <TransferForm
-          company={company}
-          token={token}
-          warehouses={warehouses}
-          onDone={load}
-        />
-      )}
+      {ctx.permissions.includes('inventory.transfer') &&
+        warehouses.length > 1 && (
+          <TransferForm
+            company={company}
+            token={token}
+            warehouses={warehouses}
+            onDone={load}
+          />
+        )}
       <section className="panel">
         <h2>Movement history</h2>
         {moves.length ? (
-          <DataRows rows={moves} />
+          <div className="table">
+            <div className="tr head">
+              {['type', 'quantity', 'created_at'].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
+            </div>
+            {moves.map((m, i) => (
+              <div className="tr" key={m.id ?? i}>
+                <span>{m.movement_type ?? m.type ?? '—'}</span>
+                <span>{m.quantity}</span>
+                <span>
+                  {m.created_at
+                    ? new Date(m.created_at).toLocaleString('id-ID')
+                    : '—'}
+                </span>
+              </div>
+            ))}
+          </div>
         ) : (
-          <p className="muted">Belum ada movement.</p>
+          <div className="ng-empty">
+            <h3>{t('dashboard.noData')}</h3>
+          </div>
         )}
       </section>
     </>
   );
 }
-function Barcode({ company, token }: { company: string; token: string }) {
+
+function Barcode({
+  company,
+  token,
+}: {
+  company: string;
+  token: string;
+}) {
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   async function lookup(e: FormEvent) {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    setResult(null);
     try {
-      setResult(
-        await api(
-          `/barcodes/lookup?code=${encodeURIComponent(code)}`,
-          token,
-          company,
-        ),
+      const res = await api(
+        `/barcodes/lookup?code=${encodeURIComponent(code)}`,
+        token,
+        company,
       );
-      setError('');
+      setResult(res);
     } catch {
-      setResult(null);
-      setError('Barcode tidak ditemukan.');
+      setError(t('messages.notFound') || 'Barcode tidak ditemukan.');
+    } finally {
+      setLoading(false);
     }
   }
+
   return (
     <section className="panel">
-      <h2>Scan-ready lookup</h2>
+      <h2>{t('pages.barcode')}</h2>
       <form className="search" onSubmit={lookup}>
         <input
           placeholder="Barcode"
@@ -691,52 +863,31 @@ function Barcode({ company, token }: { company: string; token: string }) {
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-        <button>Cari</button>
+        <button disabled={loading}>
+          {loading ? '...' : t('common.search')}
+        </button>
       </form>
-      {result && <DataRows rows={[result.product]} />}
-      <p>{error}</p>
-    </section>
-  );
-}
-function DataRows({ rows }: { rows: any[] }) {
-  const keys = useMemo(
-    () =>
-      Object.keys(rows[0] ?? {})
-        .filter(
-          (k) =>
-            ![
-              'description',
-              'barcodes',
-              'category',
-              'product',
-              'warehouse',
-              'branch',
-              'store',
-            ].includes(k),
-        )
-        .slice(0, 6),
-    [rows],
-  );
-  return (
-    <div className="table">
-      <div className="tr head">
-        {keys.map((k) => (
-          <span key={k}>{k}</span>
-        ))}
-      </div>
-      {rows.map((r, i) => (
-        <div className="tr" key={r.id ?? i}>
-          {keys.map((k) => (
-            <span key={k}>
-              {typeof r[k] === 'boolean'
-                ? r[k]
-                  ? 'Yes'
-                  : 'No'
-                : String(r[k] ?? '—')}
+      {result?.product && (
+        <div className="table" style={{ marginTop: 16 }}>
+          <div className="tr head">
+            {['name', 'sku', 'sellingPrice', 'stock'].map((k) => (
+              <span key={k}>{k}</span>
+            ))}
+          </div>
+          <div className="tr">
+            <span>{result.product.name ?? '—'}</span>
+            <span>{result.product.sku ?? '—'}</span>
+            <span>
+              Rp{' '}
+              {Number(result.product.sellingPrice ?? 0).toLocaleString(
+                'id-ID',
+              )}
             </span>
-          ))}
+            <span>{result.product.stock ?? '—'}</span>
+          </div>
         </div>
-      ))}
-    </div>
+      )}
+      {error && <p className="muted">{error}</p>}
+    </section>
   );
 }

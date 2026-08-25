@@ -108,6 +108,7 @@ export const en = {
     warehouses: 'Warehouses',
     branches: 'Branches',
     stores: 'Store Management',
+    users: 'Users / Team',
     tutorial: 'Tutorial',
     settings: 'Settings',
     finance: 'Finance',
@@ -119,6 +120,7 @@ export const en = {
   // Common
   common: {
     save: 'Save',
+    saving: 'Saving...',
     cancel: 'Cancel',
     delete: 'Delete',
     edit: 'Edit',
