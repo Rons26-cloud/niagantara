@@ -2,6 +2,8 @@
 
 Multi-tenant business platform — operational dashboards, POS, inventory, finance, reporting, and Google Sheets sync.
 
+![Website Preview](docs/screenshots/web-desktop.png)
+
 ## Stack
 
 | Layer | Tech |
