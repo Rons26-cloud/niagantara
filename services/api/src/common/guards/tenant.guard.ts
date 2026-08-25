@@ -11,6 +11,9 @@ export class TenantGuard implements CanActivate {
     if (typeof companyId !== 'string' || !companyId) {
       throw new BadRequestException({ code: 'COMPANY_CONTEXT_REQUIRED', message: 'x-company-id is required.' });
     }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(companyId)) {
+      throw new BadRequestException({ code: 'INVALID_COMPANY_ID', message: 'x-company-id must be a valid UUID.' });
+    }
 
     const { data: membership, error } = await this.supabase.client
       .from('company_members')

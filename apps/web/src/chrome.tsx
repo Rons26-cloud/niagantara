@@ -4,17 +4,11 @@ import {
   ThemeSwitcher,
   LanguageSwitcher,
   useTranslation,
-  useTheme,
 } from '@niagantara/ui';
 import { Link, usePath } from './router';
 
-/**
- * Theme-aware image: swaps between the light-surface and dark-surface
- * derivative of the SAME official brand asset. Never recolors via CSS.
- */
 export function ThemeImage({
   lightSrc,
-  darkSrc,
   alt,
   className,
   width,
@@ -22,18 +16,16 @@ export function ThemeImage({
   loading = 'lazy',
 }: {
   lightSrc: string;
-  darkSrc?: string;
   alt: string;
   className?: string;
   width?: number;
   height?: number;
   loading?: 'eager' | 'lazy';
 }) {
-  const { theme } = useTheme();
   return (
     <img
       className={className}
-      src={theme === 'blue' && darkSrc ? darkSrc : lightSrc}
+      src={lightSrc}
       alt={alt}
       width={width}
       height={height}
@@ -60,7 +52,6 @@ export function Navbar() {
     ['/kontak', t('nav.contact')],
   ];
 
-  /* Drawer behaviour: lock body scroll, close on Escape, focus the close button. */
   useEffect(() => {
     if (!menu) return;
     const onKey = (e: KeyboardEvent) => {
@@ -81,7 +72,6 @@ export function Navbar() {
         <Link to="/" className="brand nav-brand-full" ariaLabel={t('brand.name')}>
           <ThemeImage
             lightSrc="/logo.png"
-            darkSrc="/niagantara-logo-dark.png"
             alt="NIAGANTARA"
             className="brand-logo-img"
             width={840}
@@ -95,7 +85,6 @@ export function Navbar() {
         <Link to="/" className="brand navbar-brand" ariaLabel={t('brand.name')}>
           <ThemeImage
             lightSrc="/brand-mark.png"
-            darkSrc="/niagantara-mark-dark.png"
             alt=""
             className="navbar-mark"
             width={576}
@@ -140,7 +129,6 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile drawer — hidden entirely on desktop. */}
       <div className={`drawer-root${menu ? ' open' : ''}`}>
         <div className="drawer-backdrop" onClick={close} aria-hidden="true" />
         <aside
@@ -154,7 +142,6 @@ export function Navbar() {
           <div className="drawer-head">
             <ThemeImage
               lightSrc="/brand-mark.png"
-              darkSrc="/niagantara-mark-dark.png"
               alt=""
               className="drawer-mark"
               width={576}
@@ -213,7 +200,6 @@ export function Footer() {
           <Link to="/" className="fbrand-logo" ariaLabel={t('brand.name')}>
             <ThemeImage
               lightSrc="/logo.png"
-              darkSrc="/niagantara-logo-dark.png"
               alt="NIAGANTARA"
               className="fbrand-img"
               width={840}

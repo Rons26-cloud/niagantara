@@ -1,8 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useTranslation } from '@niagantara/ui';
-
-export const SITE_URL = 'https://niagantara.com';
+import { SITE_URL, OG_IMAGE, getSeo } from './seo.config';
 
 const NavigateContext = createContext<(to: string) => void>(() => {});
 export const NavigateProvider = NavigateContext.Provider;
@@ -57,50 +55,18 @@ export function Link({
   );
 }
 
-const routeTitles: Record<string, string> = {
-  '/': 'NIAGANTARA — Business Control Platform',
-  '/fitur': 'Fitur',
-  '/solusi': 'Solusi',
-  '/harga': 'Harga',
-  '/tentang': 'Tentang',
-  '/faq': 'FAQ',
-  '/kontak': 'Kontak',
-  '/privacy': 'Kebijakan Privasi',
-  '/terms': 'Syarat & Ketentuan',
-  '/demo': 'NIAGANTARA — Demo Interaktif',
-  '/demo/dashboard': 'Dashboard — Demo',
-  '/demo/pos': 'POS — Demo',
-  '/demo/products': 'Products — Demo',
-  '/demo/categories': 'Categories — Demo',
-  '/demo/inventory': 'Inventory — Demo',
-  '/demo/stock-transfer': 'Stock Transfer — Demo',
-  '/demo/sales': 'Sales — Demo',
-  '/demo/shifts': 'Shifts — Demo',
-  '/demo/customers': 'Customers — Demo',
-  '/demo/suppliers': 'Suppliers — Demo',
-  '/demo/purchases': 'Purchases — Demo',
-  '/demo/employees': 'Employees — Demo',
-  '/demo/attendance': 'Attendance — Demo',
-  '/demo/expenses': 'Expenses — Demo',
-  '/demo/finance': 'Finance — Demo',
-  '/demo/reports': 'Reports — Demo',
-  '/demo/google-sheets': 'Google Sheets — Demo',
-  '/demo/warehouses': 'Warehouses — Demo',
-  '/demo/branches': 'Branches — Demo',
-  '/demo/stores': 'Stores — Demo',
-  '/demo/settings': 'Settings — Demo',
-  '/demo/help': 'Help — Demo',
-};
-
-/** Keeps document title + canonical URL in sync with the active route. */
 export function Seo({ path }: { path: string }) {
-  const { t } = useTranslation();
   useEffect(() => {
-    const suffix = routeTitles[path];
-    if (!suffix) return;
-    const isHome = path === '/';
-    document.title = isHome ? suffix : `${t(`nav.${path.slice(1)}` as never)} — NIAGANTARA`;
+    const seo = getSeo(path);
+    if (!seo) return;
+
+    document.title = seo.title;
+
     const url = `${SITE_URL}${path}`;
+
+    setMeta('description', seo.description);
+    setMeta('robots', seo.robots);
+
     let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');
@@ -108,12 +74,41 @@ export function Seo({ path }: { path: string }) {
       document.head.appendChild(canonical);
     }
     canonical.href = url;
-    const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
-    if (ogUrl) ogUrl.content = url;
-    const ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
-    if (ogTitle) ogTitle.content = document.title;
-    const twTitle = document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]');
-    if (twTitle) twTitle.content = document.title;
-  }, [path, t]);
+
+    setMeta('og:url', url, 'property');
+    setMeta('og:title', seo.ogTitle, 'property');
+    setMeta('og:description', seo.ogDescription, 'property');
+    setMeta('og:image', OG_IMAGE, 'property');
+
+    setMeta('twitter:title', seo.ogTitle);
+    setMeta('twitter:description', seo.ogDescription);
+    setMeta('twitter:image', OG_IMAGE);
+
+    document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach((el) => el.remove());
+    if (seo.schema?.length) {
+      const s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.dataset.seo = 'true';
+      s.textContent = JSON.stringify(seo.schema.length === 1 ? seo.schema[0] : seo.schema);
+      document.head.appendChild(s);
+    }
+
+    return () => {
+      document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach((el) => el.remove());
+    };
+  }, [path]);
+
   return null;
+}
+
+function setMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
+  if (!content) return;
+  const key = attr === 'property' ? `[property="${name}"]` : `[name="${name}"]`;
+  let el = document.querySelector<HTMLMetaElement>(`meta${key}`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, name);
+    document.head.appendChild(el);
+  }
+  el.content = content;
 }

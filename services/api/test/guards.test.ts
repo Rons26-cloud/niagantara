@@ -37,7 +37,12 @@ test('AuthGuard trusts platform role only from app_metadata', async () => {
 
 test('TenantGuard rejects a foreign membership', async () => {
   const guard = new TenantGuard({ client: { from: () => chain({ data: null, error: null }) } } as any);
-  await assert.rejects(() => guard.canActivate(context({ headers: { 'x-company-id': 'company-b' }, params: {}, user: { id: 'owner-a' } })), ForbiddenException);
+  await assert.rejects(() => guard.canActivate(context({ headers: { 'x-company-id': 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee' }, params: {}, user: { id: 'owner-a' } })), ForbiddenException);
+});
+
+test('TenantGuard rejects a non-UUID company id', async () => {
+  const guard = new TenantGuard({ client: { from: () => chain({ data: null, error: null }) } } as any);
+  await assert.rejects(() => guard.canActivate(context({ headers: { 'x-company-id': 'not-a-uuid' }, params: {}, user: { id: 'u1' } })));
 });
 
 test('PermissionGuard enforces the declared permission', () => {

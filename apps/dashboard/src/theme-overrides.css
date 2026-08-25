@@ -1,9 +1,3 @@
-/**
- * Theme Overrides for NIAGANTARA Dashboard
- * Applies design tokens to existing dashboard styles
- */
-
-/* Import design tokens */
 @import '@niagantara/ui/design-tokens.css';
 @import '@niagantara/ui/components.css';
 
@@ -537,8 +531,6 @@
   padding: 0 0.8rem;
 }
 
-/* Collapsed icon rail only: flatten groups, hide labels.
-   Below 769px the sidebar becomes a full drawer, so labels return. */
 @media (max-width: 900px) and (min-width: 769px) {
   .nav-group-label {
     display: none;

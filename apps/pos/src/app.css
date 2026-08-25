@@ -118,12 +118,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Sticky mobile pay bar */
 .pos-mobile-cta {
   display: none;
 }
 
-/* Receipt overlay (stays paper-white in every theme) */
 .receipt-paper {
   position: fixed;
   inset: 0;
@@ -265,9 +263,12 @@
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 22px;
+  gap: 0;
   background: var(--bg-primary);
   padding: 24px;
+}
+.pos-login .login-brand {
+  margin-bottom: 20px;
 }
 .pos-login form {
   width: min(340px, 90vw);
@@ -279,9 +280,7 @@
   font-size: 13px;
 }
 
-/* Brand logo on dark theme: theme-aware image swap handles visibility — no white plate. */
-
-/* Mobile: touch-first single column with sticky pay bar */
+/* Mobile */
 @media (max-width: 760px) {
   .pos-grid {
     grid-template-columns: 1fr;

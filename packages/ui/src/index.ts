@@ -6,6 +6,7 @@ export * from './theme';
 
 // Components
 export * from './components/BrandLogo';
+export * from './components/LoginBrand';
 export * from './components/ThemeSwitcher';
 export * from './components/LanguageSwitcher';
 export * from './components/primitives';

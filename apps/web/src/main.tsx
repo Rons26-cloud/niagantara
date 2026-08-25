@@ -1,8 +1,8 @@
-import { StrictMode, Suspense, lazy } from 'react';
+import { StrictMode, Suspense, lazy, useEffect } from 'react';
 import type { JSX } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initTheme } from '@niagantara/ui/theme';
-import { BrandLogo, getLanguage, useTranslation } from '@niagantara/ui';
+import { BrandLogo, getLanguage } from '@niagantara/ui';
 import { NavigateProvider, usePath, Seo, navigate } from './router';
 import { HomePage, FeaturesPage, SolutionsPage, PricingPage, AboutPage, FaqPage, ContactPage } from './pages';
 import { PrivacyPage, TermsPage } from './legal';
@@ -52,7 +52,6 @@ const routes: Record<string, () => JSX.Element> = {
   '/demo/help': DemoRoute,
 };
 
-/** Legacy English slugs kept working; canonicals point to Indonesian paths. */
 const legacyAliases: Record<string, string> = {
   '/features': '/fitur',
   '/solutions': '/solusi',
@@ -93,6 +92,18 @@ function DemoRoute() {
 }
 
 function NotFound() {
+  useEffect(() => {
+    document.title = 'Halaman Tidak Ditemukan — NIAGANTARA';
+    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.appendChild(robots);
+    }
+    robots.content = 'noindex, nofollow';
+    return () => { robots!.content = 'index, follow'; };
+  }, []);
+
   return (
     <div className="site">
       <main className="legal">

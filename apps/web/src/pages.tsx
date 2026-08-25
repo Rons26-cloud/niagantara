@@ -10,7 +10,6 @@ function useW(): W {
   return useTranslation().translations.website;
 }
 
-/** Mobile-only "see the dedicated page" affordance (hidden on desktop via CSS). */
 function MoreLink({ to }: { to: string }) {
   const w = useW();
   return (
@@ -153,7 +152,7 @@ export function BranchesSection() {
         </div>
         <div className="orbit" aria-hidden="true">
           <div className="orbit-ring" /><div className="orbit-ring inner" />
-          <div className="orbit-center"><ThemeImage lightSrc="/brand-mark.png" darkSrc="/niagantara-mark-dark.png" alt="" className="orbit-logo" width={576} height={628} loading="lazy" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
+          <div className="orbit-center"><ThemeImage lightSrc="/brand-mark.png" alt="" className="orbit-logo" width={576} height={628} loading="lazy" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
           <div className="orbit-card one"><b>POS</b><small>Kasir</small></div>
           <div className="orbit-card two"><b>Stok</b><small>Inventory</small></div>
           <div className="orbit-card three"><b>Laporan</b><small>Finance</small></div>
@@ -305,7 +304,7 @@ export function StepsSection({ heading = true }: { heading?: boolean }) {
 
 export function FaqSection() {
   const w = useW();
-  const [faq, setFaq] = useState(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <section id="faq" className="section faq">
       <div className="container faq-grid">
@@ -316,15 +315,32 @@ export function FaqSection() {
           <a className="text-link" href="mailto:support@niagantara.com">{w.faq.contactLink} <span aria-hidden="true">→</span></a>
         </div>
         <div>
-          {w.faq.items.map((item, i) => (
-            <div className={`faq-item${faq === i ? ' open' : ''}`} key={item.q}>
-              <button onClick={() => setFaq(faq === i ? -1 : i)} aria-expanded={faq === i}>
-                {item.q}
-                <i aria-hidden="true">{faq === i ? '−' : '+'}</i>
-              </button>
-              {faq === i && <p>{item.a}</p>}
-            </div>
-          ))}
+          {w.faq.items.map((item, i) => {
+            const expanded = open === i;
+            return (
+              <div className={`faq-item${expanded ? ' open' : ''}`} key={item.q}>
+                <h3>
+                  <button
+                    aria-expanded={expanded}
+                    aria-controls={`faq-panel-${i}`}
+                    id={`faq-trigger-${i}`}
+                    onClick={() => setOpen(expanded ? null : i)}
+                  >
+                    <span>{item.q}</span>
+                    <span className="faq-icon" aria-hidden="true">{expanded ? '−' : '+'}</span>
+                  </button>
+                </h3>
+                <div
+                  id={`faq-panel-${i}`}
+                  role="region"
+                  aria-labelledby={`faq-trigger-${i}`}
+                  hidden={!expanded}
+                >
+                  <p>{item.a}</p>
+                </div>
+              </div>
+            );
+          })}
           <MoreLink to="/faq" />
         </div>
       </div>

@@ -9,6 +9,7 @@ import {
   Field,
   Input,
   LanguageSwitcher,
+  LoginBrand,
   StatCard,
   ThemeSwitcher,
   useTranslation,
@@ -20,7 +21,6 @@ import './app.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
-/* Modules with no platform API yet: routed to honest gap pages (no mocks). */
 const GAP_MODULES: Record<string, string> = {
   companies: 'master.companies',
   users: 'master.users',
@@ -291,9 +291,7 @@ function MasterLogin({
   };
   return (
     <div className="mlogin">
-      <BrandLogo href="#" />
-      <p className="eyebrow">{t('master.signIn')}</p>
-      <p className="hint">{t('master.signInHint')}</p>
+      <LoginBrand appLabel="Platform Administration / Master Console" />
       <form onSubmit={submit}>
         <Field label={t('auth.email')}>
           <Input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />

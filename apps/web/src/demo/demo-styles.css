@@ -437,7 +437,6 @@
   gap: 1rem;
   align-content: start;
 }
-/* legacy page wrappers map onto the same spacing */
 .demo-dashboard,
 .demo-products,
 .demo-pos,

@@ -1,13 +1,15 @@
 import { FormEvent, useState } from 'react';
 import { login } from './api';
 import { useAuth } from './auth/auth-context';
-import { BrandLogo } from '@niagantara/ui';
+import { LoginBrand } from '@niagantara/ui';
+
 export function LoginPage() {
   const { setSession } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -25,12 +27,13 @@ export function LoginPage() {
       setBusy(false);
     }
   }
+
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <BrandLogo className="auth-brand" />
-        <h1>Masuk dashboard</h1>
-        <p className="muted">Gunakan akun perusahaan yang aktif.</p>
+        <LoginBrand appLabel="Dashboard User" />
+        <h1>Masuk ke Dashboard</h1>
+        <p className="muted">Kelola bisnis, cabang, penjualan, stok, dan laporan Anda.</p>
         <form onSubmit={submit}>
           <label>
             Email
@@ -52,7 +55,7 @@ export function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
-          <button disabled={busy}>{busy ? 'Memuat...' : 'Masuk'}</button>
+          <button disabled={busy}>{busy ? 'Memuat...' : 'Masuk ke Dashboard'}</button>
           <p className="form-status" role="alert">
             {error}
           </p>

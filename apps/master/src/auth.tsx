@@ -22,7 +22,6 @@ const saved = () => {
   }
 };
 
-/** Reads unverified JWT payload claims for UI gating only. Server enforcement is authoritative. */
 export function readPlatformRole(jwt: string | null): string | null {
   if (!jwt) return null;
   try {

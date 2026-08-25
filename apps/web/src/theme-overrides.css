@@ -1,9 +1,3 @@
-/**
- * Theme Overrides for NIAGANTARA Web App
- * Applies design tokens to existing styles
- */
-
-/* Import design tokens */
 @import '@niagantara/ui/design-tokens.css';
 @import '@niagantara/ui/components.css';
 @import '@niagantara/ui/ui.css';
@@ -104,9 +98,6 @@ footer {
     border-bottom: 1px solid var(--border-color);
   }
 }
-/* ============================================================
-   Accessibility
-   ============================================================ */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -132,9 +123,6 @@ footer {
   outline-color: var(--accent-primary);
 }
 
-/* ============================================================
-   Blue / Dark theme — adaptive surfaces & readable text
-   ============================================================ */
 [data-theme="blue"] {
   color-scheme: dark;
 }
@@ -144,8 +132,6 @@ footer {
   background: var(--bg-primary);
   color: var(--text-primary);
 }
-
-/* Hero — now a premium navy block in BOTH themes (see bottom of this file) */
 
 /* Navbar */
 [data-theme="blue"] .navbar {
@@ -401,10 +387,13 @@ footer {
 [data-theme="blue"] .step-grid p { color: var(--text-muted); }
 
 /* FAQ */
-[data-theme="blue"] .faq-item button { color: var(--text-primary); }
+  [data-theme="blue"] .faq-item button { color: var(--text-primary); }
+  [data-theme="blue"] .faq-item button:focus-visible { outline-color: var(--accent-secondary); }
+  [data-theme="blue"] .faq-item [role="region"] p { color: var(--text-secondary); }
 [data-theme="blue"] .faq-item { border-top-color: var(--border-color); }
 [data-theme="blue"] .faq-item:last-child { border-bottom-color: var(--border-color); }
-[data-theme="blue"] .faq-item p { color: var(--text-secondary); }
+  [data-theme="blue"] .faq-item p { color: var(--text-secondary); }
+  [data-theme="blue"] .faq-item button:focus-visible { outline-color: var(--accent-secondary); }
 
 /* CTA band stays deep navy — brighten accents for contrast */
 [data-theme="blue"] .cta>.container {
@@ -486,11 +475,9 @@ footer {
   }
 }
 
-/* Brand logo on dark-blue surfaces: theme-aware image swap handles visibility
-   via BrandLogo/BrandMark components — no white plate needed. */
+/* Brand logo on dark surfaces */
 
-/* Premium navy hero — applies in both themes; this block is last so it wins
-   over the adaptive-text rules higher up in this file. */
+/* Hero — dark navy in both themes */
 .hero {
   background:
     radial-gradient(circle at 82% 28%, rgba(37, 99, 235, 0.35), transparent 46%),
@@ -522,15 +509,7 @@ footer {
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* ============================================================
-   MOBILE & TABLET EXPERIENCE (public website)
-   Compact header + drawer · condensed homepage previews ·
-   fluid hero mockup · responsive rhythm. Desktop (>=821px)
-   is untouched: every rule below lives inside media queries,
-   except the three "hidden-by-default" mobile-only primitives.
-   ============================================================ */
-
-/* Mobile-only primitives — never visible on desktop */
+/* Mobile */
 .navbar-brand,
 .drawer-root,
 .section-more {
@@ -538,7 +517,7 @@ footer {
 }
 
 @media (max-width: 820px) {
-  /* ---------- Compact sticky header (56-64px zone) ---------- */
+  /* Compact sticky header */
   .nav-inner {
     height: 60px;
     gap: 12px;
@@ -549,7 +528,7 @@ footer {
     display: none;
   }
 
-  /* Compact branding: official BrandMark + short wordmark */
+  /* Compact branding */
   .nav-brand-full {
     display: none;
   }
@@ -620,7 +599,7 @@ footer {
     transform: translateY(-6px) rotate(-45deg);
   }
 
-  /* ---------- Mobile drawer ---------- */
+  /* Mobile drawer */
   .drawer-root {
     position: fixed;
     inset: 0;
@@ -671,7 +650,6 @@ footer {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
   }
-  /* Drawer mark uses theme-aware image swap — no white plate needed. */
   .drawer-title {
     font-family: Manrope, sans-serif;
     font-size: 14px;
@@ -751,7 +729,7 @@ footer {
     padding-top: 2px;
   }
 
-  /* ---------- Hero ---------- */
+  /* Hero */
   .hero {
     padding: 40px 0 52px;
   }
@@ -797,7 +775,7 @@ footer {
     right: 2px;
   }
 
-  /* ---------- Vertical rhythm ---------- */
+  /* Vertical rhythm */
   .section {
     padding: 56px 0;
   }
@@ -823,7 +801,7 @@ footer {
     font-size: 13px;
   }
 
-  /* ---------- Condensed homepage: previews, not the full document ---------- */
+  /* Homepage previews */
   .home-page .showcase,
   .home-page .inventory-section,
   .home-page .finance,
@@ -850,7 +828,7 @@ footer {
     color: var(--accent-primary);
   }
 
-  /* ---------- Cards ---------- */
+  /* Cards */
   .feature-grid {
     gap: 10px;
   }
@@ -875,7 +853,7 @@ footer {
     margin-top: 12px;
   }
 
-  /* ---------- Misc compaction ---------- */
+  /* Misc */
   .logo-strip .container {
     padding: 18px 0;
     min-height: 0;
@@ -909,7 +887,7 @@ footer {
     border-radius: 16px;
   }
 
-  /* ---------- Footer: compact stacked columns ---------- */
+  /* Footer */
   .footer {
     padding: 42px 0 30px;
   }
@@ -992,11 +970,7 @@ footer {
   background: rgba(2, 6, 17, 0.66);
 }
 
-/* ============================================================
-   THEME-AWARE BRAND IMAGERY
-   Navbar / drawer / footer consume the official dark-surface
-   derivatives (niagantara-*-dark.png) instead of plates.
-   ============================================================ */
+/* Navbar / drawer / footer brand imagery */
 .nav-brand-full .brand-logo-img,
 .fbrand-img {
   height: 34px;
@@ -1025,10 +999,7 @@ footer {
   height: 58px;
 }
 
-/* ============================================================
-   PROFESSIONAL FOOTER
-   Token-based so both themes inherit correct surfaces/ink.
-   ============================================================ */
+/* Footer */
 .footer {
   background: var(--bg-secondary);
   border-top-color: var(--border-color);

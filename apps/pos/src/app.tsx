@@ -12,6 +12,7 @@ import {
   Select,
   ThemeSwitcher,
   useTranslation,
+  LoginBrand,
 } from '@niagantara/ui';
 import '@niagantara/ui/design-tokens.css';
 import '@niagantara/ui/components.css';
@@ -164,7 +165,7 @@ function PosLogin({
   };
   return (
     <div className="pos-login">
-      <BrandLogo href="#" />
+      <LoginBrand appLabel="POS / Kasir" />
       <form onSubmit={submit}>
         <Field label={t('auth.email')}>
           <Input

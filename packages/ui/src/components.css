@@ -1,8 +1,3 @@
-/**
- * Component Styles for NIAGANTARA Design System
- */
-
-/* Brand Logo */
 .brand {
   display: inline-flex;
   align-items: center;
@@ -12,8 +7,6 @@
   color: inherit;
 }
 
-/* Official logo asset (single source of truth: assets/brand/niagantara-logo.png).
-   Height is fixed, width stays automatic — the logo is never stretched. */
 .brand-mark,
 .brand-logo-img {
   display: inline-flex;
@@ -28,7 +21,6 @@
   user-select: none;
 }
 
-/* Sidebar brand container — theme-aware, no white box. */
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -36,14 +28,12 @@
   padding: 4px 0;
 }
 
-/* Tablet: slightly more compact lockup. */
 @media (max-width: 960px) {
   .navbar .brand-logo-img {
     height: 30px !important;
   }
 }
 
-/* Mobile: compact presentation where necessary. */
 @media (max-width: 640px) {
   .navbar .brand-logo-img {
     height: 24px !important;
@@ -66,6 +56,57 @@
   font-weight: 800;
   margin-top: 5px;
   text-transform: uppercase;
+}
+
+/* Login Brand — shared login page brand block */
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-align: center;
+}
+.login-brand__logo {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+.login-brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.login-brand__text strong {
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.login-brand__text small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--brand-blue);
+}
+.login-brand__app {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+}
+
+@media (max-width: 480px) {
+  .login-brand__logo { height: 44px; margin-bottom: 10px; }
+  .login-brand__text strong { font-size: 18px; }
 }
 
 /* Theme Switcher */

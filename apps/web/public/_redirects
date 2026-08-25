@@ -1,1 +1,9 @@
-/* /index.html 200
+# Legacy English aliases → Indonesian canonicals
+/features          /fitur               301
+/solutions         /solusi              301
+/pricing           /harga               301
+/about             /tentang             301
+/contact           /kontak              301
+
+# SPA fallback
+/*                 /index.html          200

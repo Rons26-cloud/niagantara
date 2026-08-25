@@ -1,8 +1,3 @@
-/**
- * LanguageSwitcher Component
- * Allows users to switch between Indonesian and English
- */
-
 import React from 'react';
 import { useTranslation, Language } from '../i18n';
 
@@ -12,15 +7,8 @@ interface LanguageSwitcherProps {
   compact?: boolean;
 }
 
-/**
- * LanguageSwitcher - Toggle between Indonesian and English
- * 
- * @param className - Additional CSS classes
- * @param ariaLabel - Accessibility label
- * @param compact - If true, shows compact version (ID | EN)
- */
-export function LanguageSwitcher({ 
-  className = '', 
+export function LanguageSwitcher({
+  className = '',
   ariaLabel = 'Switch language',
   compact = false
 }: LanguageSwitcherProps) {

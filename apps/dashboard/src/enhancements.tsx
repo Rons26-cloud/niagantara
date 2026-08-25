@@ -47,7 +47,6 @@ export function storeBranch(id: string) {
   }
 }
 
-/** Independent async data hook: never lets one failure poison siblings (Phase 34 root-cause fix). */
 export function useResource<T>(
   fetcher: () => Promise<T>,
   deps: unknown[],
@@ -86,8 +85,6 @@ export function describeError(e: unknown): string {
 function isoDay(d: Date) {
   return d.toISOString().slice(0, 10);
 }
-
-/* ---------------- Dashboard home ---------------- */
 
 type Sale = {
   id: string;
@@ -472,8 +469,6 @@ export function MiniBars({
   );
 }
 
-/* ---------------- Onboarding ---------------- */
-
 export function Onboarding({
   ctx,
   go,
@@ -510,7 +505,6 @@ export function Onboarding({
   );
 }
 
-/* ---------------- Stock transfer ---------------- */
 
 export function TransferForm({
   company,
@@ -604,7 +598,6 @@ export function TransferForm({
   );
 }
 
-/* ---------------- Settings page ---------------- */
 
 export function SettingsPage({
   ctx,
@@ -729,8 +722,6 @@ function Tabs2({
     </div>
   );
 }
-
-/* ---------------- Help page ---------------- */
 
 const HELP_KEYS = [
   'dashboard',
