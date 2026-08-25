@@ -1,6 +1,7 @@
 # Deployment
 
-- `niagantara.com` and `www`: Cloudflare static `apps/web/dist`.
+- `niagantara-web.pages.dev`: Cloudflare Pages `apps/web/dist` (current live URL).
+- `niagantara.com` and `www`: custom domain target (pending DNS configuration).
 - `app`, `master`, `pos`: matching Cloudflare static app `dist` directories.
 - `api`: `Dockerfile.api` on a Node 22-compatible container host, proxied through Cloudflare.
 - sheet worker: `Dockerfile.worker` as a private independent Node service with no inbound public route.

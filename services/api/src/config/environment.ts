@@ -10,7 +10,7 @@ export interface ServerEnvironment {
   rateLimitWindowMs: number; rateLimitDefault: number; googleClientId?: string; googleClientSecret?: string;
   googleRedirectUri?: string; googleTokenEncryptionKey?: string; logLevel: string;
 }
-const productionOrigins = ['https://niagantara.com','https://www.niagantara.com','https://app.niagantara.com','https://master.niagantara.com','https://pos.niagantara.com'];
+const productionOrigins = ['https://niagantara-web.pages.dev','https://niagantara.com','https://www.niagantara.com','https://app.niagantara.com','https://master.niagantara.com','https://pos.niagantara.com'];
 const developmentOrigins = ['http://localhost:5173','http://localhost:5174','http://localhost:5175','http://localhost:5176'];
 const googleOAuthCallbackPath = '/api/v1/google-sheets/oauth/callback';
 const productionGoogleOAuthHosts = new Set(['api.niagantara.com','niagantara-production.up.railway.app']);

@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://niagantara.com';
+export const SITE_URL = 'https://niagantara-web.pages.dev';
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface SeoMeta {

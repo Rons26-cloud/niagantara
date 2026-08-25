@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /demo/
 
-Sitemap: https://niagantara.com/sitemap.xml
+Sitemap: https://niagantara-web.pages.dev/sitemap.xml
