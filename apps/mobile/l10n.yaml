@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+# Generate real sources inside lib/l10n instead of a synthetic package,
+# so imports stay stable across Flutter versions.
+synthetic-package: false
+nullable-getter: false

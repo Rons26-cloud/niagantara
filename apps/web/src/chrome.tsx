@@ -1,13 +1,48 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
-  BrandLogo,
-  BrandMark,
   ThemeSwitcher,
   LanguageSwitcher,
   useTranslation,
+  useTheme,
 } from '@niagantara/ui';
 import { Link, usePath } from './router';
+
+/**
+ * Theme-aware image: swaps between the light-surface and dark-surface
+ * derivative of the SAME official brand asset. Never recolors via CSS.
+ */
+export function ThemeImage({
+  lightSrc,
+  darkSrc,
+  alt,
+  className,
+  width,
+  height,
+  loading = 'lazy',
+}: {
+  lightSrc: string;
+  darkSrc?: string;
+  alt: string;
+  className?: string;
+  width?: number;
+  height?: number;
+  loading?: 'eager' | 'lazy';
+}) {
+  const { theme } = useTheme();
+  return (
+    <img
+      className={className}
+      src={theme === 'blue' && darkSrc ? darkSrc : lightSrc}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding="async"
+      draggable={false}
+    />
+  );
+}
 
 export function Navbar() {
   const [menu, setMenu] = useState(false);
@@ -43,9 +78,30 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="container nav-inner">
-        <BrandLogo href="/" className="nav-brand-full" />
+        <Link to="/" className="brand nav-brand-full" ariaLabel={t('brand.name')}>
+          <ThemeImage
+            lightSrc="/logo.png"
+            darkSrc="/niagantara-logo-dark.png"
+            alt="NIAGANTARA"
+            className="brand-logo-img"
+            width={840}
+            height={324}
+            loading="eager"
+          />
+          <span className="brand-copy">
+            <small>BUSINESS CONTROL PLATFORM</small>
+          </span>
+        </Link>
         <Link to="/" className="brand navbar-brand" ariaLabel={t('brand.name')}>
-          <BrandMark size={30} />
+          <ThemeImage
+            lightSrc="/brand-mark.png"
+            darkSrc="/niagantara-mark-dark.png"
+            alt=""
+            className="navbar-mark"
+            width={576}
+            height={628}
+            loading="eager"
+          />
           <span className="brand-word">NIAGANTARA</span>
         </Link>
         <nav aria-label={t('nav.primary')}>
@@ -96,7 +152,15 @@ export function Navbar() {
           inert={!menu}
         >
           <div className="drawer-head">
-            <BrandMark size={26} />
+            <ThemeImage
+              lightSrc="/brand-mark.png"
+              darkSrc="/niagantara-mark-dark.png"
+              alt=""
+              className="drawer-mark"
+              width={576}
+              height={628}
+              loading="eager"
+            />
             <strong className="drawer-title">NIAGANTARA</strong>
             <button
               ref={closeButtonRef}
@@ -145,34 +209,91 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="container footer-grid">
-        <div>
-          <BrandLogo />
-          <p>{t('website.footer.tagline')}</p>
-          <small>{t('website.footer.rights')}</small>
+        <div className="fbrand">
+          <Link to="/" className="fbrand-logo" ariaLabel={t('brand.name')}>
+            <ThemeImage
+              lightSrc="/logo.png"
+              darkSrc="/niagantara-logo-dark.png"
+              alt="NIAGANTARA"
+              className="fbrand-img"
+              width={840}
+              height={324}
+              loading="lazy"
+            />
+          </Link>
+          <strong className="fbrand-tag">{t('website.footer.tagline')}</strong>
+          <p>{t('website.footer.description')}</p>
         </div>
-        <div>
+
+        <nav className="fcol" aria-label={t('website.footer.productsHeading')}>
           <h4>{t('website.footer.productsHeading')}</h4>
+          <Link to="/fitur">{t('website.footer.features')}</Link>
+          <Link to="/solusi">{t('website.footer.solutions')}</Link>
+          <Link to="/harga">{t('website.footer.pricing')}</Link>
           <Link to="/solusi">{t('website.footer.pos')}</Link>
-          <Link to="/solusi">{t('website.footer.inventory')}</Link>
-          <Link to="/fitur">{t('website.footer.finance')}</Link>
-          <Link to="/fitur">{t('website.footer.reports')}</Link>
-          <Link to="/solusi">{t('website.footer.sheets')}</Link>
-        </div>
-        <div>
+          <a href="https://niagantara-app.pages.dev" rel="noopener">
+            {t('website.footer.dashboard')}
+          </a>
+        </nav>
+
+        <nav className="fcol" aria-label={t('website.footer.companyHeading')}>
           <h4>{t('website.footer.companyHeading')}</h4>
           <Link to="/tentang">{t('website.footer.about')}</Link>
-          <Link to="/kontak">{t('website.footer.contact')}</Link>
-        </div>
-        <div>
-          <h4>{t('website.footer.helpHeading')}</h4>
           <Link to="/faq">{t('website.footer.faq')}</Link>
+          <Link to="/kontak">{t('website.footer.contact')}</Link>
           <a href="mailto:support@niagantara.com">{t('website.footer.helpCenter')}</a>
+        </nav>
+
+        <div className="fcol fcontact">
+          <h4>{t('website.footer.contactHeading')}</h4>
+          <a className="fmail" href="mailto:hello@niagantara.com">
+            <b>hello@niagantara.com</b>
+            <small>{t('website.footer.contactGeneral')}</small>
+          </a>
+          <a className="fmail" href="mailto:support@niagantara.com">
+            <b>support@niagantara.com</b>
+            <small>{t('website.footer.contactSupport')}</small>
+          </a>
+          <a className="fmail" href="mailto:security@niagantara.com">
+            <b>security@niagantara.com</b>
+            <small>{t('website.footer.contactSecurity')}</small>
+          </a>
+          <a className="fmail" href="mailto:billing@niagantara.com">
+            <b>billing@niagantara.com</b>
+            <small>{t('website.footer.contactBilling')}</small>
+          </a>
         </div>
-        <div>
+
+        <nav className="fcol flegal" aria-label={t('website.footer.legalHeading')}>
           <h4>{t('website.footer.legalHeading')}</h4>
           <Link to="/privacy">{t('website.footer.privacy')}</Link>
           <Link to="/terms">{t('website.footer.terms')}</Link>
+          <a href="mailto:security@niagantara.com">{t('website.footer.security')}</a>
+        </nav>
+      </div>
+
+      {/* Secondary system/administration contacts — kept out of the primary block */}
+      <div className="container fsystemic">
+        <small className="fsystemic-head">{t('website.footer.systemicHeading')}</small>
+        <div className="fsystemic-row">
+          <a className="fchip" href="mailto:admin@niagantara.com">
+            admin@niagantara.com
+            <small>{t('website.footer.contactAdmin')}</small>
+          </a>
+          {/* Automated sender — intentionally NOT a mailto link */}
+          <span className="fchip static">
+            no-reply@niagantara.com
+            <small>{t('website.footer.contactNoreply')}</small>
+          </span>
+          <a className="fchip" href="mailto:niagantara.official@gmail.com">
+            niagantara.official@gmail.com
+            <small>{t('website.footer.contactGmail')}</small>
+          </a>
         </div>
+      </div>
+
+      <div className="container fbottom">
+        <small>{t('website.footer.rights')}</small>
       </div>
     </footer>
   );

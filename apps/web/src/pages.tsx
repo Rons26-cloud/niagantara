@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrandLogo, useTranslation } from '@niagantara/ui';
-import { Shell, Button, Kicker, Heading } from './chrome';
+import { Shell, Button, Kicker, Heading, ThemeImage } from './chrome';
 import { Link } from './router';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
 
@@ -31,7 +31,7 @@ export function HeroSection() {
           <p>{w.hero.subtitle}</p>
           <div className="actions">
             <Button to="/kontak">{w.hero.cta}</Button>
-            <Button secondary to="/fitur">{w.hero.demo} <small>▶</small></Button>
+            <Button secondary to="/demo">{w.hero.demo} <small>▶</small></Button>
           </div>
           <div className="trust">
             {w.hero.trust.map((x) => <span key={x}>✓ {x}</span>)}
@@ -153,7 +153,7 @@ export function BranchesSection() {
         </div>
         <div className="orbit" aria-hidden="true">
           <div className="orbit-ring" /><div className="orbit-ring inner" />
-          <div className="orbit-center"><img className="orbit-logo" src="/brand-mark.png" alt="" loading="lazy" decoding="async" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
+          <div className="orbit-center"><ThemeImage lightSrc="/brand-mark.png" darkSrc="/niagantara-mark-dark.png" alt="" className="orbit-logo" width={576} height={628} loading="lazy" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
           <div className="orbit-card one"><b>POS</b><small>Kasir</small></div>
           <div className="orbit-card two"><b>Stok</b><small>Inventory</small></div>
           <div className="orbit-card three"><b>Laporan</b><small>Finance</small></div>

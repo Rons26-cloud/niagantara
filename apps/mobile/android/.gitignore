@@ -1,0 +1,7 @@
+gradle-wrapper.jar
+.gradle/
+local.properties
+key.properties
+*.jks
+*.keystore
+app/upload-keystore.jks
