@@ -50,7 +50,7 @@ export const id = {
 
   // Dashboard
   dashboard: {
-    title: 'Dashboard',
+    title: 'Owner Dashboard',
     overview: 'Ringkasan',
     todaySales: 'Penjualan Hari Ini',
     todayProfit: 'Laba Hari Ini',
@@ -82,12 +82,13 @@ export const id = {
       integration: 'Integrasi',
       company: 'Perusahaan',
       team: 'Tim',
+      account: 'Akun',
     },
   },
 
   // Pages
   pages: {
-    dashboard: 'Dasbor',
+    dashboard: 'Beranda',
     pos: 'POS / Kasir',
     sales: 'Penjualan',
     shifts: 'Shift Kasir',

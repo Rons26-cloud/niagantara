@@ -17,7 +17,10 @@ class ApiClient {
               connectTimeout: AppConfig.connectTimeout,
               receiveTimeout: AppConfig.receiveTimeout,
               headers: {'content-type': 'application/json'},
-              validateStatus: (status) => status != null && status < 500,
+              // Make 4xx responses enter the error path so a 401 clears the
+              // invalid local session instead of being returned as success.
+              validateStatus: (status) =>
+                  status != null && status >= 200 && status < 300,
             )),
         _sessionStore = sessionStore ?? SessionStore() {
     _dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) async {
@@ -25,13 +28,15 @@ class ApiClient {
       if (token != null && token.isNotEmpty) {
         options.headers['authorization'] = 'Bearer $token';
       }
-      final companyId = await _sessionStore.readActiveCompanyId();
-      if (companyId != null && companyId.isNotEmpty) {
-        options.headers['x-company-id'] = companyId;
-      }
-      final branchId = await _sessionStore.readActiveBranchId();
-      if (branchId != null && branchId.isNotEmpty) {
-        options.headers['x-branch-id'] = branchId;
+      if (options.extra['withTenantHeaders'] != false) {
+        final companyId = await _sessionStore.readActiveCompanyId();
+        if (companyId != null && companyId.isNotEmpty) {
+          options.headers['x-company-id'] = companyId;
+        }
+        final branchId = await _sessionStore.readActiveBranchId();
+        if (branchId != null && branchId.isNotEmpty) {
+          options.headers['x-branch-id'] = branchId;
+        }
       }
       handler.next(options);
     }));
@@ -49,24 +54,44 @@ class ApiClient {
     Map<String, dynamic>? query,
     bool withTenantHeaders = true,
   }) =>
-      _request('GET', path, query: query);
+      _request('GET', path, query: query, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> post(String path, {Object? body}) => _request('POST', path, body: body);
+  Future<dynamic> post(
+    String path, {
+    Object? body,
+    bool withTenantHeaders = true,
+  }) =>
+      _request('POST', path,
+          body: body, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> patch(String path, {Object? body}) => _request('PATCH', path, body: body);
+  Future<dynamic> patch(
+    String path, {
+    Object? body,
+    bool withTenantHeaders = true,
+  }) =>
+      _request('PATCH', path,
+          body: body, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> delete(String path) => _request('DELETE', path);
+  Future<dynamic> delete(
+    String path, {
+    bool withTenantHeaders = true,
+  }) =>
+      _request('DELETE', path, withTenantHeaders: withTenantHeaders);
 
   Future<dynamic> _request(
     String method,
     String path, {
     Map<String, dynamic>? query,
     Object? body,
+    bool withTenantHeaders = true,
   }) async {
     try {
       final response = await _dio.request<dynamic>(
         path,
-        options: Options(method: method),
+        options: Options(
+          method: method,
+          extra: {'withTenantHeaders': withTenantHeaders},
+        ),
         queryParameters: query,
         data: body,
       );

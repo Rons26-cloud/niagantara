@@ -129,6 +129,18 @@ export function DashboardHome({
     [company, token],
   );
 
+  useEffect(() => {
+    const onRealtime = (event: Event) => {
+      const resources = (event as CustomEvent<{ resources?: string[] }>).detail?.resources ?? [];
+      if (resources.includes('sales')) sales.reload();
+      if (resources.includes('inventory')) lowStock.reload();
+      if (resources.includes('finance')) finance.reload();
+      if (resources.includes('sheets')) sheets.reload();
+    };
+    window.addEventListener('niagantara:realtime', onRealtime);
+    return () => window.removeEventListener('niagantara:realtime', onRealtime);
+  }, [sales.reload, lowStock.reload, finance.reload, sheets.reload]);
+
   const paidSales = useMemo(
     () =>
       (sales.data ?? []).filter((s) =>

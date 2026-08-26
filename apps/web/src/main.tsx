@@ -4,21 +4,39 @@ import { createRoot } from 'react-dom/client';
 import { initTheme } from '@niagantara/ui/theme';
 import { BrandLogo, getLanguage } from '@niagantara/ui';
 import { NavigateProvider, usePath, Seo, navigate } from './router';
-import { HomePage } from './pages';
 import './styles.css';
 import './theme-overrides.css';
 
 initTheme();
 document.documentElement.lang = getLanguage();
 
-const FeaturesPage = lazy(() => import('./pages').then((m) => ({ default: m.FeaturesPage })));
-const SolutionsPage = lazy(() => import('./pages').then((m) => ({ default: m.SolutionsPage })));
-const PricingPage = lazy(() => import('./pages').then((m) => ({ default: m.PricingPage })));
-const AboutPage = lazy(() => import('./pages').then((m) => ({ default: m.AboutPage })));
-const FaqPage = lazy(() => import('./pages').then((m) => ({ default: m.FaqPage })));
-const ContactPage = lazy(() => import('./pages').then((m) => ({ default: m.ContactPage })));
-const PrivacyPage = lazy(() => import('./legal').then((m) => ({ default: m.PrivacyPage })));
-const TermsPage = lazy(() => import('./legal').then((m) => ({ default: m.TermsPage })));
+const HomePage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.HomePage })),
+);
+const FeaturesPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.FeaturesPage })),
+);
+const SolutionsPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.SolutionsPage })),
+);
+const PricingPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.PricingPage })),
+);
+const AboutPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.AboutPage })),
+);
+const FaqPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.FaqPage })),
+);
+const ContactPage = lazy(() =>
+  import('./pages').then((m) => ({ default: m.ContactPage })),
+);
+const PrivacyPage = lazy(() =>
+  import('./legal').then((m) => ({ default: m.PrivacyPage })),
+);
+const TermsPage = lazy(() =>
+  import('./legal').then((m) => ({ default: m.TermsPage })),
+);
 const DemoApp = lazy(() =>
   import('./demo/demo-app').then((m) => ({ default: m.DemoApp })),
 );
@@ -59,7 +77,9 @@ function App() {
     return (
       <NavigateProvider value={navigate}>
         <Seo path={path} />
-        <HomePage />
+        <Suspense fallback={<PageFallback />}>
+          <HomePage />
+        </Suspense>
       </NavigateProvider>
     );
   }
@@ -88,7 +108,16 @@ function PageFallback() {
   return (
     <div className="site">
       <main className="legal">
-        <div className="container" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          className="container"
+          style={{
+            textAlign: 'center',
+            minHeight: '60vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <BrandLogo />
         </div>
       </main>
@@ -125,7 +154,9 @@ function NotFound() {
       document.head.appendChild(robots);
     }
     robots.content = 'noindex, nofollow';
-    return () => { robots!.content = 'index, follow'; };
+    return () => {
+      robots!.content = 'index, follow';
+    };
   }, []);
 
   return (
@@ -135,7 +166,11 @@ function NotFound() {
           <BrandLogo />
           <h1>404</h1>
           <p>Halaman tidak ditemukan.</p>
-          <p><a className="back" href="/">← Kembali ke beranda</a></p>
+          <p>
+            <a className="back" href="/">
+              ← Kembali ke beranda
+            </a>
+          </p>
         </div>
       </main>
     </div>

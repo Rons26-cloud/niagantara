@@ -2,19 +2,19 @@
 
 Multi-tenant business platform — operational dashboards, POS, inventory, finance, reporting, and Google Sheets sync.
 
-![Website Preview](docs/screenshots/web-desktop.png)
+![Website Preview](docs/screenshots/o1.jpg)
 
 ## Stack
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 19, Vite 7, TypeScript |
-| API | NestJS 11, Fastify, Supabase JS |
-| Database | Supabase PostgreSQL (RLS) |
-| Auth | Supabase Auth + custom SMTP |
-| Queue | Node worker (Supabase Realtime) |
-| Monorepo | pnpm workspaces, Turborepo |
-| Hosting | Cloudflare Pages, Railway |
+| Layer    | Tech                            |
+| -------- | ------------------------------- |
+| Frontend | React 19, Vite 7, TypeScript    |
+| API      | NestJS 11, Fastify, Supabase JS |
+| Database | Supabase PostgreSQL (RLS)       |
+| Auth     | Supabase Auth + custom SMTP     |
+| Queue    | Node worker (Supabase Realtime) |
+| Monorepo | pnpm workspaces, Turborepo      |
+| Hosting  | Cloudflare Pages, Railway       |
 
 ## Repository layout
 
@@ -119,7 +119,7 @@ All operational docs live in `docs/`:
 - `MIGRATIONS.md` — database migration workflow
 - `OBSERVABILITY.md` — logging and monitoring
 - `RECOVERY.md` — incident response
-- `SECURITY.md` — security policies
+- [`SECURITY.md`](SECURITY.md) — security policies
 - `BRAND_ASSETS.md` — logo and branding
 
 ## Security

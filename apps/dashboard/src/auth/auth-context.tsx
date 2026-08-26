@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 export type SessionUser = { id: string; email?: string };
 type AuthState = {
   user: SessionUser | null;
   accessToken: string | null;
-  setSession: (user: SessionUser, token: string) => void;
+  setSession: (user: SessionUser, token: string, refreshToken?: string) => void;
   clearSession: () => void;
 };
 const KEY = 'niagantara.dashboard.session.v1';
@@ -21,23 +22,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setToken] = useState<string | null>(
     initial?.accessToken ?? null,
   );
+  const realtimeAuth = useRef(
+    import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
+      ? createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: false },
+        })
+      : null,
+  );
+  useEffect(() => {
+    const client = realtimeAuth.current;
+    if (!client) return;
+    if (initial?.accessToken && initial?.refreshToken) {
+      void client.auth.setSession({ access_token: initial.accessToken, refresh_token: initial.refreshToken });
+    }
+    const { data } = client.auth.onAuthStateChange((_event, session) => {
+      if (!session?.access_token) return;
+      setToken(session.access_token);
+      const current = saved();
+      sessionStorage.setItem(KEY, JSON.stringify({ user: current?.user ?? user, accessToken: session.access_token, refreshToken: session.refresh_token }));
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
   return (
     <AuthContext.Provider
       value={{
         user,
         accessToken,
-        setSession: (u, t) => {
+        setSession: (u, t, refreshToken) => {
           setUser(u);
           setToken(t);
           sessionStorage.setItem(
             KEY,
-            JSON.stringify({ user: u, accessToken: t }),
+            JSON.stringify({ user: u, accessToken: t, refreshToken }),
           );
+          if (refreshToken) void realtimeAuth.current?.auth.setSession({ access_token: t, refresh_token: refreshToken });
         },
         clearSession: () => {
           setUser(null);
           setToken(null);
           sessionStorage.removeItem(KEY);
+          void realtimeAuth.current?.auth.signOut({ scope: 'local' });
         },
       }}
     >

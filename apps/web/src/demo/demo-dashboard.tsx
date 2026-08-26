@@ -1,9 +1,20 @@
+import { useState } from 'react';
 import { StatCard, Card, Badge, useTranslation } from '@niagantara/ui';
 import { useDemoStore } from './demo-store';
 import { navigate } from '../router';
-import { TrendingUp, Plus, Package, BarChart3, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import {
+  TrendingUp,
+  Plus,
+  Package,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from 'lucide-react';
 
-const BRANCH_FACTORS: Record<string, { sales: number; profit: number; trx: number }> = {
+const BRANCH_FACTORS: Record<
+  string,
+  { sales: number; profit: number; trx: number }
+> = {
   'branch-1': { sales: 1, profit: 1, trx: 1 },
   'branch-2': { sales: 0.42, profit: 0.38, trx: 0.45 },
   'branch-3': { sales: 0.27, profit: 0.24, trx: 0.3 },
@@ -13,6 +24,9 @@ const WEEK = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as const;
 
 export function DemoDashboard() {
   const { t } = useTranslation();
+  const today = new Date().toISOString().slice(0, 10);
+  const [from, setFrom] = useState(today);
+  const [to, setTo] = useState(today);
   const {
     dashboardMetrics,
     products,
@@ -23,8 +37,7 @@ export function DemoDashboard() {
   } = useDemoStore();
 
   const factor = BRANCH_FACTORS[selectedBranch] ?? BRANCH_FACTORS['branch-1'];
-  const branchName =
-    branches.find((b) => b.id === selectedBranch)?.name ?? '';
+  const branchName = branches.find((b) => b.id === selectedBranch)?.name ?? '';
 
   const lowStockProducts = products.filter((p) => p.stock <= p.minimumStock);
   const recentSales = sales.slice(0, 5);
@@ -37,7 +50,9 @@ export function DemoDashboard() {
       minimumFractionDigits: 0,
     }).format(Math.round(amount));
 
-  const baseWeek = [4200000, 5100000, 3800000, 6200000, 7500000, 8900000, 4850000];
+  const baseWeek = [
+    4200000, 5100000, 3800000, 6200000, 7500000, 8900000, 4850000,
+  ];
   const salesChartData = WEEK.map((day, i) => ({
     day,
     value: Math.round(baseWeek[i] * factor.sales),
@@ -53,33 +68,74 @@ export function DemoDashboard() {
   ];
 
   const topProducts = [...products]
-    .sort((a, b) => b.sellingPrice * (b.minimumStock + 10) - a.sellingPrice * (a.minimumStock + 10))
+    .sort(
+      (a, b) =>
+        b.sellingPrice * (b.minimumStock + 10) -
+        a.sellingPrice * (a.minimumStock + 10),
+    )
     .slice(0, 5)
     .map((product, i) => ({
       ...product,
-      sold: ((product.minimumStock + 7) * (5 - i)) + 12,
+      sold: (product.minimumStock + 7) * (5 - i) + 12,
     }));
 
   const quickActions: { icon: React.ReactNode; label: string; to: string }[] = [
-    { icon: <TrendingUp size={18} />, label: t('demo.newSale'), to: '/demo/pos' },
-    { icon: <Plus size={18} />, label: t('demo.addProduct'), to: '/demo/products' },
-    { icon: <Package size={18} />, label: t('demo.checkStock'), to: '/demo/inventory' },
-    { icon: <BarChart3 size={18} />, label: t('demo.viewReports'), to: '/demo/reports' },
+    {
+      icon: <TrendingUp size={18} />,
+      label: t('demo.newSale'),
+      to: '/demo/pos',
+    },
+    {
+      icon: <Plus size={18} />,
+      label: t('demo.addProduct'),
+      to: '/demo/products',
+    },
+    {
+      icon: <Package size={18} />,
+      label: t('demo.checkStock'),
+      to: '/demo/inventory',
+    },
+    {
+      icon: <BarChart3 size={18} />,
+      label: t('demo.viewReports'),
+      to: '/demo/reports',
+    },
   ];
 
   return (
     <div className="demo-dashboard">
+      <div className="demo-owner-filterbar">
+        <label>
+          <span>{t('common.date')}</span>
+          <input
+            type="date"
+            value={from}
+            max={to}
+            onChange={(event) => setFrom(event.target.value)}
+          />
+        </label>
+        <span className="demo-owner-filter-arrow" aria-hidden="true">
+          →
+        </span>
+        <label>
+          <span>{t('common.date')}</span>
+          <input
+            type="date"
+            value={to}
+            min={from}
+            onChange={(event) => setTo(event.target.value)}
+          />
+        </label>
+        <span className="demo-owner-branch">
+          {t('context.branch')}: <b>{branchName}</b>
+        </span>
+      </div>
+
       <div className="demo-metrics-grid">
         <StatCard
           label={t('dashboard.todaySales')}
           value={formatCurrency(dashboardMetrics.todaySales * factor.sales)}
           note={`↗ 12,8% · ${branchName}`}
-          tone="success"
-        />
-        <StatCard
-          label={t('dashboard.todayProfit')}
-          value={formatCurrency(dashboardMetrics.todayProfit * factor.profit)}
-          note="↗ 8,4%"
           tone="success"
         />
         <StatCard
@@ -94,16 +150,47 @@ export function DemoDashboard() {
           tone="warning"
         />
         <StatCard
-          label={t('dashboard.productsSold')}
-          value={Math.round(dashboardMetrics.productsSold * factor.trx)}
-          note={t('dashboard.totalProducts')}
+          label={t('dashboard.averageTransaction')}
+          value={formatCurrency(
+            (dashboardMetrics.todaySales * factor.sales) /
+              Math.max(
+                1,
+                Math.round(dashboardMetrics.todayTransactions * factor.trx),
+              ),
+          )}
+          note="PAID"
+        />
+      </div>
+
+      <div className="demo-metrics-grid demo-finance-metrics">
+        <StatCard
+          label={t('website.finance.revenue')}
+          value={formatCurrency(dashboardMetrics.todaySales * factor.sales)}
+        />
+        <StatCard
+          label={t('pages.expenses')}
+          value={formatCurrency(1825000 * factor.sales)}
+        />
+        <StatCard
+          label={t('pages.payables')}
+          value={formatCurrency(4750000 * factor.sales)}
+          note="period purchases"
+        />
+        <StatCard
+          label={t('dashboard.todayProfit')}
+          value={formatCurrency(dashboardMetrics.todayProfit * factor.profit)}
+          tone="success"
         />
       </div>
 
       <div className="demo-charts-grid">
         <Card title={t('demo.salesChart')}>
           <div className="demo-chart-container">
-            <div className="demo-bar-chart" role="img" aria-label={t('demo.salesChart')}>
+            <div
+              className="demo-bar-chart"
+              role="img"
+              aria-label={t('demo.salesChart')}
+            >
               {salesChartData.map((item) => (
                 <div key={item.day} className="demo-bar-group">
                   <div
@@ -125,7 +212,10 @@ export function DemoDashboard() {
                 <li key={item.category}>
                   <span>{item.category}</span>
                   <span className="demo-dist-track" aria-hidden="true">
-                    <i className="demo-dist-fill" style={{ width: `${item.value}%` }} />
+                    <i
+                      className="demo-dist-fill"
+                      style={{ width: `${item.value}%` }}
+                    />
                   </span>
                   <b>{item.value}%</b>
                 </li>
@@ -140,26 +230,39 @@ export function DemoDashboard() {
           <ul className="demo-mini-list">
             {recentSales.map((sale) => (
               <li key={sale.id}>
-                <span className="demo-rank" aria-hidden="true"><ArrowUpRight size={14} /></span>
+                <span className="demo-rank" aria-hidden="true">
+                  <ArrowUpRight size={14} />
+                </span>
                 <span className="demo-mini-main">
                   <b>{sale.invoice}</b>
-                  <small>{sale.customer} • {sale.cashier}</small>
+                  <small>
+                    {sale.customer} • {sale.cashier}
+                  </small>
                 </span>
                 <Badge tone={sale.status === 'PAID' ? 'success' : 'warning'}>
                   {sale.status}
                 </Badge>
-                <span className="demo-mini-value">{formatCurrency(sale.total)}</span>
+                <span className="demo-mini-value">
+                  {formatCurrency(sale.total)}
+                </span>
               </li>
             ))}
             {recentMovements.slice(0, 2).map((mov) => (
               <li key={mov.id}>
-                <span className="demo-rank" aria-hidden="true"><ArrowDownLeft size={14} /></span>
+                <span className="demo-rank" aria-hidden="true">
+                  <ArrowDownLeft size={14} />
+                </span>
                 <span className="demo-mini-main">
                   <b>{mov.productName}</b>
-                  <small>{mov.type} • {mov.date}</small>
+                  <small>
+                    {mov.type} • {mov.date}
+                  </small>
                 </span>
-                <span className={`demo-mini-value ${mov.quantity < 0 ? 'demo-negative' : 'demo-positive'}`}>
-                  {mov.quantity > 0 ? '+' : ''}{mov.quantity}
+                <span
+                  className={`demo-mini-value ${mov.quantity < 0 ? 'demo-negative' : 'demo-positive'}`}
+                >
+                  {mov.quantity > 0 ? '+' : ''}
+                  {mov.quantity}
                 </span>
               </li>
             ))}
@@ -168,19 +271,28 @@ export function DemoDashboard() {
 
         <Card title={t('dashboard.lowStock')}>
           <ul className="demo-mini-list demo-mini-list--stock">
-            {(lowStockProducts.length ? lowStockProducts : products.slice(0, 4)).slice(0, 5).map((product) => (
-              <li key={product.id}>
-                <span className="demo-mini-main">
-                  <b>{product.name}</b>
-                  <small>
-                    {product.stock} / min {product.minimumStock} {product.unit}
-                  </small>
-                </span>
-                <Badge tone={product.stock <= product.minimumStock ? 'danger' : 'success'}>
-                  {product.stock <= product.minimumStock ? 'LOW' : 'OK'}
-                </Badge>
-              </li>
-            ))}
+            {(lowStockProducts.length ? lowStockProducts : products.slice(0, 4))
+              .slice(0, 5)
+              .map((product) => (
+                <li key={product.id}>
+                  <span className="demo-mini-main">
+                    <b>{product.name}</b>
+                    <small>
+                      {product.stock} / min {product.minimumStock}{' '}
+                      {product.unit}
+                    </small>
+                  </span>
+                  <Badge
+                    tone={
+                      product.stock <= product.minimumStock
+                        ? 'danger'
+                        : 'success'
+                    }
+                  >
+                    {product.stock <= product.minimumStock ? 'LOW' : 'OK'}
+                  </Badge>
+                </li>
+              ))}
           </ul>
         </Card>
 
@@ -188,7 +300,9 @@ export function DemoDashboard() {
           <ol className="demo-mini-list">
             {topProducts.map((product, index) => (
               <li key={product.id}>
-                <span className="demo-product-rank demo-rank">#{index + 1}</span>
+                <span className="demo-product-rank demo-rank">
+                  #{index + 1}
+                </span>
                 <span className="demo-mini-main">
                   <b>{product.name}</b>
                   <small>{product.category}</small>
@@ -220,8 +334,12 @@ export function DemoDashboard() {
               ● {t('demo.sheetsConnected')}
             </span>
             <div className="demo-sheets-info">
-              <span>{t('demo.lastSync')}: <b>Hari ini, 09:15</b></span>
-              <span>{t('demo.activeSheet')}: <b>Q3_Business_Report</b></span>
+              <span>
+                {t('demo.lastSync')}: <b>Hari ini, 09:15</b>
+              </span>
+              <span>
+                {t('demo.activeSheet')}: <b>Q3_Business_Report</b>
+              </span>
             </div>
           </div>
         </Card>

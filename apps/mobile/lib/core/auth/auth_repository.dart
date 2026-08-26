@@ -15,7 +15,7 @@ class AuthRepository {
     final res = await _api.post('/auth/login', body: {
       'email': email.trim().toLowerCase(),
       'password': password,
-    }) as Map<String, dynamic>;
+    }, withTenantHeaders: false) as Map<String, dynamic>;
     final session = res['session'] as Map<String, dynamic>?;
     final token = session?['access_token']?.toString();
     if (token == null || token.isEmpty) {
@@ -45,13 +45,13 @@ class AuthRepository {
       'companyName': companyName.trim(),
       if (fullName != null && fullName.trim().isNotEmpty)
         'fullName': fullName.trim(),
-    });
+    }, withTenantHeaders: false);
   }
 
   Future<void> forgotPassword(String email) async {
     await _api.post('/auth/forgot-password', body: {
       'email': email.trim().toLowerCase(),
-    });
+    }, withTenantHeaders: false);
   }
 
   /// Returns the recovery tokens issued after a valid OTP.
@@ -60,7 +60,7 @@ class AuthRepository {
     final res = await _api.post('/auth/verify-recovery', body: {
       'email': email.trim().toLowerCase(),
       'otp': otp.trim(),
-    }) as Map<String, dynamic>;
+    }, withTenantHeaders: false) as Map<String, dynamic>;
     return (
       accessToken: res['accessToken']?.toString() ?? '',
       refreshToken: res['refreshToken']?.toString() ?? '',
@@ -80,6 +80,7 @@ class AuthRepository {
         'confirmPassword': confirmPassword,
         'refreshToken': refreshToken,
       },
+      withTenantHeaders: false,
     );
     // Recovery tokens are single-use; never persist them.
   }

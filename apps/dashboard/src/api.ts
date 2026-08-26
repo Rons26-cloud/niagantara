@@ -13,12 +13,17 @@ export async function api<T>(
   companyId?: string,
   init: RequestInit = {},
 ) {
+  const storedBranch =
+    typeof sessionStorage !== 'undefined'
+      ? sessionStorage.getItem('niagantara.active-branch')
+      : null;
   const response = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: {
       'content-type': 'application/json',
       authorization: `Bearer ${token}`,
       ...(companyId ? { 'x-company-id': companyId } : {}),
+      ...(storedBranch ? { 'x-branch-id': storedBranch } : {}),
       ...init.headers,
     },
   });

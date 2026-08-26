@@ -8,7 +8,7 @@ import {
   SidebarIcon,
   USER_NAV_ICONS,
 } from '@niagantara/ui';
-import { Search, Bell, LogOut } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { useDemoStore } from './demo-store';
 import { Link, navigate } from '../router';
 
@@ -19,6 +19,7 @@ const navItems = [
   ['shifts', 'Cashier Shift'],
   ['products', 'Products'],
   ['categories', 'Categories'],
+  ['barcode', 'Barcode'],
   ['inventory', 'Inventory'],
   ['warehouses', 'Warehouses'],
   ['stock-transfer', 'Stock Transfer'],
@@ -26,9 +27,12 @@ const navItems = [
   ['suppliers', 'Suppliers'],
   ['purchases', 'Purchases'],
   ['employees', 'Employees'],
+  ['users', 'Users'],
   ['attendance', 'Attendance'],
   ['expenses', 'Expenses'],
   ['finance', 'Finance'],
+  ['payables', 'Payables'],
+  ['receivables', 'Receivables'],
   ['reports', 'Reports'],
   ['google-sheets', 'Google Sheets'],
   ['branches', 'Branches'],
@@ -46,18 +50,22 @@ const PAGE_KEYS: Partial<Record<NavId, string>> = {
 
 const NAV_GROUPS: [string, NavId[]][] = [
   ['main', ['dashboard', 'pos']],
-  ['catalog', ['products', 'categories', 'inventory']],
+  ['catalog', ['products', 'categories', 'barcode', 'inventory']],
   ['sales', ['sales', 'shifts', 'customers']],
   ['purchasing', ['purchases', 'suppliers']],
-  ['finance', ['expenses', 'finance', 'reports']],
+  ['finance', ['expenses', 'payables', 'receivables', 'reports']],
   ['integration', ['google-sheets']],
-  ['company', ['warehouses', 'stock-transfer', 'branches', 'stores']],
-  ['team', ['employees', 'attendance']],
+  ['company', ['warehouses', 'branches', 'stores']],
+  ['team', ['employees', 'attendance', 'users']],
 ];
 
 const PRIMARY_NAV: NavId[] = ['dashboard', 'pos', 'sales', 'reports'];
 
-function pageTitle(id: string, label: string, t: (k: string) => string): string {
+function pageTitle(
+  id: string,
+  label: string,
+  t: (k: string) => string,
+): string {
   const key = PAGE_KEYS[id as NavId] ?? `pages.${id}`;
   const translated = t(key);
   return translated === key ? label : translated;
@@ -132,7 +140,7 @@ export function DemoShell({
   const lowStock = products.filter((p) => p.stock <= p.minimumStock).length;
   const recentSales = sales.filter((s) => s.id.startsWith('demo-')).length;
   const notifications = [
-    ...lowStock > 0
+    ...(lowStock > 0
       ? [
           {
             id: 'low-stock',
@@ -140,8 +148,8 @@ export function DemoShell({
             detail: `${lowStock} ${t('demo.lowStockNotifications').toLowerCase()}`,
           },
         ]
-      : [],
-    ...recentSales > 0
+      : []),
+    ...(recentSales > 0
       ? [
           {
             id: 'sales',
@@ -149,7 +157,7 @@ export function DemoShell({
             detail: `${recentSales}× ${t('common.payment')}`,
           },
         ]
-      : [],
+      : []),
     {
       id: 'sheets',
       title: t('demo.googleSheetsStatus'),
@@ -169,7 +177,12 @@ export function DemoShell({
   };
 
   const sidebarItem = (id: NavId, label: string) => {
-    const iconKey = id === 'google-sheets' ? 'sheets' : id === 'stock-transfer' ? 'stock-transfer' : id;
+    const iconKey =
+      id === 'google-sheets'
+        ? 'sheets'
+        : id === 'stock-transfer'
+          ? 'stock-transfer'
+          : id;
     const Icon = USER_NAV_ICONS[iconKey] ?? USER_NAV_ICONS[id];
     return (
       <Link
@@ -213,7 +226,55 @@ export function DemoShell({
           <span className="demo-mobile-page-title">{title}</span>
           <small className="demo-mobile-brand-sub">{company}</small>
         </div>
+        <button
+          className="demo-mobile-notification"
+          aria-label={t('demo.notifications')}
+          onClick={() => setNotifOpen((open) => !open)}
+        >
+          <Bell size={18} aria-hidden="true" />
+          <span className="demo-dot" aria-hidden="true" />
+        </button>
       </div>
+
+      <div className="demo-mobile-context" aria-label={t('context.company')}>
+        <label>
+          <span>{t('context.store')}</span>
+          <select
+            value={selectedStore}
+            onChange={(event) => setSelectedStore(event.target.value)}
+          >
+            {stores.map((store) => (
+              <option key={store.id} value={store.id}>
+                {store.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>{t('context.branch')}</span>
+          <select
+            value={selectedBranch}
+            onChange={(event) => setSelectedBranch(event.target.value)}
+          >
+            {branches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {notifOpen && (
+        <div className="demo-mobile-notification-panel" role="status">
+          <b>{t('demo.notifications')}</b>
+          {notifications.map((notification) => (
+            <span key={notification.id}>
+              <strong>{notification.title}</strong>
+              <small>{notification.detail}</small>
+            </span>
+          ))}
+        </div>
+      )}
 
       {menuOpen && (
         <button
@@ -223,7 +284,11 @@ export function DemoShell({
         />
       )}
 
-      <aside id="demo-sidebar" className="demo-sidebar" aria-label={t('nav.primary')}>
+      <aside
+        id="demo-sidebar"
+        className="demo-sidebar"
+        aria-label={t('nav.primary')}
+      >
         <div className="demo-brand">
           <BrandLogo className="demo-sidebar-brand-full" />
           <BrandMark size={32} className="demo-sidebar-brand-collapsed" />
@@ -265,7 +330,7 @@ export function DemoShell({
       <main className="demo-workspace">
         <header className="demo-topbar">
           <div>
-            <p className="eyebrow">USER DASHBOARD</p>
+            <p className="eyebrow">OWNER DASHBOARD</p>
             <h1>{title}</h1>
           </div>
 
@@ -312,11 +377,19 @@ export function DemoShell({
               role="search"
               onSubmit={(e) => {
                 e.preventDefault();
-                goSearch((e.currentTarget.elements.namedItem('q') as HTMLInputElement)?.value ?? '');
+                goSearch(
+                  (e.currentTarget.elements.namedItem('q') as HTMLInputElement)
+                    ?.value ?? '',
+                );
               }}
             >
               <Search size={15} aria-hidden="true" />
-              <input name="q" type="search" placeholder={`${t('common.search')}…`} aria-label={t('common.search')} />
+              <input
+                name="q"
+                type="search"
+                placeholder={`${t('common.search')}…`}
+                aria-label={t('common.search')}
+              />
             </form>
 
             <div ref={notifRef} style={{ position: 'relative' }}>
@@ -331,7 +404,11 @@ export function DemoShell({
                 <span className="demo-dot" aria-hidden="true" />
               </button>
               {notifOpen && (
-                <div className="demo-pop" role="menu" aria-label={t('demo.notifications')}>
+                <div
+                  className="demo-pop"
+                  role="menu"
+                  aria-label={t('demo.notifications')}
+                >
                   <div className="demo-pop-head">{t('demo.notifications')}</div>
                   {notifications.map((n) => (
                     <div className="demo-pop-item" key={n.id} role="menuitem">
@@ -343,7 +420,10 @@ export function DemoShell({
               )}
             </div>
 
-            <span className="demo-profile-chip" title={`${user.name} — ${user.role}`}>
+            <span
+              className="demo-profile-chip"
+              title={`${user.name} — ${user.role}`}
+            >
               <span className="demo-user-avatar" aria-hidden="true">
                 {initials}
               </span>

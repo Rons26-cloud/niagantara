@@ -50,7 +50,7 @@ export const en = {
 
   // Dashboard
   dashboard: {
-    title: 'Dashboard',
+    title: 'Owner Dashboard',
     overview: 'Overview',
     todaySales: "Today's Sales",
     todayProfit: "Today's Profit",
@@ -82,12 +82,13 @@ export const en = {
       integration: 'Integration',
       company: 'Company',
       team: 'Team',
+      account: 'Account',
     },
   },
 
   // Pages
   pages: {
-    dashboard: 'Dashboard',
+    dashboard: 'Home',
     pos: 'POS / Cashier',
     sales: 'Sales',
     shifts: 'Cashier Shift',

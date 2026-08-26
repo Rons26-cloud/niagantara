@@ -2,8 +2,11 @@
   "name": "niagantara-v2",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@11.22.0",
-  "engines": { "node": ">=20.0.0" },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "corepack pnpm -r --if-present run build",

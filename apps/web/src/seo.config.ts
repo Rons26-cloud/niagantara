@@ -43,7 +43,12 @@ const features: SeoMeta = {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Fitur', item: `${SITE_URL}/fitur` },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Fitur',
+          item: `${SITE_URL}/fitur`,
+        },
       ],
     },
   ],
@@ -72,7 +77,12 @@ const solutions: SeoMeta = {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Solusi', item: `${SITE_URL}/solusi` },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Solusi',
+          item: `${SITE_URL}/solusi`,
+        },
       ],
     },
   ],
@@ -100,7 +110,12 @@ const pricing: SeoMeta = {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Harga', item: `${SITE_URL}/harga` },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Harga',
+          item: `${SITE_URL}/harga`,
+        },
       ],
     },
   ],
@@ -128,7 +143,12 @@ const about: SeoMeta = {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Tentang', item: `${SITE_URL}/tentang` },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Tentang',
+          item: `${SITE_URL}/tentang`,
+        },
       ],
     },
   ],
@@ -210,7 +230,12 @@ const faq: SeoMeta = {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'FAQ', item: `${SITE_URL}/faq` },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'FAQ',
+          item: `${SITE_URL}/faq`,
+        },
       ],
     },
   ],
@@ -237,8 +262,7 @@ const privacy: SeoMeta = {
 
 const terms: SeoMeta = {
   title: 'Syarat & Ketentuan — NIAGANTARA',
-  description:
-    'Syarat dan ketentuan penggunaan platform NIAGANTARA.',
+  description: 'Syarat dan ketentuan penggunaan platform NIAGANTARA.',
   ogTitle: 'Syarat & Ketentuan — NIAGANTARA',
   ogDescription: 'Syarat dan ketentuan penggunaan NIAGANTARA.',
   robots: 'index, follow',
@@ -285,6 +309,7 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/demo/pos': demoPage,
   '/demo/products': demoPage,
   '/demo/categories': demoPage,
+  '/demo/barcode': demoPage,
   '/demo/inventory': demoPage,
   '/demo/stock-transfer': demoPage,
   '/demo/sales': demoPage,
@@ -293,9 +318,12 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/demo/suppliers': demoPage,
   '/demo/purchases': demoPage,
   '/demo/employees': demoPage,
+  '/demo/users': demoPage,
   '/demo/attendance': demoPage,
   '/demo/expenses': demoPage,
   '/demo/finance': demoPage,
+  '/demo/payables': demoPage,
+  '/demo/receivables': demoPage,
   '/demo/reports': demoPage,
   '/demo/google-sheets': demoPage,
   '/demo/warehouses': demoPage,

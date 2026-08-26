@@ -19,6 +19,7 @@ export function LoginPage() {
       setSession(
         { id: result.user.id, email: result.user.email },
         result.session.access_token,
+        result.session.refresh_token,
       );
       window.location.assign('/');
     } catch {

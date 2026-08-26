@@ -27,6 +27,7 @@ import {
   LayoutDashboard,
   Building2,
   LogOut,
+  Table,
 } from 'lucide-react';
 
 export type { NavIcon } from './feature-icons';
@@ -54,7 +55,7 @@ export const USER_NAV_ICONS: Record<string, IconType> = {
   payables: HandCoins,
   receivables: BadgeDollarSign,
   reports: BarChart3,
-  sheets: Table2,
+  sheets: Table,
   warehouses: Warehouse,
   branches: GitBranch,
   stores: Store,

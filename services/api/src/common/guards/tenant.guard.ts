@@ -48,7 +48,33 @@ export class TenantGuard implements CanActivate {
       .eq('company_id', companyId)
       .eq('user_id', request.user.id)
       .eq('status', 'active');
-    const branchRoleKeys = [...new Set((branchMemberships ?? []).map((member: { role_key: string }) => member.role_key))];
+    // Only the explicitly selected branch may contribute branch permissions.
+    // Merging roles from every branch lets a privileged role in branch A
+    // authorize service-role-backed mutations against branch B.
+    const selectedBranchId = request.headers['x-branch-id'];
+    if (selectedBranchId !== undefined &&
+        (typeof selectedBranchId !== 'string' ||
+         !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(selectedBranchId))) {
+      throw new BadRequestException({ code: 'INVALID_BRANCH_ID', message: 'x-branch-id must be a valid UUID.' });
+    }
+    const selectedMembership = typeof selectedBranchId === 'string'
+      ? (branchMemberships ?? []).find((member: { branch_id: string }) => member.branch_id === selectedBranchId)
+      : undefined;
+    if (selectedBranchId && !selectedMembership) {
+      const isCompanyAdministrator = ['owner', 'company_admin'].includes(membership.role_key);
+      const { data: selectedBranch } = isCompanyAdministrator
+        ? await this.supabase.client
+            .from('branches')
+            .select('id')
+            .eq('id', selectedBranchId)
+            .eq('company_id', companyId)
+            .maybeSingle()
+        : { data: null };
+      if (!selectedBranch) {
+        throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'You do not have access to the selected branch.' });
+      }
+    }
+    const branchRoleKeys = selectedMembership ? [selectedMembership.role_key] : [];
     if (branchRoleKeys.length > 0) {
       const { data: branchRoles } = await this.supabase.client
         .from('roles')

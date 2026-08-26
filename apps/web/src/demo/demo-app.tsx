@@ -36,6 +36,7 @@ const DEMO_PAGES = [
   'shifts',
   'products',
   'categories',
+  'barcode',
   'inventory',
   'warehouses',
   'stock-transfer',
@@ -43,9 +44,12 @@ const DEMO_PAGES = [
   'suppliers',
   'purchases',
   'employees',
+  'users',
   'attendance',
   'expenses',
   'finance',
+  'payables',
+  'receivables',
   'reports',
   'google-sheets',
   'branches',
@@ -59,7 +63,8 @@ type DemoPage = (typeof DEMO_PAGES)[number];
 function readDemoPage(path: string): DemoPage {
   if (path.startsWith('/demo/')) {
     const page = path.replace('/demo/', '').replace(/\/+$/, '');
-    if ((DEMO_PAGES as readonly string[]).includes(page)) return page as DemoPage;
+    if ((DEMO_PAGES as readonly string[]).includes(page))
+      return page as DemoPage;
   }
   return 'dashboard';
 }
@@ -67,6 +72,7 @@ function readDemoPage(path: string): DemoPage {
 function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
   switch (currentPage) {
     case 'products':
+    case 'barcode':
       return <DemoProducts />;
     case 'pos':
       return <DemoPOS />;
@@ -87,12 +93,15 @@ function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
     case 'purchases':
       return <DemoPurchases />;
     case 'employees':
+    case 'users':
       return <DemoEmployees />;
     case 'attendance':
       return <DemoAttendance />;
     case 'expenses':
       return <DemoExpenses />;
     case 'finance':
+    case 'payables':
+    case 'receivables':
       return <DemoFinance />;
     case 'reports':
       return <DemoReports />;

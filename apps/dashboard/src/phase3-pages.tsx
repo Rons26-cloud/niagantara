@@ -3,6 +3,8 @@ import { api } from './api';
 export { PosPage, Receipt } from '@niagantara/pos-core';
 import { Receipt } from '@niagantara/pos-core';
 import type { PosCtx } from '@niagantara/pos-core';
+import { Button, EmptyState, ErrorState, Input, LoadingState, useTranslation } from '@niagantara/ui';
+import { Clock3, ReceiptText } from 'lucide-react';
 type Ctx = PosCtx;
 
 export function ShiftPage({
@@ -14,21 +16,17 @@ export function ShiftPage({
   token: string;
   ctx: Ctx;
 }) {
+  const { t } = useTranslation();
   const branch = ctx.accessible_branches[0],
     store = ctx.stores.find((x) => x.id === branch?.store_id);
-  const [rows, setRows] = useState<any[]>([]),
-    [cash, setCash] = useState('0'),
-    [msg, setMsg] = useState('');
-  const load = () =>
-    api<any[]>('/shifts', token, company)
-      .then(setRows)
-      .catch(() => setMsg('Shift gagal dimuat.'));
+  const [rows, setRows] = useState<any[]>([]), [cash, setCash] = useState('0'), [msg, setMsg] = useState(''), [loading, setLoading] = useState(true), [error, setError] = useState<string | null>(null);
+  const load = () => { setLoading(true); setError(null); return api<any[]>('/shifts', token, company).then(setRows).catch(() => setError('Shift gagal dimuat.')).finally(() => setLoading(false)); };
   useEffect(() => {
     void load();
   }, [company, token]);
   const open = async () => {
     if (!branch || !store) return;
-    await api('/shifts/open', token, company, {
+    try { await api('/shifts/open', token, company, {
       method: 'POST',
       headers: { 'x-branch-id': branch.id },
       body: JSON.stringify({
@@ -36,40 +34,40 @@ export function ShiftPage({
         branchId: branch.id,
         openingCash: Number(cash),
       }),
-    });
-    load();
+    }); setMsg('Shift berhasil dibuka.'); await load(); } catch { setMsg('Shift tidak dapat dibuka.'); }
   };
   const close = async (id: string) => {
-    await api(`/shifts/${id}/close`, token, company, {
+    try { await api(`/shifts/${id}/close`, token, company, {
       method: 'POST',
       body: JSON.stringify({ closingCash: Number(cash) }),
-    });
-    load();
+    }); setMsg('Shift berhasil ditutup.'); await load(); } catch { setMsg('Shift tidak dapat ditutup.'); }
   };
+  if (loading) return <LoadingState label={t('common.loading')} />;
+  if (error) return <ErrorState message={error} onRetry={load} />;
   return (
     <>
       <section className="panel">
-        <h2>Cashier Shift</h2>
-        <input
+        <h2>Shift Kasir</h2>
+        <Input
           type="number"
           min="0"
           value={cash}
           onChange={(e) => setCash(e.target.value)}
         />
         {ctx.permissions.includes('shift.open') && (
-          <button onClick={open}>Open shift</button>
+          <Button onClick={open}>Buka Shift</Button>
         )}
-        <p>{msg}</p>
+        {msg && <p className="muted" role="status">{msg}</p>}
       </section>
       <section className="panel">
-        {rows.map((x) => (
+        {rows.length === 0 ? <EmptyState icon={<Clock3 size={28} />} title="Belum ada shift" description="Buka shift untuk mulai operasional kasir." /> : rows.map((x) => (
           <div className="shift-row" key={x.id}>
             <span>
               {x.status} · {new Date(x.opened_at).toLocaleString('id-ID')}
             </span>
             <b>Opening Rp {Number(x.opening_cash).toLocaleString('id-ID')}</b>
             {x.status === 'OPEN' && ctx.permissions.includes('shift.close') && (
-              <button onClick={() => close(x.id)}>Close shift</button>
+              <Button variant="secondary" onClick={() => close(x.id)}>Tutup Shift</Button>
             )}
           </div>
         ))}
@@ -86,6 +84,7 @@ export function SalesPage({
   token: string;
   ctx: Ctx;
 }) {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<any[]>([]),
     [sale, setSale] = useState<any>(),
     [q, setQ] = useState(''),
@@ -94,13 +93,12 @@ export function SalesPage({
     [branch, setBranch] = useState(''),
     [cashier, setCashier] = useState(''),
     [from, setFrom] = useState(''),
-    [to, setTo] = useState('');
-  const load = () =>
-    api<any[]>(
+    [to, setTo] = useState(''), [loading, setLoading] = useState(true), [error, setError] = useState<string | null>(null);
+  const load = () => { setLoading(true); setError(null); return api<any[]>(
       `/sales?search=${encodeURIComponent(q)}&status=${status}&paymentMethod=${payment}&branchId=${branch}&cashierId=${cashier}&from=${from}&to=${to}`,
       token,
       company,
-    ).then(setRows);
+    ).then(setRows).catch(() => setError('Penjualan gagal dimuat.')).finally(() => setLoading(false)); };
   useEffect(() => {
     void load();
   }, [company, token]);
@@ -109,18 +107,16 @@ export function SalesPage({
   const cancel = async () => {
     const reason = prompt('Alasan pembatalan');
     if (reason && sale) {
-      await api(`/sales/${sale.id}/cancel`, token, company, {
+      try { await api(`/sales/${sale.id}/cancel`, token, company, {
         method: 'POST',
         body: JSON.stringify({ reason }),
-      });
-      setSale(undefined);
-      load();
+      }); setSale(undefined); await load(); } catch { setError('Transaksi tidak dapat dibatalkan.'); }
     }
   };
   const refund = async (partial = false) => {
     const reason = prompt('Alasan refund');
     if (reason && sale) {
-      await api(`/sales/${sale.id}/refunds`, token, company, {
+      try { await api(`/sales/${sale.id}/refunds`, token, company, {
         method: 'POST',
         body: JSON.stringify({
           reason,
@@ -138,11 +134,11 @@ export function SalesPage({
             }),
           ),
         }),
-      });
-      detail(sale.id);
-      load();
+      }); await detail(sale.id); await load(); } catch { setError('Refund tidak dapat diproses.'); }
     }
   };
+  if (loading) return <LoadingState label={t('common.loading')} />;
+  if (error) return <ErrorState message={error} onRetry={load} />;
   return (
     <>
       <section className="panel">
@@ -171,11 +167,10 @@ export function SalesPage({
             value={to}
             onChange={(e) => setTo(e.target.value)}
           />
-          <input
-            value={branch}
-            onChange={(e) => setBranch(e.target.value)}
-            placeholder="Branch ID"
-          />
+          <select value={branch} onChange={(e) => setBranch(e.target.value)} aria-label="Cabang">
+            <option value="">Semua cabang</option>
+            {ctx.accessible_branches.map((item: any) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          </select>
           <input
             value={cashier}
             onChange={(e) => setCashier(e.target.value)}
@@ -197,7 +192,7 @@ export function SalesPage({
           </select>
         </div>
         <div className="sale-list">
-          {rows.map((x) => (
+          {rows.length === 0 ? <EmptyState icon={<ReceiptText size={28} />} title="Belum ada penjualan" description="Ubah filter tanggal atau tunggu transaksi baru." /> : rows.map((x) => (
             <button key={x.id} onClick={() => detail(x.id)}>
               <b>{x.transaction_number}</b>
               <span>{new Date(x.created_at).toLocaleString('id-ID')}</span>
