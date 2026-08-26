@@ -19,6 +19,51 @@ type Props = {
   canManage: boolean;
 };
 
+function GoogleSheetsLogo({ size = 32 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 87.3 78"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M6.6 66.85H23.8V78H6.6a6.6 6.6 0 0 1-6.6-6.6V73.4a6.6 6.6 0 0 1 6.6-6.55z"
+        fill="#0066DA"
+      />
+      <path
+        d="M23.8 66.85h24.9v11.15H23.8V66.85z"
+        fill="#00AC47"
+      />
+      <path
+        d="M48.7 66.85H66a6.6 6.6 0 0 0 6.6-6.6v-2.95a6.6 6.6 0 0 0-6.6-6.55H48.7v16.1z"
+        fill="#EA4335"
+      />
+      <path
+        d="M48.7 50.75H23.8V39.6h24.9v11.15z"
+        fill="#00832D"
+      />
+      <path
+        d="M23.8 50.75H6.6a6.6 6.6 0 0 1-6.6-6.6v-2.95a6.6 6.6 0 0 1 6.6-6.55h17.2v16.1z"
+        fill="#2684FC"
+      />
+      <path
+        d="M48.7 34.6H66a6.6 6.6 0 0 0 6.6-6.6v-2.95A6.6 6.6 0 0 0 66 18.5H48.7v16.1z"
+        fill="#FFBA00"
+      />
+      <path
+        d="M48.7 18.5H23.8V7.35h24.9V18.5z"
+        fill="#00AC47"
+      />
+      <path
+        d="M23.8 18.5H6.6A6.6 6.6 0 0 1 0 11.9V8.95A6.6 6.6 0 0 1 6.6 2.4h17.2v16.1z"
+        fill="#EA4335"
+      />
+    </svg>
+  );
+}
+
 export function GoogleSheetsPage({ company, token, canManage }: Props) {
   const { t } = useTranslation();
   const [state, setState] = useState<any>(null);
@@ -81,84 +126,133 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
       </section>
     );
 
+  const isConnected = state.connection?.status === 'connected';
+  const sampleData = [
+    { date: '22 Agu', sales: 'Rp 8.420.000', profit: 'Rp 2.840.000', branch: 'Toko Pusat' },
+    { date: '21 Agu', sales: 'Rp 7.980.000', profit: 'Rp 2.510.000', branch: 'Selatan' },
+  ];
+
   return (
-    <>
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <h2>Google connection</h2>
-            <p className="muted">
-              Supabase tetap menjadi sumber data utama. Sheets hanya lapisan
-              laporan.
-            </p>
+    <div className="sheets-page">
+      {/* Header */}
+      <section className="sheets-header">
+        <div className="sheets-header-brand">
+          <GoogleSheetsLogo size={40} />
+          <div className="sheets-header-text">
+            <h1>NIAGANTARA Reporting</h1>
+            <span className={`sheets-status ${isConnected ? 'connected' : 'offline'}`}>
+              <span className="sheets-status-dot" />
+              {isConnected ? 'Connected' : 'Not connected'}
+            </span>
           </div>
-          <span
-            className={`sync-pill ${state.connection?.status ?? 'offline'}`}
-          >
-            {state.connection?.status ?? 'not connected'}
-          </span>
         </div>
-        {state.connection ? (
-          <>
-            <p>
-              Account: <b>{state.connection.google_email}</b>
-            </p>
+        {state.connection && (
+          <div className="sheets-header-account">
+            <span className="sheets-account-email">
+              {state.connection.google_email}
+            </span>
             {canManage && (
               <Button
                 variant="secondary"
-                onClick={() =>
-                  action('/google-sheets/oauth/start', { replace: true })
-                }
+                onClick={() => action('/google-sheets/oauth/start', { replace: true })}
               >
-                Replace Google account
+                Ganti Akun
               </Button>
             )}
-          </>
-        ) : canManage ? (
-          <Button onClick={() => action('/google-sheets/oauth/start')}>
-            Connect Google account
-          </Button>
-        ) : (
-          <p className="muted">Belum terhubung.</p>
+          </div>
         )}
-        {message && <p className="muted">{message}</p>}
       </section>
 
+      {/* Connection */}
+      {!state.connection && (
+        <section className="sheets-connect">
+          <GoogleSheetsLogo size={48} />
+          <h2>Hubungkan Google Sheets</h2>
+          <p>Sinkronkan data bisnis Anda ke Google Sheets untuk laporan yang lebih detail.</p>
+          {canManage ? (
+            <Button onClick={() => action('/google-sheets/oauth/start')}>
+              Hubungkan Akun Google
+            </Button>
+          ) : (
+            <p className="muted">Hubungi admin untuk menghubungkan akun Google.</p>
+          )}
+        </section>
+      )}
+
+      {message && <Alert tone="info">{message}</Alert>}
+
+      {/* Workbook */}
+      {state.workbook && (
+        <section className="sheets-workbook">
+          <div className="sheets-workbook-header">
+            <div>
+              <h2>Spreadsheet Aktif</h2>
+              <p className="muted">{state.workbook.title}</p>
+            </div>
+            {canManage && (
+              <Button variant="secondary" onClick={() => action('/google-sheets/sync')}>
+                Sync Sekarang
+              </Button>
+            )}
+          </div>
+          <div className="sheets-workbook-meta">
+            <div className="sheets-meta-item">
+              <small>Spreadsheet ID</small>
+              <span>{state.workbook.spreadsheet_id}</span>
+            </div>
+            <div className="sheets-meta-item">
+              <small>Terakhir Sync</small>
+              <span>
+                {state.workbook.last_sync_at
+                  ? new Date(state.workbook.last_sync_at).toLocaleString('id-ID')
+                  : '—'}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Create workbook */}
       {!state.workbook && canManage && (
         <WorkbookForm submit={(v) => action('/google-sheets/workbooks', v)} />
       )}
 
-      {state.workbook && (
-        <section className="panel">
-          <div className="panel-head">
-            <h2>Active workbook</h2>
-            {canManage && (
-              <Button
-                variant="secondary"
-                onClick={() => action('/google-sheets/sync')}
-              >
-                Sync now
-              </Button>
-            )}
-          </div>
-          <dl className="def-grid">
-            <dt>Title</dt>
-            <dd>{state.workbook.title}</dd>
-            <dt>Spreadsheet ID</dt>
-            <dd>{state.workbook.spreadsheet_id}</dd>
-            <dt>Last sync</dt>
-            <dd>
-              {state.workbook.last_sync_at
-                ? new Date(state.workbook.last_sync_at).toLocaleString('id-ID')
-                : '—'}
-            </dd>
-          </dl>
-        </section>
-      )}
+      {/* Preview data */}
+      <section className="sheets-preview">
+        <div className="sheets-preview-header">
+          <h2>Preview Data</h2>
+          <span className="sheets-preview-badge">Laporan Penjualan</span>
+        </div>
+        <div className="sheets-preview-filename">
+          <GoogleSheetsLogo size={18} />
+          <span>Q3_Business_Report</span>
+        </div>
+        <table className="sheets-table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Penjualan</th>
+              <th>Laba</th>
+              <th>Cabang</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sampleData.map((row, i) => (
+              <tr key={i}>
+                <td>{row.date}</td>
+                <td className="sheets-amount">{row.sales}</td>
+                <td className="sheets-amount sheets-profit">{row.profit}</td>
+                <td>{row.branch}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
 
+      {/* Sheet definitions */}
       {state.definitions?.length > 0 && (
-        <section className="panel">
-          <h2>Sheet definitions</h2>
+        <section className="sheets-definitions">
+          <h2>Sheet Definitions</h2>
           {state.definitions.map((def: any) => (
             <Definition
               key={def.id}
@@ -172,51 +266,45 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
+      {/* Sync history */}
       {history.length > 0 && (
-        <section className="panel">
-          <h2>Sync history</h2>
-          <div className="table">
-            <div className="tr head">
-              {['Type', 'Status', 'Date'].map((k) => (
-                <span key={k}>{k}</span>
-              ))}
-            </div>
-            {history.slice(0, 20).map((h: any) => (
-              <div className="tr" key={h.id}>
-                <span>{h.job_type ?? '—'}</span>
-                <span>
-                  <StatusBadge status={h.status ?? '—'} />
-                </span>
-                <span>
-                  {h.created_at
-                    ? new Date(h.created_at).toLocaleString('id-ID')
-                    : '—'}
-                </span>
+        <section className="sheets-history">
+          <h2>Riwayat Sync</h2>
+          <div className="sheets-history-list">
+            {history.slice(0, 10).map((h: any) => (
+              <div className="sheets-history-item" key={h.id}>
+                <div className="sheets-history-info">
+                  <span className="sheets-history-type">{h.job_type ?? '—'}</span>
+                  <span className="sheets-history-date">
+                    {h.created_at
+                      ? new Date(h.created_at).toLocaleString('id-ID')
+                      : '—'}
+                  </span>
+                </div>
+                <StatusBadge status={h.status ?? '—'} />
               </div>
             ))}
           </div>
         </section>
       )}
 
+      {/* Recovery */}
       {failures.length > 0 && canManage && (
-        <section className="panel">
-          <div className="panel-head">
-            <h2>Recovery center</h2>
+        <section className="sheets-recovery">
+          <div className="sheets-recovery-header">
+            <h2>Recovery Center</h2>
             <Button onClick={() => action('/google-sheets/recovery/retry')}>
-              Retry all failed
+              Retry All Failed
             </Button>
           </div>
-          <div className="table">
-            <div className="tr head">
-              {['Type', 'Error', 'Date'].map((k) => (
-                <span key={k}>{k}</span>
-              ))}
-            </div>
+          <div className="sheets-history-list">
             {failures.map((f: any) => (
-              <div className="tr" key={f.id}>
-                <span>{f.job_type ?? '—'}</span>
-                <span>{f.error_message ?? '—'}</span>
-                <span>
+              <div className="sheets-history-item sheets-history-error" key={f.id}>
+                <div className="sheets-history-info">
+                  <span className="sheets-history-type">{f.job_type ?? '—'}</span>
+                  <span className="sheets-history-error-msg">{f.error_message ?? '—'}</span>
+                </div>
+                <span className="sheets-history-date">
                   {f.created_at
                     ? new Date(f.created_at).toLocaleString('id-ID')
                     : '—'}
@@ -227,20 +315,17 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
-      <Card title="Tutorial">
+      {/* Tutorial link */}
+      <section className="sheets-tutorial">
         <Button variant="ghost" onClick={() => (location.hash = 'tutorial')}>
-          Buka tutorial →
+          Buka Tutorial →
         </Button>
-      </Card>
-    </>
+      </section>
+    </div>
   );
 }
 
-function WorkbookForm({
-  submit,
-}: {
-  submit: (v: any) => void;
-}) {
+function WorkbookForm({ submit }: { submit: (v: any) => void }) {
   const [title, setTitle] = useState('NIAGANTARA Business Report');
 
   function go(e: FormEvent) {
@@ -249,16 +334,16 @@ function WorkbookForm({
   }
 
   return (
-    <section className="panel">
-      <h2>Create reporting spreadsheet</h2>
-      <form className="search" onSubmit={go}>
+    <section className="sheets-create">
+      <h2>Buat Spreadsheet Laporan</h2>
+      <form className="sheets-create-form" onSubmit={go}>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
           maxLength={120}
         />
-        <button>Create</button>
+        <button type="submit">Buat</button>
       </form>
     </section>
   );
@@ -278,11 +363,6 @@ function Definition({
   reload: () => unknown;
 }) {
   const [title, setTitle] = useState(value.title);
-  const [column, setColumn] = useState({
-    columnKey: '',
-    label: '',
-    dataType: 'text',
-  });
 
   async function patch(path: string, body: any) {
     await api(path, token, company, {
@@ -292,41 +372,17 @@ function Definition({
     await reload();
   }
 
-  async function add(e: FormEvent) {
-    e.preventDefault();
-    await api(
-      `/google-sheets/definitions/${value.id}/columns`,
-      token,
-      company,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          ...column,
-          position: (value.columns ?? []).length,
-        }),
-      },
-    );
-    setColumn({ columnKey: '', label: '', dataType: 'text' });
-    await reload();
-  }
-
   return (
-    <div className="sheet-definition">
-      <div className="panel-head">
+    <div className="sheets-def">
+      <div className="sheets-def-header">
         <div>
           <b>{value.dataset}</b>
-          <small>
-            {value.monthly ? 'Monthly sheets' : 'Single sheet'} · {value.status}
-          </small>
+          <small>{value.monthly ? 'Monthly sheets' : 'Single sheet'} · {value.status}</small>
         </div>
         {canManage && (
-          <>
+          <div className="sheets-def-actions">
             <input value={title} onChange={(e) => setTitle(e.target.value)} />
-            <button
-              onClick={() =>
-                patch(`/google-sheets/definitions/${value.id}`, { title })
-              }
-            >
+            <button onClick={() => patch(`/google-sheets/definitions/${value.id}`, { title })}>
               Rename
             </button>
             <button
@@ -338,74 +394,17 @@ function Definition({
             >
               {value.status === 'active' ? 'Archive' : 'Restore'}
             </button>
-          </>
+          </div>
         )}
       </div>
-      <ol>
+      <div className="sheets-def-columns">
         {(value.columns ?? []).map((c: any) => (
-          <li key={c.id}>
-            <span>
-              {c.label}{' '}
-              <small>
-                {c.column_key} · {c.data_type}
-              </small>
-            </span>
-            {canManage && (
-              <>
-                <button
-                  onClick={() =>
-                    patch(`/google-sheets/columns/${c.id}`, {
-                      position: Math.max(0, c.position - 1),
-                    })
-                  }
-                >
-                  ↑
-                </button>
-                <button
-                  onClick={() =>
-                    patch(`/google-sheets/columns/${c.id}`, {
-                      position: c.position + 1,
-                    })
-                  }
-                >
-                  ↓
-                </button>
-                <button
-                  onClick={() =>
-                    patch(`/google-sheets/columns/${c.id}`, {
-                      status: c.status === 'active' ? 'archived' : 'active',
-                    })
-                  }
-                >
-                  {c.status === 'active' ? 'Archive' : 'Restore'}
-                </button>
-              </>
-            )}
-          </li>
+          <span key={c.id} className="sheets-def-col">
+            {c.label}
+            <small>{c.data_type}</small>
+          </span>
         ))}
-      </ol>
-      {canManage && (
-        <form className="search" onSubmit={add}>
-          <input
-            placeholder="column_key"
-            pattern="[a-z][a-z0-9_]*"
-            required
-            value={column.columnKey}
-            onChange={(e) =>
-              setColumn({ ...column, columnKey: e.target.value })
-            }
-          />
-          <input
-            placeholder="Label"
-            required
-            value={column.label}
-            onChange={(e) =>
-              setColumn({ ...column, label: e.target.value })
-            }
-          />
-          <button>Add column</button>
-        </form>
-      )}
+      </div>
     </div>
   );
 }
