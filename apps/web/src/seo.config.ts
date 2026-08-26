@@ -91,7 +91,7 @@ const solutions: SeoMeta = {
 const pricing: SeoMeta = {
   title: 'Harga NIAGANTARA — Paket Bisnis untuk UMKM',
   description:
-    'Lihat paket harga NIAGANTARA untuk bisnis Anda. Tersedia paket Free, Business, dan Enterprise dengan fitur yang dapat disesuaikan.',
+    'Pelajari paket NIAGANTARA untuk kebutuhan bisnis Anda. Tersedia paket Free, Business, dan Enterprise dengan fitur yang dapat disesuaikan.',
   ogTitle: 'Harga NIAGANTARA — Paket Bisnis untuk UMKM',
   ogDescription:
     'Paket harga NIAGANTARA: Free, Business, dan Enterprise untuk kebutuhan bisnis UMKM dan multi-cabang.',
@@ -177,10 +177,10 @@ const faq: SeoMeta = {
         },
         {
           '@type': 'Question',
-          name: 'Apakah bisa digunakan untuk banyak cabang?',
+          name: 'Apakah NIAGANTARA dapat digunakan untuk mengelola banyak cabang?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Bisa. Struktur Company, Store, dan Branch membantu pemilik mengelola banyak lokasi dengan akses dan data yang terisolasi.',
+            text: 'Ya. Struktur perusahaan, toko, dan cabang membantu pemilik mengelola banyak lokasi dengan akses serta data yang terpisah.',
           },
         },
         {
@@ -220,7 +220,7 @@ const faq: SeoMeta = {
           name: 'Bagaimana cara memulai?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Buat akun, buat toko, tambahkan cabang dan produk, lalu mulai kelola transaksi serta operasional Anda.',
+            text: 'Daftarkan akun, buat toko, tambahkan cabang dan produk, kemudian kelola transaksi serta operasional bisnis Anda.',
           },
         },
       ],
@@ -242,12 +242,12 @@ const faq: SeoMeta = {
 };
 
 const contact: SeoMeta = {
-  title: 'Kontak NIAGANTARA — Hubungi Tim Kami',
+  title: 'Kontak NIAGANTARA — Informasi dan Dukungan',
   description:
-    'Hubungi tim NIAGANTARA untuk pertanyaan produk, dukungan teknis, atau kerjasama bisnis. Kirim email ke hello@niagantara.com.',
-  ogTitle: 'Kontak NIAGANTARA — Hubungi Tim Kami',
+    'Hubungi tim NIAGANTARA untuk informasi produk, dukungan teknis, atau kerja sama bisnis melalui hello@niagantara.com.',
+  ogTitle: 'Kontak NIAGANTARA — Informasi dan Dukungan',
   ogDescription:
-    'Hubungi NIAGANTARA untuk pertanyaan produk dan dukungan bisnis.',
+    'Hubungi NIAGANTARA untuk memperoleh informasi produk dan dukungan bisnis.',
   robots: 'index, follow',
 };
 
@@ -269,12 +269,12 @@ const terms: SeoMeta = {
 };
 
 const demo: SeoMeta = {
-  title: 'Demo Interaktif NIAGANTARA — Coba Gratis',
+  title: 'Demonstrasi Interaktif NIAGANTARA',
   description:
-    'Coba demo interaktif NIAGANTARA untuk melihat cara kerja POS, manajemen stok, laporan, dan fitur lainnya secara langsung.',
-  ogTitle: 'Demo Interaktif NIAGANTARA — Coba Gratis',
+    'Jelajahi demonstrasi interaktif NIAGANTARA untuk mempelajari POS, pengelolaan stok, laporan, dan fitur lainnya secara langsung.',
+  ogTitle: 'Demonstrasi Interaktif NIAGANTARA',
   ogDescription:
-    'Coba demo interaktif NIAGANTARA: POS, stok, laporan, dan fitur lainnya.',
+    'Jelajahi demonstrasi interaktif NIAGANTARA yang mencakup POS, stok, laporan, dan fitur lainnya.',
   robots: 'noindex, nofollow',
 };
 

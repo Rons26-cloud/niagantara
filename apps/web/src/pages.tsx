@@ -153,7 +153,7 @@ export function BranchesSection() {
         </div>
         <div className="orbit" aria-hidden="true">
           <div className="orbit-ring" /><div className="orbit-ring inner" />
-          <div className="orbit-center"><ThemeImage lightSrc="/brand-mark.png" alt="" className="orbit-logo" width={576} height={628} loading="lazy" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
+          <div className="orbit-center"><ThemeImage lightSrc="/brand-mark-144.webp" alt="" className="orbit-logo" width={144} height={157} loading="lazy" /><strong>NIAGANTARA</strong><small>ONE SOURCE OF TRUTH</small></div>
           <div className="orbit-card one"><b>POS</b><small>Kasir</small></div>
           <div className="orbit-card two"><b>Stok</b><small>Inventory</small></div>
           <div className="orbit-card three"><b>Laporan</b><small>Finance</small></div>

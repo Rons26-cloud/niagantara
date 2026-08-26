@@ -23,7 +23,7 @@ export const id = {
     menu: 'Buka menu navigasi',
     more: 'Lainnya',
     primary: 'Navigasi utama',
-    trial: 'Coba Gratis',
+    trial: 'Uji Coba Gratis',
   },
 
   // Auth
@@ -310,8 +310,8 @@ export const id = {
       title: 'Semua Bisnis Anda<br /><span>Dalam Satu Kendali</span>',
       subtitle: 'Kelola penjualan, POS, stok, keuangan, cabang, pelanggan, dan laporan bisnis dalam satu platform terintegrasi.',
       cta: 'Mulai Sekarang',
-      demo: 'Lihat Demo',
-      trust: ['Multi-Cabang', 'Realtime', 'Aman', 'Terintegrasi'],
+      demo: 'Lihat Demonstrasi',
+      trust: ['Multi-Cabang', 'Waktu Nyata', 'Aman', 'Terintegrasi'],
       todaySales: 'Penjualan hari ini',
       lowStock: 'Stok hampir habis',
       needsAttention: 'Perlu perhatian',
@@ -325,19 +325,19 @@ export const id = {
       items: [
         { title: 'POS / Kasir', text: 'Transaksi cepat yang langsung terhubung dengan stok.' },
         { title: 'Produk & Stok', text: 'Pantau persediaan dan transfer antar cabang.' },
-        { title: 'Penjualan', text: 'Lihat tren omzet dan transaksi lebih jelas.' },
+        { title: 'Penjualan', text: 'Analisis tren omzet dan transaksi secara lebih jelas.' },
         { title: 'Keuangan', text: 'Catat pemasukan, pengeluaran, kas, dan laba.' },
-        { title: 'Pelanggan', text: 'Bangun relasi pelanggan dengan data rapi.' },
+        { title: 'Pelanggan', text: 'Bangun hubungan pelanggan dengan data yang tertata.' },
         { title: 'Supplier', text: 'Kelola pemasok dan pembelian dalam satu alur.' },
         { title: 'Karyawan', text: 'Atur akses sesuai peran dan tanggung jawab.' },
         { title: 'Multi-Cabang', text: 'Kelola perusahaan, toko, dan cabang terpisah.' },
-        { title: 'Laporan', text: 'Ubah data operasional menjadi insight.' },
+        { title: 'Laporan', text: 'Ubah data operasional menjadi wawasan bisnis.' },
         { title: 'Google Sheets', text: 'Sinkronkan data bisnis yang didukung.' },
       ],
     },
     showcase: {
       kicker: 'VISIBILITAS TANPA JEDA',
-      title: 'Pantau Bisnis <span>Secara Realtime</span>',
+      title: 'Pantau Bisnis <span>Secara Langsung</span>',
       subtitle: 'Satu pandangan yang jelas untuk memahami apa yang terjadi di seluruh operasional Anda.',
     },
     solutions: {
@@ -447,7 +447,7 @@ export const id = {
       contactLink: 'Hubungi support',
       items: [
         { q: 'Apa itu NIAGANTARA?', a: 'NIAGANTARA adalah Business Control Platform untuk mengelola operasional bisnis—mulai dari POS, penjualan, stok, keuangan, hingga laporan—dalam satu sistem terintegrasi.' },
-        { q: 'Apakah bisa digunakan untuk banyak cabang?', a: 'Bisa. Struktur Company, Store, dan Branch membantu pemilik mengelola banyak lokasi dengan akses dan data yang terisolasi.' },
+        { q: 'Apakah NIAGANTARA dapat digunakan untuk mengelola banyak cabang?', a: 'Ya. Struktur perusahaan, toko, dan cabang membantu pemilik mengelola banyak lokasi dengan akses serta data yang terpisah.' },
         { q: 'Apakah tersedia POS?', a: 'Ya. POS terintegrasi dengan produk, stok, riwayat transaksi, dan konteks cabang.' },
         { q: 'Apakah mendukung Google Sheets?', a: 'Ya. Admin perusahaan dapat menghubungkan Google Sheets untuk sinkronisasi data bisnis yang didukung.' },
         { q: 'Apakah tersedia aplikasi mobile?', a: 'Pengalaman mobile sedang disiapkan. Dashboard web tetap responsif untuk perangkat mobile.' },
@@ -461,7 +461,7 @@ export const id = {
     cta: {
       title: 'Siap Mengelola Bisnis dengan Lebih Baik?',
       subtitle: 'Mulai gunakan NIAGANTARA dan kelola operasional bisnis Anda dalam satu platform.',
-      tryFree: 'Coba Gratis',
+      tryFree: 'Mulai Uji Coba Gratis',
       signIn: 'Masuk',
     },
     demoLabels: {

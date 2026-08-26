@@ -16,7 +16,7 @@ export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
       </div>
       <div className="dash-body">
         <aside aria-hidden="true">
-          <ThemeImage lightSrc="/brand-mark.png" alt="" className="mini-logo" width={576} height={628} loading="lazy" />
+          <ThemeImage lightSrc="/brand-mark-144.webp" alt="" className="mini-logo" width={144} height={157} loading="lazy" />
           <a className="active" tabIndex={-1}><LayoutDashboard size={14} aria-hidden="true" /> <span>{d.overview}</span></a>
           <a tabIndex={-1}><ShoppingBag size={14} aria-hidden="true" /> <span>{w.features.items[2].title}</span></a>
           <a tabIndex={-1}><WalletCards size={14} aria-hidden="true" /> <span>{w.features.items[3].title}</span></a>
@@ -87,7 +87,7 @@ export function PosPreview({ w }: { w: W }) {
   return (
     <div className="pos-preview" aria-hidden="true">
       <div className="pos-head">
-        <ThemeImage lightSrc="/brand-mark.png" alt="" className="brand-logo-img pos-mark" width={576} height={628} loading="lazy" />
+        <ThemeImage lightSrc="/brand-mark-144.webp" alt="" className="brand-logo-img pos-mark" width={144} height={157} loading="lazy" />
         <span>Toko Pusat⌄</span>
         <i>A</i>
       </div>

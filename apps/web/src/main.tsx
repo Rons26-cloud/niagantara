@@ -4,33 +4,21 @@ import { createRoot } from 'react-dom/client';
 import { initTheme } from '@niagantara/ui/theme';
 import { BrandLogo, getLanguage } from '@niagantara/ui';
 import { NavigateProvider, usePath, Seo, navigate } from './router';
+import {
+  AboutPage,
+  ContactPage,
+  FaqPage,
+  FeaturesPage,
+  HomePage,
+  PricingPage,
+  SolutionsPage,
+} from './pages';
 import './styles.css';
 import './theme-overrides.css';
 
 initTheme();
 document.documentElement.lang = getLanguage();
 
-const HomePage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.HomePage })),
-);
-const FeaturesPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.FeaturesPage })),
-);
-const SolutionsPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.SolutionsPage })),
-);
-const PricingPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.PricingPage })),
-);
-const AboutPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.AboutPage })),
-);
-const FaqPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.FaqPage })),
-);
-const ContactPage = lazy(() =>
-  import('./pages').then((m) => ({ default: m.ContactPage })),
-);
 const PrivacyPage = lazy(() =>
   import('./legal').then((m) => ({ default: m.PrivacyPage })),
 );
@@ -118,7 +106,7 @@ function PageFallback() {
             justifyContent: 'center',
           }}
         >
-          <BrandLogo />
+          <BrandLogo src="/logo-280.webp" />
         </div>
       </main>
     </div>
@@ -132,8 +120,8 @@ function DemoRoute() {
         <div className="site">
           <main className="legal">
             <div className="container" style={{ textAlign: 'center' }}>
-              <BrandLogo />
-              <p style={{ marginTop: 24 }}>…</p>
+              <BrandLogo src="/logo-280.webp" />
+              <p style={{ marginTop: 24 }}>Memuat demonstrasi…</p>
             </div>
           </main>
         </div>
@@ -163,7 +151,7 @@ function NotFound() {
     <div className="site">
       <main className="legal">
         <div className="container" style={{ textAlign: 'center' }}>
-          <BrandLogo />
+          <BrandLogo src="/logo-280.webp" />
           <h1>404</h1>
           <p>Halaman tidak ditemukan.</p>
           <p>

@@ -395,7 +395,6 @@ footer {
   [data-theme="blue"] .faq-item p { color: var(--text-secondary); }
   [data-theme="blue"] .faq-item button:focus-visible { outline-color: var(--accent-secondary); }
 
-/* CTA band stays deep navy — brighten accents for contrast */
 [data-theme="blue"] .cta>.container {
   background: linear-gradient(135deg, #0b1220, #101c38);
   border: 1px solid var(--border-color);
@@ -427,7 +426,6 @@ footer {
 /* Trust row */
 [data-theme="blue"] .trust span { color: var(--text-muted); }
 
-/* Hero heading accent brighter for contrast on navy */
 [data-theme="blue"] .hero h1 span,
 [data-theme="blue"] h2 span { color: #60a5fa; }
 
@@ -449,7 +447,6 @@ footer {
   color: var(--accent-secondary);
 }
 
-/* Compact, app-like mobile spacing for the public site */
 @media (max-width: 820px) {
   .section {
     padding: 56px 0;
@@ -474,8 +471,6 @@ footer {
     margin-bottom: 30px;
   }
 }
-
-/* Brand logo on dark surfaces */
 
 /* Hero — dark navy in both themes */
 .hero {
@@ -523,7 +518,6 @@ footer {
     gap: 12px;
   }
 
-  /* Full desktop navigation row is replaced by the drawer */
   .nav-inner > nav {
     display: none;
   }
@@ -551,8 +545,6 @@ footer {
     color: #f8fafc;
   }
 
-  /* Header right side: theme toggle + hamburger only.
-     Language, Masuk and Coba Gratis live in the drawer. */
   .nav-actions {
     margin-left: auto;
     gap: 10px;
@@ -569,7 +561,6 @@ footer {
     display: none;
   }
 
-  /* Hamburger — comfortable 44px touch target */
   .menu {
     display: inline-flex;
     flex-direction: column;
@@ -921,9 +912,6 @@ footer {
     padding: 36px 0 44px;
   }
 
-  /* Fluid dashboard mockup: scales exactly to viewport width via
-     container-query units, with a fixed-scale fallback. The wrapper
-     box keeps the scaled height so no dead vertical space remains. */
   .hero-visual {
     container-type: inline-size;
     aspect-ratio: 760 / 530;
@@ -964,8 +952,6 @@ footer {
   }
 }
 
-/* Blue theme: drawer surfaces inherit tokens automatically;
-   soften the backdrop slightly for the navy palette. */
 [data-theme="blue"] .drawer-backdrop {
   background: rgba(2, 6, 17, 0.66);
 }
@@ -1154,8 +1140,6 @@ a.fchip:hover {
     gap: 26px 18px;
     padding-top: 44px;
   }
-  /* Neutralize legacy nth-child offsets from styles.css (equal specificity,
-     later layer wins) */
   .footer-grid > div:nth-child(4),
   .footer-grid > div:nth-child(5),
   .footer-grid > nav:nth-child(4),

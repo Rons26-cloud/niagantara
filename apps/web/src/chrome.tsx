@@ -71,11 +71,11 @@ export function Navbar() {
       <div className="container nav-inner">
         <Link to="/" className="brand nav-brand-full" ariaLabel={t('brand.name')}>
           <ThemeImage
-            lightSrc="/logo.png"
+            lightSrc="/logo-280.webp"
             alt="NIAGANTARA"
             className="brand-logo-img"
-            width={840}
-            height={324}
+            width={280}
+            height={108}
             loading="eager"
           />
           <span className="brand-copy">
@@ -84,11 +84,11 @@ export function Navbar() {
         </Link>
         <Link to="/" className="brand navbar-brand" ariaLabel={t('brand.name')}>
           <ThemeImage
-            lightSrc="/brand-mark.png"
+            lightSrc="/brand-mark-144.webp"
             alt=""
             className="navbar-mark"
-            width={576}
-            height={628}
+            width={144}
+            height={157}
             loading="eager"
           />
           <span className="brand-word">NIAGANTARA</span>
@@ -141,11 +141,11 @@ export function Navbar() {
         >
           <div className="drawer-head">
             <ThemeImage
-              lightSrc="/brand-mark.png"
+              lightSrc="/brand-mark-144.webp"
               alt=""
               className="drawer-mark"
-              width={576}
-              height={628}
+              width={144}
+              height={157}
               loading="eager"
             />
             <strong className="drawer-title">NIAGANTARA</strong>
@@ -199,11 +199,11 @@ export function Footer() {
         <div className="fbrand">
           <Link to="/" className="fbrand-logo" ariaLabel={t('brand.name')}>
             <ThemeImage
-              lightSrc="/logo.png"
+              lightSrc="/logo-280.webp"
               alt="NIAGANTARA"
               className="fbrand-img"
-              width={840}
-              height={324}
+              width={280}
+              height={108}
               loading="lazy"
             />
           </Link>
@@ -258,7 +258,6 @@ export function Footer() {
         </nav>
       </div>
 
-      {/* Secondary system/administration contacts — kept out of the primary block */}
       <div className="container fsystemic">
         <small className="fsystemic-head">{t('website.footer.systemicHeading')}</small>
         <div className="fsystemic-row">
@@ -266,7 +265,6 @@ export function Footer() {
             admin@niagantara.com
             <small>{t('website.footer.contactAdmin')}</small>
           </a>
-          {/* Automated sender — intentionally NOT a mailto link */}
           <span className="fchip static">
             no-reply@niagantara.com
             <small>{t('website.footer.contactNoreply')}</small>
