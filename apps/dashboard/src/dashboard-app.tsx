@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError, api } from './api';
 import { useAuth } from './auth/auth-context';
 import { PosPage as Pos } from './phase3-pages';
@@ -15,11 +15,13 @@ import {
 } from '@niagantara/ui';
 import {
   Building2,
+  ChevronDown,
   CircleHelp,
   LogOut,
   MapPin,
   Settings,
   ShieldCheck,
+  User,
 } from 'lucide-react';
 import {
   DashboardHome,
@@ -114,17 +116,55 @@ const navPermission: Record<string, string | undefined> = {
 };
 
 export function DashboardApp() {
-  const { accessToken, clearSession } = useAuth();
+  const { accessToken, user: authUser, clearSession } = useAuth();
   const { t } = useTranslation();
   const [ctx, setCtx] = useState<Ctx | null>(null);
   const [companyNames, setCompanyNames] = useState<Record<string, string>>({});
   const [branchId, setBranchId] = useState<string | null>(loadStoredBranch());
   const [page, setPage] = useState(location.hash.slice(1) || 'dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('niagantara.sidebar.collapsed') === 'true';
+  });
   const [navSearch, setNavSearch] = useState('');
   const [status, setStatus] = useState('loading');
   const [badges, setBadges] = useState<Record<string, number>>({});
+  const badgeTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const loadBadges = useCallback(
+    (companyId: string, token: string) => {
+      if (!companyId) return;
+      const today = new Date().toISOString().slice(0, 10);
+      Promise.all([
+        api<any[]>('/employees', token, companyId).catch(() => []),
+        api<any[]>('/attendance', token, companyId).catch(() => []),
+        api<any[]>('/users', token, companyId).catch(() => []),
+        api<any[]>(
+          `/sales?from=${today}&to=${today}`,
+          token,
+          companyId,
+        ).catch(() => []),
+        api<any[]>('/inventory/low-stock', token, companyId).catch(() => []),
+      ]).then(([employees, attendance, users, todaySales, lowStock]) => {
+        const todayAttendance = Array.isArray(attendance)
+          ? attendance.filter(
+              (r: any) => r.clock_in_at?.slice(0, 10) === today,
+            )
+          : [];
+        const present = todayAttendance.filter(
+          (r: any) => r.status === 'PRESENT' || r.status === 'LATE',
+        ).length;
+        setBadges({
+          employees: Array.isArray(employees) ? employees.length : 0,
+          attendance: present,
+          users: Array.isArray(users) ? users.length : 0,
+          sales: Array.isArray(todaySales) ? todaySales.length : 0,
+          'low-stock': Array.isArray(lowStock) ? lowStock.length : 0,
+        });
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!accessToken) return;
@@ -145,31 +185,17 @@ export function DashboardApp() {
           e instanceof ApiError && e.status === 403 ? 'denied' : 'error',
         ),
       );
-  }, [accessToken]);
+  }, [accessToken, loadBadges]);
 
-  function loadBadges(companyId: string, token: string) {
-    if (!companyId) return;
-    const today = new Date().toISOString().slice(0, 10);
-    Promise.all([
-      api<any[]>('/employees', token, companyId).catch(() => []),
-      api<any[]>('/attendance', token, companyId).catch(() => []),
-      api<any[]>('/users', token, companyId).catch(() => []),
-      api<any[]>(`/sales?from=${today}&to=${today}`, token, companyId).catch(() => []),
-      api<any[]>('/inventory/low-stock', token, companyId).catch(() => []),
-    ]).then(([employees, attendance, users, todaySales, lowStock]) => {
-      const todayAttendance = Array.isArray(attendance)
-        ? attendance.filter((r: any) => r.clock_in_at?.slice(0, 10) === today)
-        : [];
-      const present = todayAttendance.filter((r: any) => r.status === 'PRESENT' || r.status === 'LATE').length;
-      setBadges({
-        employees: Array.isArray(employees) ? employees.length : 0,
-        attendance: present,
-        users: Array.isArray(users) ? users.length : 0,
-        sales: Array.isArray(todaySales) ? todaySales.length : 0,
-        'low-stock': Array.isArray(lowStock) ? lowStock.length : 0,
-      });
-    });
-  }
+  useEffect(() => {
+    if (!ctx?.active_company || !accessToken) return;
+    badgeTimerRef.current = setInterval(() => {
+      loadBadges(ctx.active_company, accessToken);
+    }, 30000);
+    return () => {
+      if (badgeTimerRef.current) clearInterval(badgeTimerRef.current);
+    };
+  }, [ctx?.active_company, accessToken, loadBadges]);
 
   useEffect(() => {
     const onHash = () => {
@@ -222,6 +248,14 @@ export function DashboardApp() {
     accessible_branches: selectedBranch
       ? [selectedBranch]
       : ctx.accessible_branches,
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((v) => {
+      const next = !v;
+      localStorage.setItem('niagantara.sidebar.collapsed', String(next));
+      return next;
+    });
   };
 
   const go = (id: string) => {
@@ -347,7 +381,7 @@ export function DashboardApp() {
               type="button"
               aria-label={sidebarCollapsed ? 'Buka sidebar' : 'Ciutkan sidebar'}
               aria-pressed={sidebarCollapsed}
-              onClick={() => setSidebarCollapsed((value) => !value)}
+              onClick={toggleSidebar}
             >
               {sidebarCollapsed ? '›' : '‹'}
             </button>
@@ -394,9 +428,11 @@ export function DashboardApp() {
                       >
                         {Icon && <SidebarIcon icon={Icon} size={18} />}
                         <span>{t(`pages.${id}`) || label}</span>
-                        {badgeCount != null && badgeCount > 0 && !sidebarCollapsed && (
-                          <span className="nav-badge">{badgeCount}</span>
-                        )}
+                        {badgeCount != null &&
+                          badgeCount > 0 &&
+                          !sidebarCollapsed && (
+                            <span className="nav-badge">{badgeCount}</span>
+                          )}
                       </button>
                     );
                   })}
@@ -414,7 +450,7 @@ export function DashboardApp() {
             </span>
             <span className="sidebar-account-copy">
               <b>{profileName}</b>
-              <small>{profileRole.replaceAll('_', ' ')}</small>
+              <small>{authUser?.email ?? profileRole.replaceAll('_', ' ')}</small>
             </span>
           </div>
           <button

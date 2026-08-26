@@ -3,6 +3,7 @@ import { ApiError } from './api';
 import { login, useAuth, type SessionUser } from './auth';
 import {
   BrandLogo,
+  BrandMark,
   Button,
   ErrorState,
   Field,
@@ -10,9 +11,11 @@ import {
   LanguageSwitcher,
   LoadingState,
   Select,
+  SidebarIcon,
   ThemeSwitcher,
   useTranslation,
   LoginBrand,
+  POS_NAV_ICONS,
 } from '@niagantara/ui';
 import '@niagantara/ui/design-tokens.css';
 import '@niagantara/ui/components.css';
@@ -21,6 +24,14 @@ import { PosPage } from '@niagantara/pos-core';
 import './app.css';
 
 const BRANCH_KEY = 'niagantara.pos.branch';
+
+type PosPage = 'pos' | 'settings' | 'history';
+
+const POS_NAV: [PosPage, string][] = [
+  ['pos', 'Kasir'],
+  ['history', 'Riwayat'],
+  ['settings', 'Pengaturan'],
+];
 
 export function PosApp() {
   const { user, accessToken, setSession, clearSession } = useAuth();
@@ -32,6 +43,10 @@ export function PosApp() {
   const [branchId, setBranchId] = useState(
     () => sessionStorage.getItem(BRANCH_KEY) ?? '',
   );
+  const [activePage, setActivePage] = useState<PosPage>('pos');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('niagantara.pos.sidebar.collapsed') === 'true';
+  });
 
   useEffect(() => {
     if (!accessToken) return;
@@ -63,14 +78,42 @@ export function PosApp() {
   const store =
     ctx?.stores?.find((s: any) => s.id === branch?.store_id) ?? ctx?.stores?.[0];
 
+  const userInitials = String(user?.email ?? 'P')
+    .split('@')[0]
+    .split('.')
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((v) => {
+      const next = !v;
+      localStorage.setItem('niagantara.pos.sidebar.collapsed', String(next));
+      return next;
+    });
+  };
+
   return (
-    <div className="pos-shell">
-      <header className="pos-topbar">
-        <BrandLogo compact href="#" />
+    <div className={`pos-shell${sidebarCollapsed ? ' pos-sidebar-collapsed' : ''}`}>
+      <aside className="pos-sidebar">
+        <div className="pos-sidebar-brand">
+          <BrandLogo compact href="#" className="pos-sidebar-full" />
+          <BrandMark size={28} className="pos-sidebar-mark" />
+          <button
+            className="pos-sidebar-collapse"
+            type="button"
+            aria-label={sidebarCollapsed ? 'Buka sidebar' : 'Ciutkan sidebar'}
+            onClick={toggleSidebar}
+          >
+            {sidebarCollapsed ? '›' : '‹'}
+          </button>
+        </div>
+
         {status === 'ready' && ctx && (
-          <label className="pos-branch">
-            <span>{t('context.branch')}</span>
-            <Select
+          <div className="pos-sidebar-branch">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <select
               value={branch?.id ?? ''}
               onChange={(e) => {
                 setBranchId(e.target.value);
@@ -82,17 +125,50 @@ export function PosApp() {
                   {b.name}
                 </option>
               ))}
-            </Select>
-          </label>
+            </select>
+          </div>
         )}
-        <div className="pos-topbar__controls">
-          <ThemeSwitcher />
-          <LanguageSwitcher compact />
-          <Button variant="ghost" onClick={() => { clearSession(); location.reload(); }}>
-            {t('auth.logout')}
-          </Button>
+
+        <nav className="pos-sidebar-nav">
+          {POS_NAV.map(([id, label]) => {
+            const Icon = POS_NAV_ICONS[id];
+            return (
+              <button
+                key={id}
+                className={activePage === id ? 'active' : ''}
+                onClick={() => setActivePage(id)}
+              >
+                {Icon && <SidebarIcon icon={Icon} size={18} />}
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="pos-sidebar-footer">
+          <div className="pos-sidebar-controls">
+            <ThemeSwitcher />
+            <LanguageSwitcher compact />
+          </div>
+          <div className="pos-sidebar-user">
+            <span className="pos-sidebar-user-avatar">{userInitials}</span>
+            <span className="pos-sidebar-user-info">
+              <b>{user?.email ?? 'Kasir'}</b>
+              {branch?.name && <small>{branch.name}</small>}
+            </span>
+          </div>
+          <button
+            className="pos-sidebar-logout"
+            onClick={() => {
+              clearSession();
+              location.reload();
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <span>{t('auth.logout')}</span>
+          </button>
         </div>
-      </header>
+      </aside>
 
       <main className="pos-main">
         {status === 'loading' && <LoadingState label={t('dashboard.loadingContext')} />}
@@ -107,7 +183,7 @@ export function PosApp() {
         {status === 'error' && (
           <ErrorState message={t('dashboard.loadError')} onRetry={() => location.reload()} />
         )}
-        {status === 'ready' && ctx && branch &&
+        {status === 'ready' && ctx && branch && activePage === 'pos' &&
           (ctx.permissions.includes('pos.access') ? (
             <PosPage
               company={ctx.active_company}
@@ -121,6 +197,18 @@ export function PosApp() {
           ) : (
             <ErrorState message={t('dashboard.permissionDenied')} />
           ))}
+        {status === 'ready' && activePage === 'history' && (
+          <div className="pos-gap-page">
+            <h2>Riwayat Transaksi</h2>
+            <p>Fitur ini akan segera tersedia.</p>
+          </div>
+        )}
+        {status === 'ready' && activePage === 'settings' && (
+          <div className="pos-gap-page">
+            <h2>Pengaturan POS</h2>
+            <p>Fitur ini akan segera tersedia.</p>
+          </div>
+        )}
       </main>
     </div>
   );

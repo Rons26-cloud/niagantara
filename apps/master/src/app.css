@@ -4,9 +4,13 @@
 .mshell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 260px 1fr;
   background: var(--bg-primary);
   color: var(--text-primary);
+  transition: grid-template-columns 0.2s ease;
+}
+.mshell.msidebar-collapsed {
+  grid-template-columns: 68px 1fr;
 }
 .msidebar {
   position: sticky;
@@ -14,22 +18,18 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 18px 14px;
+  gap: 8px;
+  padding: 16px 12px;
   background: var(--surface);
   border-right: 1px solid var(--border-color);
-}
-.msidebar p.eyebrow {
-  letter-spacing: 0.16em;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--brand-cyan);
-  margin: 4px 0 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .msidebar-brand {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 .msidebar-brand .brand {
   padding: 2px 4px;
@@ -37,11 +37,59 @@
 .msidebar-brand .msidebar-mark {
   display: none;
 }
+.msidebar-collapse {
+  display: none;
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.15s ease;
+}
+.msidebar-collapse:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+.msidebar-collapsed .msidebar-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status indicator */
+.msidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.msidebar-status .status-ok {
+  color: var(--success, #10B981);
+}
+.msidebar-status .status-err {
+  color: var(--danger, #EF4444);
+}
+
+/* Nav */
 .msidebar nav {
   display: flex;
   flex-direction: column;
   gap: 2px;
   overflow-y: auto;
+  flex: 1;
 }
 .mnav-group {
   font-size: 10px;
@@ -50,6 +98,9 @@
   letter-spacing: 0.12em;
   color: var(--text-muted);
   margin: 14px 8px 6px;
+}
+.msidebar-collapsed .mnav-group {
+  display: none;
 }
 .msidebar nav a {
   display: flex;
@@ -61,6 +112,7 @@
   font-size: 13.5px;
   font-weight: 600;
   text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 .msidebar nav a svg {
   flex-shrink: 0;
@@ -72,6 +124,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.msidebar nav a .nav-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-primary, #2563EB);
+  color: #fff;
+  min-width: 18px;
+  text-align: center;
+}
 .msidebar nav a:hover {
   background: var(--surface-elevated);
   color: var(--text-primary);
@@ -80,26 +142,112 @@
   background: var(--brand-blue);
   color: #fff;
 }
+.msidebar-collapsed .msidebar nav a {
+  justify-content: center;
+  padding: 10px;
+}
+.msidebar-collapsed .msidebar nav a span,
+.msidebar-collapsed .msidebar nav a .nav-badge {
+  display: none;
+}
+
+/* Footer */
 .msidebar__foot {
   margin-top: auto;
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
 }
 .msidebar__controls {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
+.msidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+}
+.msidebar-account-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--brand-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.msidebar-account-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+.msidebar-account-copy b {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msidebar-account-copy small {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.msidebar-collapsed .msidebar-account {
+  justify-content: center;
+  padding: 8px;
+}
+.msidebar-collapsed .msidebar-account-copy {
+  display: none;
+}
+.msidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  width: 100%;
+}
+.msidebar-logout:hover {
+  background: var(--danger, #EF4444);
+  color: #fff;
+}
+.msidebar-collapsed .msidebar-logout {
+  justify-content: center;
+}
+.msidebar-collapsed .msidebar-logout span {
+  display: none;
+}
+
 .role-chip {
-  justify-self: start;
   background: rgba(139, 92, 246, 0.15);
   color: var(--brand-purple);
-  padding: 3px 10px;
+  padding: 2px 8px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
 }
 
+/* Workspace */
 .mworkspace {
   padding: 26px clamp(14px, 3vw, 40px);
   max-width: 1200px;
@@ -145,6 +293,7 @@
   margin-top: 14px;
 }
 
+/* Login */
 .mlogin {
   min-height: 100vh;
   display: grid;
@@ -166,19 +315,7 @@
   margin-top: 10px;
 }
 
-@media (max-width: 860px) {
-  .msidebar-brand {
-    align-self: auto;
-  }
-  .msidebar-brand .brand.msidebar-full {
-    display: none;
-  }
-  .msidebar-brand .msidebar-mark {
-    display: block;
-    height: 28px !important;
-  }
-}
-
+/* Responsive */
 @media (max-width: 860px) {
   .mshell {
     grid-template-columns: 1fr;
@@ -191,6 +328,24 @@
     flex-wrap: wrap;
     border-right: 0;
     border-bottom: 1px solid var(--border-color);
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .msidebar-collapse {
+    display: none;
+  }
+  .msidebar-status {
+    display: none;
+  }
+  .msidebar-brand {
+    align-self: auto;
+  }
+  .msidebar-brand .brand.msidebar-full {
+    display: none;
+  }
+  .msidebar-brand .msidebar-mark {
+    display: block;
+    height: 28px !important;
   }
   .msidebar nav {
     flex-direction: row;
@@ -199,6 +354,7 @@
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    flex: unset;
   }
   .msidebar nav::-webkit-scrollbar {
     display: none;
@@ -213,6 +369,14 @@
     margin: 0 0 0 auto;
     display: flex;
     align-items: center;
+    border-top: none;
+    padding-top: 0;
+  }
+  .msidebar-account {
+    display: none;
+  }
+  .msidebar-logout span {
+    display: none;
   }
   .mworkspace {
     padding: 18px 14px;

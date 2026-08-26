@@ -16,6 +16,7 @@ import {
   SidebarIcon,
   MASTER_NAV_ICONS,
 } from '@niagantara/ui';
+import { Activity, Building2, LogOut, ShieldCheck, User } from 'lucide-react';
 import '@niagantara/ui/design-tokens.css';
 import '@niagantara/ui/components.css';
 import '@niagantara/ui/ui.css';
@@ -86,6 +87,10 @@ export function MasterApp() {
   const [page, setPage] = useState(
     location.hash.replace(/^#\/?/, '') || 'dashboard',
   );
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('niagantara.master.sidebar.collapsed') === 'true';
+  });
+
   useEffect(() => {
     const onHash = () => setPage(location.hash.replace(/^#\/?/, '') || 'dashboard');
     window.addEventListener('hashchange', onHash);
@@ -99,7 +104,26 @@ export function MasterApp() {
     setPage(id);
   };
 
-  const navLink = (id: string, label: string) => {
+  const toggleSidebar = () => {
+    setSidebarCollapsed((v) => {
+      const next = !v;
+      localStorage.setItem('niagantara.master.sidebar.collapsed', String(next));
+      return next;
+    });
+  };
+
+  const apiOk = !!healthHook.health && !healthHook.error;
+  const dbOk = healthHook.readiness?.database === 'reachable';
+
+  const userInitials = String(user?.email ?? 'M')
+    .split('@')[0]
+    .split('.')
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  const navLink = (id: string, label: string, badge?: number) => {
     const Icon = MASTER_NAV_ICONS[id];
     return (
       <a
@@ -111,28 +135,48 @@ export function MasterApp() {
       >
         {Icon && <SidebarIcon icon={Icon} size={18} />}
         <span>{label}</span>
+        {badge != null && badge > 0 && !sidebarCollapsed && (
+          <span className="nav-badge">{badge}</span>
+        )}
       </a>
     );
   };
 
   return (
-    <div className="mshell">
+    <div className={`mshell${sidebarCollapsed ? ' msidebar-collapsed' : ''}`}>
       <aside className="msidebar">
         <div className="msidebar-brand sidebar-brand">
           <BrandLogo href="#/dashboard" className="msidebar-full" />
           <BrandMark size={30} className="msidebar-mark" />
+          <button
+            className="msidebar-collapse"
+            type="button"
+            aria-label={sidebarCollapsed ? 'Buka sidebar' : 'Ciutkan sidebar'}
+            onClick={toggleSidebar}
+          >
+            {sidebarCollapsed ? '›' : '‹'}
+          </button>
         </div>
-        <p className="eyebrow">{t('master.control')}</p>
+
+        <div className="msidebar-status">
+          <Activity size={14} className={apiOk ? 'status-ok' : 'status-err'} />
+          <span className="msidebar-status-text">
+            {apiOk ? t('master.operational') : healthHook.error ? t('master.down') : '...'}
+          </span>
+        </div>
+
         <nav aria-label={t('nav.primary')}>
           <span className="mnav-group">{t('master.dashboardNav')}</span>
           {navLink('dashboard', t('pages.dashboard'))}
+
           <span className="mnav-group">{t('master.platformNav')}</span>
           {navLink('companies', t('master.companies'))}
           {navLink('users', t('master.users'))}
           {navLink('subscription', t('master.subscription'))}
           {navLink('billing', t('master.billing'))}
+
           <span className="mnav-group">{t('master.systemManagement')}</span>
-          {navLink('system-health', t('master.systemHealth'))}
+          {navLink('system-health', t('master.systemHealth'), apiOk ? 0 : 1)}
           {navLink('releases', t('master.releases'))}
           {navLink('versions', t('master.versions'))}
           {navLink('feature-flags', t('master.featureFlags'))}
@@ -140,24 +184,42 @@ export function MasterApp() {
           {navLink('maintenance', t('master.maintenance'))}
           {navLink('announcements', t('master.announcements'))}
           {navLink('mobile-versions', t('master.mobileVersions'))}
+
           <span className="mnav-group">{t('master.securityNav')}</span>
           {navLink('security', t('master.auditLog'))}
+
           <span className="mnav-group">{t('master.operationsNav')}</span>
           {navLink('operations', t('master.sheets.title'))}
         </nav>
+
         <div className="msidebar__foot">
           <div className="msidebar__controls">
             <ThemeSwitcher />
             <LanguageSwitcher compact />
           </div>
-          {platformRole && (
-            <code className="role-chip" title={platformRole}>
-              {platformRole}
-            </code>
-          )}
-          <Button variant="ghost" onClick={() => { clearSession(); location.hash = ''; }}>
-            {t('auth.logout')}
-          </Button>
+          <div className="msidebar-account">
+            <span className="msidebar-account-avatar" aria-hidden="true">
+              {userInitials}
+            </span>
+            <span className="msidebar-account-copy">
+              <b>{user?.email ?? 'Master'}</b>
+              {platformRole && (
+                <small className="role-chip" title={platformRole}>
+                  {platformRole}
+                </small>
+              )}
+            </span>
+          </div>
+          <button
+            className="msidebar-logout"
+            onClick={() => {
+              clearSession();
+              location.hash = '';
+            }}
+          >
+            <LogOut size={16} />
+            <span>{t('auth.logout')}</span>
+          </button>
         </div>
       </aside>
 
