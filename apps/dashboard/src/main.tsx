@@ -22,8 +22,9 @@ const recoveryRoutes = {
   '/auth/verify-recovery': VerifyRecoveryPage,
   '/auth/reset-password': ResetPasswordPage,
 } as const;
+const authRoutes = ['/auth/login', '/auth/register'];
 const Page =
-  window.location.pathname === '/auth/login'
+  authRoutes.includes(window.location.pathname)
     ? LoginPage
     : (recoveryRoutes[
         window.location.pathname as keyof typeof recoveryRoutes

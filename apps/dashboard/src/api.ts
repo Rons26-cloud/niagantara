@@ -43,3 +43,20 @@ export async function login(email: string, password: string) {
     throw new ApiError(response.status, body.code ?? 'LOGIN_FAILED');
   return body;
 }
+
+export async function register(payload: {
+  email: string;
+  password: string;
+  fullName: string;
+  companyName: string;
+}) {
+  const response = await fetch(`${apiBase}/auth/register`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw new ApiError(response.status, body.code ?? 'REGISTER_FAILED');
+  return body;
+}

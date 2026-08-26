@@ -12,6 +12,7 @@ import '../features/dashboard/dashboard_screen.dart';
 import '../features/employees/employees_screen.dart';
 import '../features/expenses/expenses_screen.dart';
 import '../features/finance/finance_screen.dart';
+import '../features/help/help_screen.dart';
 import '../features/sheets/sheets_screen.dart';
 import '../features/inventory/inventory_screen.dart';
 import '../features/inventory/transfers_screen.dart' show TransfersScreen, TransferFormScreen;
@@ -64,6 +65,7 @@ class Routes {
   static const sheets = '/sheets';
   static const notifications = '/notifications';
   static const settings = '/settings';
+  static const help = '/help';
   static const account = '/account';
 }
 
@@ -172,6 +174,9 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       break;
     case Routes.settings:
       page = const SettingsScreen();
+      break;
+    case Routes.help:
+      page = const HelpScreen();
       break;
     case Routes.account:
       page = const AccountScreen();

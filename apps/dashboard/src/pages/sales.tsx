@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import {
   Button,
@@ -7,6 +7,7 @@ import {
   Field,
   Input,
   LoadingState,
+  Modal,
   Pagination,
   Select,
   StatCard,
@@ -14,13 +15,27 @@ import {
   usePaged,
   useTranslation,
 } from '@niagantara/ui';
-import { ReceiptText } from 'lucide-react';
+import { Clock, CreditCard, Download, ReceiptText, TrendingUp, User, X } from 'lucide-react';
 import { Receipt } from '@niagantara/pos-core';
 
 type Ctx = {
   permissions: string[];
   stores: any[];
   accessible_branches: any[];
+};
+
+type Sale = {
+  id: string;
+  transaction_number: string;
+  status: string;
+  grand_total: number;
+  refunded_total?: number;
+  created_at: string;
+  cashier_id?: string;
+  branch_id?: string;
+  shift_id?: string;
+  payments?: { method: string; amount: number }[];
+  items?: any[];
 };
 
 export function SalesPage({
@@ -33,7 +48,7 @@ export function SalesPage({
   ctx: Ctx;
 }) {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<Sale[]>([]);
   const [sale, setSale] = useState<any>();
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('');
@@ -44,11 +59,12 @@ export function SalesPage({
   const [to, setTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [detailSale, setDetailSale] = useState<Sale | null>(null);
 
   const load = () => {
     setLoading(true);
     setError(null);
-    api<any[]>(
+    api<Sale[]>(
       `/sales?search=${encodeURIComponent(q)}&status=${status}&paymentMethod=${payment}&branchId=${branch}&cashierId=${cashier}&from=${from}&to=${to}`,
       token,
       company,
@@ -62,19 +78,59 @@ export function SalesPage({
     void load();
   }, [company, token]);
 
-  const detail = async (id: string) =>
-    setSale(await api(`/sales/${id}`, token, company));
+  useEffect(() => {
+    const onRealtime = (event: Event) => {
+      const resources = (event as CustomEvent<{ resources?: string[] }>).detail?.resources ?? [];
+      if (resources.includes('sales')) load();
+    };
+    window.addEventListener('niagantara:realtime', onRealtime);
+    return () => window.removeEventListener('niagantara:realtime', onRealtime);
+  }, [company, token]);
+
+  const detail = async (id: string) => {
+    try {
+      setSale(await api(`/sales/${id}`, token, company));
+    } catch { /* ignore */ }
+  };
 
   const fmtRp = (n: number) => `Rp ${Number(n ?? 0).toLocaleString('id-ID')}`;
 
-  const paidSales = rows.filter((s) =>
-    ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'].includes(s.status),
+  const paidSales = useMemo(
+    () => rows.filter((s) => ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'].includes(s.status)),
+    [rows],
   );
-  const revenue = paidSales.reduce(
-    (sum, s) => sum + Number(s.grand_total) - Number(s.refunded_total ?? 0),
-    0,
+  const revenue = useMemo(
+    () => paidSales.reduce((sum, s) => sum + Number(s.grand_total) - Number(s.refunded_total ?? 0), 0),
+    [paidSales],
   );
   const avgTransaction = paidSales.length ? revenue / paidSales.length : 0;
+  const cancelledCount = rows.filter((s) => s.status === 'CANCELLED').length;
+  const refundCount = rows.filter((s) => ['REFUNDED', 'PARTIALLY_REFUNDED'].includes(s.status)).length;
+  const refundRate = paidSales.length > 0 ? Math.round((refundCount / paidSales.length) * 100) : 0;
+
+  const paymentBreakdown = useMemo(() => {
+    const map = new Map<string, { count: number; total: number }>();
+    for (const s of paidSales) {
+      const method = s.payments?.[0]?.method ?? 'UNKNOWN';
+      const cur = map.get(method) ?? { count: 0, total: 0 };
+      cur.count += 1;
+      cur.total += Number(s.grand_total);
+      map.set(method, cur);
+    }
+    return [...map.entries()].sort((a, b) => b[1].total - a[1].total);
+  }, [paidSales]);
+
+  const hourlyDistribution = useMemo(() => {
+    const hours = new Array(24).fill(0);
+    for (const s of paidSales) {
+      const h = new Date(s.created_at).getHours();
+      hours[h] += Number(s.grand_total);
+    }
+    return hours.map((total, hour) => ({
+      hour: `${String(hour).padStart(2, '0')}:00`,
+      total,
+    }));
+  }, [paidSales]);
 
   const { page, pageCount, setPage, slice } = usePaged(rows);
 
@@ -84,11 +140,24 @@ export function SalesPage({
   return (
     <>
       <div className="metrics">
-        <StatCard label="Total Pendapatan" value={fmtRp(revenue)} />
+        <StatCard label="Total Pendapatan" value={fmtRp(revenue)} tone="success" />
         <StatCard label="Total Transaksi" value={String(paidSales.length)} />
         <StatCard label="Rata-rata Transaksi" value={fmtRp(avgTransaction)} />
-        <StatCard label="Total Item" value={String(rows.length)} note="semua status" />
+        <StatCard label="Refund Rate" value={`${refundRate}%`} tone={refundRate > 5 ? 'danger' : 'default'} />
       </div>
+
+      {paymentBreakdown.length > 0 && (
+        <div className="metrics">
+          {paymentBreakdown.slice(0, 4).map(([method, { count, total }]) => (
+            <StatCard
+              key={method}
+              label={method.replace(/_/g, ' ')}
+              value={`${count} transaksi`}
+              note={fmtRp(total)}
+            />
+          ))}
+        </div>
+      )}
 
       <section className="panel">
         <div className="panel-head">
@@ -97,15 +166,12 @@ export function SalesPage({
 
         <form
           className="search"
-          onSubmit={(e) => {
-            e.preventDefault();
-            load();
-          }}
+          onSubmit={(e) => { e.preventDefault(); load(); }}
         >
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Nomor transaksi"
+            placeholder="Nomor transaksi..."
           />
           <Button type="submit">{t('common.search')}</Button>
         </form>
@@ -117,29 +183,25 @@ export function SalesPage({
           <Field label="Sampai">
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </Field>
-          <Field label="Branch ID">
-            <Input
-              value={branch}
-              onChange={(e) => setBranch(e.target.value)}
-              placeholder="Branch ID"
-            />
-          </Field>
-          <Field label="Cashier ID">
-            <Input
-              value={cashier}
-              onChange={(e) => setCashier(e.target.value)}
-              placeholder="Cashier ID"
-            />
-          </Field>
-          <Field label={t('demo.paymentMethod')}>
+          {ctx.accessible_branches.length > 1 && (
+            <Field label="Cabang">
+              <Select value={branch} onChange={(e) => setBranch(e.target.value)}>
+                <option value="">Semua</option>
+                {ctx.accessible_branches.map((b: any) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </Select>
+            </Field>
+          )}
+          <Field label="Metode Bayar">
             <Select value={payment} onChange={(e) => setPayment(e.target.value)}>
-              <option value="">{t('demo.allPayments')}</option>
+              <option value="">Semua</option>
               {['CASH', 'QRIS', 'BANK_TRANSFER', 'E_WALLET', 'OTHER'].map((x) => (
                 <option key={x}>{x}</option>
               ))}
             </Select>
           </Field>
-          <Field label={t('common.status')}>
+          <Field label="Status">
             <Select value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="">Semua</option>
               {['PAID', 'CANCELLED', 'REFUNDED', 'PARTIALLY_REFUNDED'].map((x) => (
@@ -158,13 +220,23 @@ export function SalesPage({
         ) : (
           <div className="sale-list">
             {slice.map((x: any) => (
-              <button key={x.id} onClick={() => detail(x.id)}>
-                <b>{x.transaction_number}</b>
-                <span>{new Date(x.created_at).toLocaleString('id-ID')}</span>
-                <strong>{fmtRp(Number(x.grand_total))}</strong>
-                <small>
+              <button key={x.id} onClick={() => detail(x.id)} className="sale-item">
+                <div className="sale-item-left">
+                  <span className="sale-item-number">{x.transaction_number}</span>
+                  <span className="sale-item-time">
+                    <Clock size={12} />
+                    {new Date(x.created_at).toLocaleString('id-ID', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                <div className="sale-item-right">
+                  <span className="sale-item-total">{fmtRp(Number(x.grand_total))}</span>
                   <StatusBadge status={x.status} />
-                </small>
+                </div>
               </button>
             ))}
           </div>
@@ -173,12 +245,38 @@ export function SalesPage({
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
 
+      {hourlyDistribution.some((h) => h.total > 0) && (
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Distribusi Penjualan per Jam</h2>
+          </div>
+          <div className="hourly-chart">
+            {hourlyDistribution.filter((h) => h.total > 0).map((h) => {
+              const maxVal = Math.max(...hourlyDistribution.map((x) => x.total), 1);
+              return (
+                <div key={h.hour} className="hourly-bar">
+                  <div className="hourly-bar-fill" style={{ height: `${(h.total / maxVal) * 100}%` }} />
+                  <span className="hourly-bar-label">{h.hour}</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {sale && (
         <section className="panel">
+          <div className="panel-head">
+            <h2>Detail Transaksi</h2>
+            <Button variant="ghost" onClick={() => setSale(undefined)}>
+              <X size={14} /> Tutup
+            </Button>
+          </div>
           <Receipt sale={sale} onClose={() => setSale(undefined)} />
           {ctx.permissions.includes('sale.cancel') && sale.status === 'PAID' && (
             <Button
               variant="danger"
+              style={{ marginTop: '1rem' }}
               onClick={async () => {
                 const reason = prompt('Alasan pembatalan');
                 if (reason) {
@@ -191,7 +289,7 @@ export function SalesPage({
                 }
               }}
             >
-              {t('common.cancel')} {t('common.sale')}
+              {t('common.cancel')} Transaksi
             </Button>
           )}
         </section>

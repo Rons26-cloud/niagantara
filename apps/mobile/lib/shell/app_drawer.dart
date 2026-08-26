@@ -58,12 +58,12 @@ class AppDrawer extends StatelessWidget {
       _Group((l) => l.money, [
         _Item(Icons.savings_outlined, (l) => l.menuExpenses, Routes.expenses, 'expense.read'),
         _Item(Icons.account_balance_wallet_outlined, (l) => l.menuFinance, Routes.finance, 'finance.read'),
-        _Item(Icons.assessment_outlined, (l) => l.menuReports, Routes.reports, 'report.read'),
+        _Item(Icons.assessment_outlined, (l) => l.menuReports, Routes.reports, 'finance.read'),
       ]),
       _Group((l) => l.system, [
         _Item(Icons.table_view_rounded, (l) => l.menuSheets, Routes.sheets, 'sheet.read'),
         _Item(Icons.settings_outlined, (l) => l.menuSettings, Routes.settings),
-        _Item(Icons.help_outline_rounded, (l) => l.menuHelp, Routes.settings),
+        _Item(Icons.help_outline_rounded, (l) => l.menuHelp, Routes.help),
       ]),
     ];
 

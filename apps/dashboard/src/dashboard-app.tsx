@@ -124,6 +124,7 @@ export function DashboardApp() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [navSearch, setNavSearch] = useState('');
   const [status, setStatus] = useState('loading');
+  const [badges, setBadges] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!accessToken) return;
@@ -137,6 +138,7 @@ export function DashboardApp() {
           Object.fromEntries((companies ?? []).map((c: any) => [c.id, c.name])),
         );
         setStatus('ready');
+        loadBadges(me.active_company, accessToken);
       })
       .catch((e) =>
         setStatus(
@@ -144,6 +146,30 @@ export function DashboardApp() {
         ),
       );
   }, [accessToken]);
+
+  function loadBadges(companyId: string, token: string) {
+    if (!companyId) return;
+    const today = new Date().toISOString().slice(0, 10);
+    Promise.all([
+      api<any[]>('/employees', token, companyId).catch(() => []),
+      api<any[]>('/attendance', token, companyId).catch(() => []),
+      api<any[]>('/users', token, companyId).catch(() => []),
+      api<any[]>(`/sales?from=${today}&to=${today}`, token, companyId).catch(() => []),
+      api<any[]>('/inventory/low-stock', token, companyId).catch(() => []),
+    ]).then(([employees, attendance, users, todaySales, lowStock]) => {
+      const todayAttendance = Array.isArray(attendance)
+        ? attendance.filter((r: any) => r.clock_in_at?.slice(0, 10) === today)
+        : [];
+      const present = todayAttendance.filter((r: any) => r.status === 'PRESENT' || r.status === 'LATE').length;
+      setBadges({
+        employees: Array.isArray(employees) ? employees.length : 0,
+        attendance: present,
+        users: Array.isArray(users) ? users.length : 0,
+        sales: Array.isArray(todaySales) ? todaySales.length : 0,
+        'low-stock': Array.isArray(lowStock) ? lowStock.length : 0,
+      });
+    });
+  }
 
   useEffect(() => {
     const onHash = () => {
@@ -358,6 +384,7 @@ export function DashboardApp() {
                   </span>
                   {items.map(([id, label]) => {
                     const Icon = USER_NAV_ICONS[id];
+                    const badgeCount = badges[id];
                     return (
                       <button
                         key={id}
@@ -367,6 +394,9 @@ export function DashboardApp() {
                       >
                         {Icon && <SidebarIcon icon={Icon} size={18} />}
                         <span>{t(`pages.${id}`) || label}</span>
+                        {badgeCount != null && badgeCount > 0 && !sidebarCollapsed && (
+                          <span className="nav-badge">{badgeCount}</span>
+                        )}
                       </button>
                     );
                   })}

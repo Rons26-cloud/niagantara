@@ -16,6 +16,47 @@ import {
 import type { Language, Theme } from '@niagantara/ui';
 import { getLanguage, getTheme, setLanguage, setTheme } from '@niagantara/ui';
 import type { OrgCtx } from '../enhancements';
+import {
+  Building2,
+  FileText,
+  Globe,
+  Mail,
+  MapPin,
+  Phone,
+  Save,
+  ShieldCheck,
+  User,
+} from 'lucide-react';
+
+type CompanyProfile = {
+  id: string;
+  name: string;
+  legal_name?: string;
+  npwp?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
+  website?: string;
+  industry?: string;
+  founded_date?: string;
+  business_type?: string;
+  logo_url?: string;
+  latitude?: number;
+  longitude?: number;
+  status?: string;
+  created_at?: string;
+};
+
+type CompanyPlan = {
+  plan: string;
+  plan_limits?: Record<string, any>;
+  status?: string;
+  expires_at?: string;
+};
 
 export function SettingsPage({
   ctx,
@@ -28,35 +69,283 @@ export function SettingsPage({
 }) {
   const { t, language, setLanguage: setLang } = useTranslation();
   const [theme, setThemeState] = useState<Theme>(getTheme());
-  const [plan, setPlan] = useState<any>(null);
-  const [planState, setPlanState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [company, setCompany] = useState<CompanyProfile | null>(null);
+  const [plan, setPlan] = useState<CompanyPlan | null>(null);
+  const [loadingCompany, setLoadingCompany] = useState(true);
+  const [loadingPlan, setLoadingPlan] = useState(true);
+  const [editingCompany, setEditingCompany] = useState(false);
+  const [companyForm, setCompanyForm] = useState<Partial<CompanyProfile>>({});
+  const [companyMsg, setCompanyMsg] = useState('');
 
   useEffect(() => {
     let active = true;
-    api(`/companies/${ctx.active_company}/plan`, token, ctx.active_company)
-      .then((value) => { if (active) { setPlan(value); setPlanState('ready'); } })
-      .catch(() => { if (active) setPlanState('error'); });
+    if (!ctx.active_company) return;
+    setLoadingCompany(true);
+    api<CompanyProfile>(`/companies/${ctx.active_company}`, token, ctx.active_company)
+      .then((data) => { if (active) { setCompany(data); setCompanyForm(data); } })
+      .catch(() => {})
+      .finally(() => { if (active) setLoadingCompany(false); });
+    api<CompanyPlan>(`/companies/${ctx.active_company}/plan`, token, ctx.active_company)
+      .then((data) => { if (active) setPlan(data); })
+      .catch(() => {})
+      .finally(() => { if (active) setLoadingPlan(false); });
     return () => { active = false; };
   }, [ctx.active_company, token]);
 
+  async function saveCompany(e: FormEvent) {
+    e.preventDefault();
+    setCompanyMsg('Menyimpan...');
+    try {
+      const updated = await api<CompanyProfile>(
+        `/companies/${ctx.active_company}`,
+        token,
+        ctx.active_company,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(companyForm),
+        },
+      );
+      setCompany(updated);
+      setEditingCompany(false);
+      setCompanyMsg('Profil perusahaan berhasil diperbarui.');
+    } catch {
+      setCompanyMsg('Gagal memperbarui profil perusahaan.');
+    }
+  }
+
+  const fmtRp = (n: number) => `Rp ${Math.round(n).toLocaleString('id-ID')}`;
+
   return (
     <>
-      <Card title={t('settings.profile')}>
+      <Card title="Profil Perusahaan">
+        {loadingCompany ? (
+          <LoadingState label="Memuat profil..." />
+        ) : company ? (
+          editingCompany ? (
+            <form className="inline-form" onSubmit={saveCompany}>
+              <div className="settings-grid">
+                <Field label="Nama Perusahaan">
+                  <Input
+                    required
+                    value={companyForm.name ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
+                  />
+                </Field>
+                <Field label="Nama Legal / NPWP">
+                  <Input
+                    value={companyForm.legal_name ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, legal_name: e.target.value })}
+                  />
+                </Field>
+                <Field label="NPWP">
+                  <Input
+                    value={companyForm.npwp ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, npwp: e.target.value })}
+                    placeholder="00.000.000.0-000.000"
+                  />
+                </Field>
+                <Field label="Telepon">
+                  <Input
+                    value={companyForm.phone ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
+                    placeholder="+62 xxx"
+                  />
+                </Field>
+                <Field label="Email Perusahaan">
+                  <Input
+                    type="email"
+                    value={companyForm.email ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
+                  />
+                </Field>
+                <Field label="Website">
+                  <Input
+                    value={companyForm.website ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, website: e.target.value })}
+                    placeholder="https://..."
+                  />
+                </Field>
+                <Field label="Bidang Usaha">
+                  <Input
+                    value={companyForm.industry ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })}
+                    placeholder="Retail, F&B, dll."
+                  />
+                </Field>
+                <Field label="Bentuk Usaha">
+                  <Select
+                    value={companyForm.business_type ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, business_type: e.target.value })}
+                  >
+                    <option value="">Pilih</option>
+                    <option value="PT">PT (Perseroan Terbatas)</option>
+                    <option value="CV">CV (Commanditaire Vennootschap)</option>
+                    <option value="UD">UD (Usaha Dagang)</option>
+                    <option value="PERSEORANGAN">Perseorangan</option>
+                    <option value="KOPERASI">Koperasi</option>
+                    <option value="LAINNYA">Lainnya</option>
+                  </Select>
+                </Field>
+                <Field label="Tanggal Berdiri">
+                  <Input
+                    type="date"
+                    value={companyForm.founded_date ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, founded_date: e.target.value })}
+                  />
+                </Field>
+              </div>
+              <Field label="Alamat Lengkap">
+                <textarea
+                  className="settings-textarea"
+                  value={companyForm.address ?? ''}
+                  onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                  rows={3}
+                />
+              </Field>
+              <div className="settings-grid">
+                <Field label="Kota">
+                  <Input
+                    value={companyForm.city ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, city: e.target.value })}
+                  />
+                </Field>
+                <Field label="Provinsi">
+                  <Input
+                    value={companyForm.province ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, province: e.target.value })}
+                  />
+                </Field>
+                <Field label="Kode Pos">
+                  <Input
+                    value={companyForm.postal_code ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, postal_code: e.target.value })}
+                  />
+                </Field>
+                <Field label="Negara">
+                  <Input
+                    value={companyForm.country ?? 'Indonesia'}
+                    onChange={(e) => setCompanyForm({ ...companyForm, country: e.target.value })}
+                  />
+                </Field>
+                <Field label="Latitude">
+                  <Input
+                    type="number"
+                    step="any"
+                    value={companyForm.latitude ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, latitude: Number(e.target.value) })}
+                  />
+                </Field>
+                <Field label="Longitude">
+                  <Input
+                    type="number"
+                    step="any"
+                    value={companyForm.longitude ?? ''}
+                    onChange={(e) => setCompanyForm({ ...companyForm, longitude: Number(e.target.value) })}
+                  />
+                </Field>
+              </div>
+              <div className="settings-actions">
+                <Button type="submit"><Save size={14} /> Simpan</Button>
+                <Button variant="secondary" type="button" onClick={() => { setEditingCompany(false); setCompanyForm(company); }}>
+                  Batal
+                </Button>
+              </div>
+              {companyMsg && <p className="muted" role="status">{companyMsg}</p>}
+            </form>
+          ) : (
+            <>
+              <dl className="def-grid">
+                <dt><Building2 size={14} /> Nama Perusahaan</dt>
+                <dd>{company.name}</dd>
+                {company.legal_name && (
+                  <>
+                    <dt><FileText size={14} /> Nama Legal</dt>
+                    <dd>{company.legal_name}</dd>
+                  </>
+                )}
+                {company.npwp && (
+                  <>
+                    <dt><FileText size={14} /> NPWP</dt>
+                    <dd>{company.npwp}</dd>
+                  </>
+                )}
+                {company.phone && (
+                  <>
+                    <dt><Phone size={14} /> Telepon</dt>
+                    <dd>{company.phone}</dd>
+                  </>
+                )}
+                {company.email && (
+                  <>
+                    <dt><Mail size={14} /> Email</dt>
+                    <dd>{company.email}</dd>
+                  </>
+                )}
+                {company.website && (
+                  <>
+                    <dt><Globe size={14} /> Website</dt>
+                    <dd><a href={company.website} target="_blank" rel="noopener noreferrer">{company.website}</a></dd>
+                  </>
+                )}
+                {company.industry && (
+                  <>
+                    <dt>Bidang Usaha</dt>
+                    <dd>{company.industry}</dd>
+                  </>
+                )}
+                {company.business_type && (
+                  <>
+                    <dt>Bentuk Usaha</dt>
+                    <dd>{company.business_type}</dd>
+                  </>
+                )}
+                {company.founded_date && (
+                  <>
+                    <dt>Tanggal Berdiri</dt>
+                    <dd>{new Date(company.founded_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</dd>
+                  </>
+                )}
+                {company.address && (
+                  <>
+                    <dt><MapPin size={14} /> Alamat</dt>
+                    <dd>{company.address}{company.city ? `, ${company.city}` : ''}{company.province ? `, ${company.province}` : ''}{company.postal_code ? ` ${company.postal_code}` : ''}{company.country ? `, ${company.country}` : ''}</dd>
+                  </>
+                )}
+                <dt>Status</dt>
+                <dd><StatusBadge status={company.status ?? 'ACTIVE'} /></dd>
+                {company.created_at && (
+                  <>
+                    <dt>Dibuat</dt>
+                    <dd>{new Date(company.created_at).toLocaleDateString('id-ID')}</dd>
+                  </>
+                )}
+              </dl>
+              <Button onClick={() => setEditingCompany(true)} style={{ marginTop: '1rem' }}>
+                Edit Profil Perusahaan
+              </Button>
+            </>
+          )
+        ) : (
+          <EmptyState title="Profil perusahaan tidak ditemukan" />
+        )}
+      </Card>
+
+      <Card title="Profil Pengguna">
         <dl className="def-grid">
-          <dt>{t('settings.userId')}</dt>
-          <dd>{ctx.user.id}</dd>
-          <dt>{t('settings.fullName')}</dt>
+          <dt><User size={14} /> User ID</dt>
+          <dd><code>{ctx.user.id}</code></dd>
+          <dt><User size={14} /> Nama Lengkap</dt>
           <dd>{ctx.profile?.full_name ?? '—'}</dd>
-          <dt>{t('settings.email')}</dt>
+          <dt><Mail size={14} /> Email</dt>
           <dd>{ctx.profile?.email ?? '—'}</dd>
         </dl>
       </Card>
 
-      <Card title={t('settings.appearance')}>
+      <Card title="Tampilan">
         <div className="setting-row">
-          <span>{t('settings.themeLight')}</span>
+          <span>Theme Terang</span>
           <Switch
-            label={t('settings.appearance')}
+            label="Tema"
             checked={theme === 'blue'}
             onChange={(on) => {
               const next: Theme = on ? 'blue' : 'light';
@@ -64,42 +353,36 @@ export function SettingsPage({
               setThemeState(next);
             }}
           />
-          <span>{t('settings.themeBlue')}</span>
+          <span>Theme Biru</span>
         </div>
         <div className="setting-row" style={{ marginTop: 12 }}>
-          <span>{t('settings.language')}</span>
+          <span>Bahasa</span>
           <div className="ng-tabs" role="tablist">
             <button
               role="tab"
               aria-selected={language === 'id'}
               className={language === 'id' ? 'active' : ''}
-              onClick={() => {
-                setLang('id');
-                setLanguage('id');
-              }}
+              onClick={() => { setLang('id'); setLanguage('id'); }}
             >
-              {t('settings.languageId')}
+              Indonesia
             </button>
             <button
               role="tab"
               aria-selected={language === 'en'}
               className={language === 'en' ? 'active' : ''}
-              onClick={() => {
-                setLang('en');
-                setLanguage('en');
-              }}
+              onClick={() => { setLang('en'); setLanguage('en'); }}
             >
-              {t('settings.languageEn')}
+              English
             </button>
           </div>
         </div>
       </Card>
 
-      <Card title={t('settings.workspace')}>
+      <Card title="Workspace & Hak Akses">
         <dl className="def-grid">
-          <dt>{t('settings.activeCompany')}</dt>
+          <dt>Perusahaan Aktif</dt>
           <dd>{companyName}</dd>
-          <dt>{t('settings.yourRole')}</dt>
+          <dt>Peran Anda</dt>
           <dd>
             {ctx.roles.map((r) => (
               <span key={r} className="ng-badge ng-badge--info" style={{ marginRight: 6 }}>
@@ -107,10 +390,16 @@ export function SettingsPage({
               </span>
             ))}
           </dd>
+          <dt>Cabang yang Diakses</dt>
+          <dd>
+            {ctx.accessible_branches.length > 0
+              ? ctx.accessible_branches.map((b: any) => b.name).join(', ')
+              : 'Semua cabang (owner)'}
+          </dd>
         </dl>
         <details>
           <summary>
-            {t('settings.permissionsGranted')} ({ctx.permissions.length})
+            <ShieldCheck size={14} /> Izin yang Diberikan ({ctx.permissions.length})
           </summary>
           <div className="perm-cloud">
             {ctx.permissions.map((p) => (
@@ -120,22 +409,61 @@ export function SettingsPage({
         </details>
       </Card>
 
-      <Card title={t('settings.subscription')}>
-        {planState === 'loading' && <p className="muted">Memuat paket dan batas penggunaan…</p>}
-        {planState === 'error' && <div className="ng-alert ng-alert--warning" role="alert">Paket belum dapat dimuat.</div>}
-        {planState === 'ready' && <dl className="def-grid">
-          <dt>Paket</dt><dd>{plan?.plan ?? '—'}</dd>
-          <dt>Batas</dt><dd>{plan?.plan_limits ? JSON.stringify(plan.plan_limits) : '—'}</dd>
-        </dl>}
+      <Card title="Subscription & Paket">
+        {loadingPlan ? (
+          <p className="muted">Memuat info paket...</p>
+        ) : plan ? (
+          <dl className="def-grid">
+            <dt>Paket Aktif</dt>
+            <dd><StatusBadge status={plan.plan ?? 'FREE'} /></dd>
+            {plan.status && (
+              <>
+                <dt>Status</dt>
+                <dd><StatusBadge status={plan.status} /></dd>
+              </>
+            )}
+            {plan.expires_at && (
+              <>
+                <dt>Berlaku Hingga</dt>
+                <dd>{new Date(plan.expires_at).toLocaleDateString('id-ID')}</dd>
+              </>
+            )}
+            {plan.plan_limits && (
+              <>
+                <dt>Batas Penggunaan</dt>
+                <dd>
+                  <div className="plan-limits">
+                    {Object.entries(plan.plan_limits).map(([key, value]) => (
+                      <div key={key} className="plan-limit-item">
+                        <span className="plan-limit-key">{key.replace(/_/g, ' ')}</span>
+                        <span className="plan-limit-value">{String(value)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </dd>
+              </>
+            )}
+          </dl>
+        ) : (
+          <p className="muted">Info paket tidak tersedia.</p>
+        )}
       </Card>
 
       <Card title="Keamanan Sesi">
-        <p className="muted">
-          Sesi Anda disimpan secara lokal dan berakhir bersama token saat masuk.
-        </p>
+        <dl className="def-grid">
+          <dt>Lokasi Sesi</dt>
+          <dd>Penyimpanan sesi lokal (sessionStorage)</dd>
+          <dt>Token Refresh</dt>
+          <dd>Otomatis diperbarui via Supabase</dd>
+          <dt>Auto-Logout</dt>
+          <dd>Saat browser ditutup atau sesi expired</dd>
+        </dl>
       </Card>
 
-      <Card title={t('settings.dangerZone')}>
+      <Card title="Zona Bahaya">
+        <p className="muted" style={{ marginBottom: '0.75rem' }}>
+          Tindakan di bawah ini tidak dapat dibatalkan.
+        </p>
         <Button
           variant="danger"
           onClick={() => {
@@ -144,7 +472,7 @@ export function SettingsPage({
             location.assign('/auth/login');
           }}
         >
-          {t('settings.signOutAll')}
+          Keluar dari Semua Sesi
         </Button>
       </Card>
     </>

@@ -28,6 +28,17 @@ import {
   Building2,
   LogOut,
   Table,
+  CreditCard,
+  Receipt,
+  HeartPulse,
+  Tag,
+  Flag,
+  Rocket,
+  Wrench,
+  Megaphone,
+  Smartphone,
+  ShieldCheck,
+  Activity,
 } from 'lucide-react';
 
 export type { NavIcon } from './feature-icons';
@@ -70,6 +81,18 @@ export const MASTER_NAV_ICONS: Record<string, IconType> = {
   dashboard: LayoutDashboard,
   companies: Building2,
   users: Users,
+  subscription: CreditCard,
+  billing: Receipt,
+  'system-health': HeartPulse,
+  releases: Tag,
+  versions: Tag,
+  'feature-flags': Flag,
+  rollout: Rocket,
+  maintenance: Wrench,
+  announcements: Megaphone,
+  'mobile-versions': Smartphone,
+  security: ShieldCheck,
+  operations: Activity,
 };
 
 /* ─── Mobile Bottom Nav Icons ─── */
