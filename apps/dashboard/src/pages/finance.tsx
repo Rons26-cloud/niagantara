@@ -363,6 +363,16 @@ function CashflowTab({ company, token, from, to }: { company: string; token: str
   );
 }
 
+function normalizeList(res: any): any[] {
+  if (Array.isArray(res)) return res;
+  if (res && typeof res === 'object') {
+    for (const key of ['payables', 'receivables', 'rows', 'data', 'items', 'results']) {
+      if (Array.isArray(res[key])) return res[key];
+    }
+  }
+  return [];
+}
+
 function PayablesTab({ company, token, ctx }: { company: string; token: string; ctx: Ctx }) {
   const { t } = useTranslation();
   const [data, setData] = useState<any[]>([]);
@@ -377,23 +387,18 @@ function PayablesTab({ company, token, ctx }: { company: string; token: string; 
   const load = () => {
     setLoading(true);
     setError(null);
-    try {
-      api<any[]>('/finance/payables', token, company)
-        .then(setData)
-        .catch((e) => {
-          const msg =
-            e instanceof ApiError
-              ? e.status === 404
-                ? 'Endpoint /finance/payables belum tersedia di server.'
-                : `${e.status} · ${e.code}`
-              : 'Gagal menghubungi server. Periksa koneksi jaringan.';
-          setError(msg);
-        })
-        .finally(() => setLoading(false));
-    } catch {
-      setError('Terjadi kesalahan tak terduga.');
-      setLoading(false);
-    }
+    api<any[]>('/finance/payables', token, company)
+      .then((res) => setData(normalizeList(res)))
+      .catch((e) => {
+        const msg =
+          e instanceof ApiError
+            ? e.status === 404
+              ? 'Endpoint /finance/payables belum tersedia di server.'
+              : `${e.status} · ${e.code}`
+            : 'Gagal menghubungi server. Periksa koneksi jaringan.';
+        setError(msg);
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { void load(); }, [company, token]);
@@ -589,7 +594,7 @@ function ReceivablesTab({ company, token, ctx }: { company: string; token: strin
   const load = () => {
     setLoading(true);
     api<any[]>('/finance/receivables', token, company)
-      .then(setData)
+      .then((res) => setData(normalizeList(res)))
       .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
       .finally(() => setLoading(false));
   };
@@ -683,7 +688,7 @@ function AnalysisTab({ company, token, from, to }: { company: string; token: str
       api<any[]>(`/sales?from=${from}&to=${to}`, token, company).catch(() => []),
       api<any[]>(`/expenses?from=${from}&to=${to}`, token, company).catch(() => []),
     ])
-      .then(([s, e]) => { setSales(s); setExpenses(e); })
+      .then(([s, e]) => { setSales(normalizeList(s)); setExpenses(normalizeList(e)); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [company, token, from, to]);
