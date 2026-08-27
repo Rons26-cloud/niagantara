@@ -205,7 +205,7 @@
   color: var(--text-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -232,7 +232,7 @@
 
 .sidebar nav button.active {
   background: var(--brand-blue);
-  color: #fff;
+  color: var(--surface, #fff);
 }
 
 .sidebar-controls {
@@ -255,7 +255,7 @@
   color: var(--text-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -436,7 +436,7 @@
 .inline-form button {
   padding: 10px 16px;
   background: var(--brand-blue);
-  color: #fff;
+  color: var(--surface, #fff);
   border: none;
   border-radius: var(--radius-md);
   font-size: 14px;
@@ -446,7 +446,7 @@
 }
 
 .inline-form button:hover {
-  background: #1d4ed8;
+  background: var(--accent-primary, #1d4ed8);
 }
 
 /* State pages */
@@ -473,7 +473,7 @@
 .state button {
   padding: 12px 24px;
   background: var(--brand-blue);
-  color: #fff;
+  color: var(--surface, #fff);
   border: none;
   border-radius: var(--radius-md);
   font-size: 14px;
@@ -483,7 +483,7 @@
 }
 
 .state button:hover {
-  background: #1d4ed8;
+  background: var(--accent-primary, #1d4ed8);
 }
 
 /* Enterprise dashboard shell */
@@ -667,7 +667,7 @@
   flex: 0 0 34px;
   border-radius: 10px;
   background: var(--accent-primary);
-  color: #fff;
+  color: var(--surface, #fff);
   font-size: 11px;
   font-weight: 800;
 }
@@ -1431,6 +1431,21 @@
 }
 .mobile-topbar .mobile-titles .mobile-page-title {
   flex: none;
+}
+.mobile-topbar .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-primary);
+  color: #fff;
+  flex-shrink: 0;
+}
+.mobile-topbar .brand-mark img {
+  height: 22px;
+  width: auto;
 }
 .mobile-brand-sub {
   font-size: 11px;

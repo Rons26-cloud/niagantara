@@ -364,43 +364,102 @@ function CashflowTab({ company, token, from, to }: { company: string; token: str
 }
 
 function PayablesTab({ company, token, ctx }: { company: string; token: string; ctx: Ctx }) {
+  const { t } = useTranslation();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
+  const [payRow, setPayRow] = useState<any | null>(null);
+  const [payAmount, setPayAmount] = useState('');
+  const [payMethod, setPayMethod] = useState('BANK_TRANSFER');
+  const [paying, setPaying] = useState(false);
 
   const load = () => {
     setLoading(true);
-    api<any[]>('/finance/payables', token, company)
-      .then(setData)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
-      .finally(() => setLoading(false));
+    setError(null);
+    try {
+      api<any[]>('/finance/payables', token, company)
+        .then(setData)
+        .catch((e) => {
+          const msg =
+            e instanceof ApiError
+              ? e.status === 404
+                ? 'Endpoint /finance/payables belum tersedia di server.'
+                : `${e.status} · ${e.code}`
+              : 'Gagal menghubungi server. Periksa koneksi jaringan.';
+          setError(msg);
+        })
+        .finally(() => setLoading(false));
+    } catch {
+      setError('Terjadi kesalahan tak terduga.');
+      setLoading(false);
+    }
   };
 
   useEffect(() => { void load(); }, [company, token]);
 
-  async function pay(row: any) {
-    const amount = prompt('Jumlah pembayaran', String(row.remaining_amount));
-    if (amount) {
-      try {
-        await api('/finance/payables/' + row.id + '/payments', token, company, {
-          method: 'POST',
-          body: JSON.stringify({
-            amount: Number(amount),
-            paymentMethod: 'BANK_TRANSFER',
-            idempotencyKey: crypto.randomUUID(),
-          }),
-        });
-        setMsg('Pembayaran berhasil.');
-        load();
-      } catch {
-        setMsg('Gagal melakukan pembayaran.');
-      }
+  async function submitPay() {
+    if (!payRow || !payAmount) return;
+    setPaying(true);
+    try {
+      await api('/finance/payables/' + payRow.id + '/payments', token, company, {
+        method: 'POST',
+        body: JSON.stringify({
+          amount: Number(payAmount),
+          paymentMethod: payMethod,
+          idempotencyKey: crypto.randomUUID(),
+        }),
+      });
+      setMsg('Pembayaran berhasil.');
+      setPayRow(null);
+      setPayAmount('');
+      load();
+    } catch {
+      setMsg('Gagal melakukan pembayaran. Silakan coba lagi.');
+    } finally {
+      setPaying(false);
     }
   }
 
+  function handleExport() {
+    const header = ['Deskripsi', 'Jumlah', 'Dibayar', 'Sisa', 'Status', 'Jatuh Tempo'];
+    const rows = data.map((r: any) => [
+      r.description ?? r.purchase?.purchase_number ?? r.id,
+      r.original_amount ?? 0,
+      r.paid_amount ?? 0,
+      r.remaining_amount ?? 0,
+      r.status ?? 'PENDING',
+      r.due_date ?? '',
+    ]);
+    const csv = [header, ...rows].map((r) => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hutang-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (loading) return <LoadingState label="Memuat hutang..." />;
-  if (error) return <ErrorState message={error} onRetry={load} />;
+  if (error) {
+    return (
+      <section className="panel error">
+        <div className="panel-head">
+          <h2>Daftar Hutang</h2>
+        </div>
+        <div className="empty" style={{ padding: '3rem 1.5rem' }}>
+          <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>
+            Gagal memuat data hutang
+          </p>
+          <p className="muted" style={{ marginBottom: '1rem' }}>
+            {error}
+          </p>
+          <Button onClick={load}>Coba Lagi</Button>
+        </div>
+      </section>
+    );
+  }
 
   const totalOutstanding = data.reduce((n, r) => n + Number(r.remaining_amount ?? 0), 0);
   const totalPaid = data.reduce((n, r) => n + Number(r.paid_amount ?? 0), 0);
@@ -421,9 +480,24 @@ function PayablesTab({ company, token, ctx }: { company: string; token: string; 
       <section className="panel">
         <div className="panel-head">
           <h2>Daftar Hutang</h2>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Button variant="ghost" onClick={handleExport} disabled={data.length === 0}>
+              <Download size={14} /> Export CSV
+            </Button>
+          </div>
         </div>
         {data.length === 0 ? (
-          <EmptyState icon={<HandCoins size={28} />} title="Belum ada hutang" />
+          <div className="empty" style={{ padding: '3rem 1.5rem' }}>
+            <HandCoins size={36} style={{ opacity: 0.4, marginBottom: '0.75rem' }} />
+            <p style={{ fontSize: '0.95rem', marginBottom: '0.35rem', fontWeight: 600 }}>
+              Belum ada data hutang
+            </p>
+            <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '1rem', maxWidth: 380, marginInline: 'auto' }}>
+              Data hutang (payable) akan muncul di sini setelah Anda mencatat pembelian
+              dari supplier dengan metode kredit / tempo.
+            </p>
+            <Button onClick={load}>Muat Ulang</Button>
+          </div>
         ) : (
           <div className="table">
             <div className="tr head">
@@ -441,7 +515,9 @@ function PayablesTab({ company, token, ctx }: { company: string; token: string; 
                 <span>{r.due_date ?? '—'}</span>
                 <span>
                   {ctx.permissions.includes('payable.manage') && r.status !== 'PAID' && (
-                    <Button variant="ghost" onClick={() => pay(r)}>Bayar</Button>
+                    <Button variant="ghost" onClick={() => { setPayRow(r); setPayAmount(String(r.remaining_amount ?? 0)); }}>
+                      Bayar
+                    </Button>
                   )}
                 </span>
               </div>
@@ -451,6 +527,55 @@ function PayablesTab({ company, token, ctx }: { company: string; token: string; 
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
         {msg && <p className="muted">{msg}</p>}
       </section>
+
+      <Modal
+        open={!!payRow}
+        onClose={() => { setPayRow(null); setPayAmount(''); }}
+        title="Bayar Hutang"
+        footer={
+          <Button onClick={submitPay} disabled={!payAmount || Number(payAmount) <= 0 || paying}>
+            {paying ? 'Memproses...' : 'Konfirmasi Pembayaran'}
+          </Button>
+        }
+      >
+        {payRow && (
+          <div className="inline-form" style={{ display: 'grid', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
+                Deskripsi
+              </label>
+              <span style={{ fontSize: '0.9rem' }}>
+                {payRow.description ?? payRow.purchase?.purchase_number ?? payRow.id}
+              </span>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
+                Sisa Hutang
+              </label>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                {fmtRp(Number(payRow.remaining_amount ?? 0))}
+              </span>
+            </div>
+            <Field label="Jumlah Pembayaran">
+              <Input
+                type="number"
+                min={1}
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+                placeholder="Masukkan jumlah"
+              />
+            </Field>
+            <Field label="Metode Pembayaran">
+              <Select value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
+                <option value="BANK_TRANSFER">Transfer Bank</option>
+                <option value="CASH">Tunai</option>
+                <option value="E_WALLET">E-Wallet</option>
+                <option value="OTHER">Lainnya</option>
+              </Select>
+            </Field>
+          </div>
+        )}
+      </Modal>
     </>
   );
 }

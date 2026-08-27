@@ -62,10 +62,23 @@ export function WarehousesPage({
   const load = () => {
     setLoading(true);
     setError(null);
-    api<Warehouse[]>('/warehouses', token, company)
-      .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
-      .finally(() => setLoading(false));
+    try {
+      api<Warehouse[]>('/warehouses', token, company)
+        .then(setRows)
+        .catch((e) => {
+          const msg =
+            e instanceof ApiError
+              ? e.status === 404
+                ? 'Endpoint /warehouses belum tersedia di server.'
+                : `${e.status} · ${e.code}`
+              : 'Gagal menghubungi server. Periksa koneksi jaringan.';
+          setError(msg);
+        })
+        .finally(() => setLoading(false));
+    } catch {
+      setError('Terjadi kesalahan tak terduga.');
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -129,7 +142,24 @@ export function WarehousesPage({
   }
 
   if (loading) return <LoadingState label={t('common.loading')} />;
-  if (error) return <ErrorState message={error} onRetry={load} />;
+  if (error) {
+    return (
+      <section className="panel error">
+        <div className="panel-head">
+          <h2>{t('pages.warehouses')}</h2>
+        </div>
+        <div className="empty" style={{ padding: '3rem 1.5rem' }}>
+          <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>
+            Gagal memuat data gudang
+          </p>
+          <p className="muted" style={{ marginBottom: '1rem' }}>
+            {error}
+          </p>
+          <Button onClick={load}>Coba Lagi</Button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>

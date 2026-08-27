@@ -17,7 +17,7 @@ import {
 } from '@niagantara/ui';
 import type { Language, Theme } from '@niagantara/ui';
 import { getLanguage, getTheme, setLanguage, setTheme, useTranslation } from '@niagantara/ui';
-import { Package, ReceiptText, BarChart3, Boxes, MonitorSmartphone } from 'lucide-react';
+import { Package, ReceiptText, BarChart3, Boxes, MonitorSmartphone, Clock, TrendingUp, AlertTriangle, CalendarDays } from 'lucide-react';
 
 export type OrgCtx = {
   user: { id: string };
@@ -128,6 +128,18 @@ export function DashboardHome({
     () => (can('sheet.read') ? api<any>('/google-sheets', token, company) : Promise.resolve(null)),
     [company, token],
   );
+  const products = useResource<any[]>(
+    () => (can('product.read') ? api<any[]>('/products?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    [company, token],
+  );
+  const customers = useResource<any[]>(
+    () => (can('customer.read') ? api<any[]>('/customers?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    [company, token],
+  );
+  const employees = useResource<any[]>(
+    () => (can('employee.read') ? api<any[]>('/employees?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    [company, token],
+  );
 
   useEffect(() => {
     const onRealtime = (event: Event) => {
@@ -202,6 +214,29 @@ export function DashboardHome({
       }));
   }, [sales.data]);
 
+  const recentActivity = useMemo(() => {
+    const items: { id: string; text: string; time: string; type: 'sale' | 'alert' }[] = [];
+    const recentSales = (sales.data ?? []).slice(0, 5);
+    for (const s of recentSales) {
+      items.push({
+        id: `sale-${s.id}`,
+        text: `Penjualan ${fmtRp(Number(s.grand_total))} - ${s.status}`,
+        time: new Date(s.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        type: 'sale',
+      });
+    }
+    if ((lowStock.data?.length ?? 0) > 0) {
+      const first = lowStock.data![0];
+      items.push({
+        id: `lowstock-${first.id}`,
+        text: `Stok rendah: ${first.product?.name ?? 'Produk'} (${first.quantity}/${first.minimum_stock})`,
+        time: 'Sekarang',
+        type: 'alert',
+      });
+    }
+    return items.slice(0, 5);
+  }, [sales.data, lowStock.data]);
+
   return (
     <>
       <div className="ng-filterbar">
@@ -255,6 +290,54 @@ export function DashboardHome({
         />
       </div>
 
+      <div className="metrics" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+        <Card title="Total Produk">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary, #2563EB)' }}>
+              <Package size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+                {products.loading ? '...' : (products.data?.length ?? 0)}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+                {products.error ? 'Gagal memuat' : 'produk terdaftar'}
+              </div>
+            </div>
+          </div>
+        </Card>
+        <Card title="Total Pelanggan">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, #059669 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+              <ReceiptText size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+                {customers.loading ? '...' : (customers.data?.length ?? 0)}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+                {customers.error ? 'Gagal memuat' : 'pelanggan terdaftar'}
+              </div>
+            </div>
+          </div>
+        </Card>
+        <Card title="Staff Aktif">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, #7C3AED 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
+              <BarChart3 size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+                {employees.loading ? '...' : (employees.data?.length ?? 0)}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+                {employees.error ? 'Gagal memuat' : 'karyawan aktif'}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {(can('finance.read') || can('payable.read') || can('receivable.read')) && (
         <div className="metrics metrics--finance">
           <StatCard
@@ -295,15 +378,24 @@ export function DashboardHome({
       )}
 
       <div className="dash-columns">
-        <Card title="Penjualan / Sales trend">
+        <Card title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><TrendingUp size={16} /> Revenue Trend</span>}>
           {dailySeries.length > 1 ? (
-            <MiniBars data={dailySeries.map((d) => ({ label: d.day, value: d.total }))} />
+            <>
+              <MiniBars data={dailySeries.map((d) => ({ label: d.day, value: d.total }))} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted, #6B7280)' }}>
+                <span>{dailySeries.length} hari</span>
+                <span>Tertinggi: {fmtRp(Math.max(...dailySeries.map((d) => d.total)))}</span>
+              </div>
+            </>
           ) : (
-            <p className="muted">Pilih rentang tanggal lebih dari satu hari.</p>
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <TrendingUp size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: 0 }}>Pilih rentang tanggal lebih dari satu hari untuk melihat trend.</p>
+            </div>
           )}
         </Card>
 
-        <Card title="Quick actions">
+        <Card title="Aksi Cepat">
           <div className="quick-actions">
             {can('pos.access') && (
               <Button onClick={() => go('pos')}><MonitorSmartphone size={14} /> {t('pages.pos')}</Button>
@@ -336,13 +428,36 @@ export function DashboardHome({
             </Alert>
           )}
           {!can('sheet.read') && (
-            <p className="muted">Google Sheets status memerlukan izin sheet.read.</p>
+            <p className="muted" style={{ fontSize: '0.82rem' }}>Google Sheets status memerlukan izin sheet.read.</p>
           )}
         </Card>
       </div>
 
       <div className="dash-columns">
-        <Card title="Top products">
+        <Card title="Aktivitas Terkini">
+          {recentActivity.length ? (
+            <ul className="mini-list">
+              {recentActivity.map((item) => (
+                <li key={item.id} style={{ gap: '0.6rem' }}>
+                  {item.type === 'sale' ? (
+                    <ReceiptText size={14} style={{ color: 'var(--accent-primary, #2563EB)', flexShrink: 0 }} />
+                  ) : (
+                    <AlertTriangle size={14} style={{ color: 'var(--warning, #F59E0B)', flexShrink: 0 }} />
+                  )}
+                  <b style={{ fontSize: '0.85rem', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.text}</b>
+                  <em style={{ fontStyle: 'normal', marginLeft: 'auto', color: 'var(--text-muted, #6B7280)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>{item.time}</em>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <Clock size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: 0 }}>Belum ada aktivitas terkini pada periode ini.</p>
+            </div>
+          )}
+        </Card>
+
+        <Card title="Top Produk">
           {topProducts.length ? (
             <ul className="mini-list">
               {topProducts.map((p) => (
@@ -355,20 +470,24 @@ export function DashboardHome({
               ))}
             </ul>
           ) : (
-            <EmptyState
-              icon={<Package size={28} />}
-              title={sales.error ? 'Data tidak tersedia' : 'Belum ada produk terjual'}
-              description={
-                sales.error
-                  ? undefined
-                  : 'Penjualan akan muncul di sini setelah transaksi POS pertama.'
-              }
-            />
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <Package size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: '0 0 0.5rem' }}>
+                {sales.error ? 'Data tidak tersedia' : 'Belum ada produk terjual pada periode ini'}
+              </p>
+              {!sales.error && (
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                  Penjualan akan muncul di sini setelah transaksi POS pertama.
+                </span>
+              )}
+            </div>
           )}
         </Card>
+      </div>
 
+      <div className="dash-columns">
         <Card
-          title="Recent sales"
+          title="Penjualan Terakhir"
           actions={
             can('sale.read') ? (
               <Button variant="ghost" onClick={() => go('sales')}>
@@ -388,16 +507,16 @@ export function DashboardHome({
               ))}
             </ul>
           ) : (
-            <EmptyState
-              icon={<ReceiptText size={28} />}
-              title="Belum ada penjualan pada rentang ini"
-              description="Ubah filter tanggal atau lakukan transaksi di POS."
-            />
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <ReceiptText size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: '0 0 0.5rem' }}>Belum ada penjualan pada rentang ini</p>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                Ubah filter tanggal atau lakukan transaksi di POS.
+              </span>
+            </div>
           )}
         </Card>
-      </div>
 
-      <div className="dash-columns">
         <Card title={t('dashboard.salesDistribution')}>
           {statusDistribution.length ? (
             <ul className="dist-list">
@@ -414,51 +533,99 @@ export function DashboardHome({
               ))}
             </ul>
           ) : (
-            <EmptyState
-              icon={<BarChart3 size={28} />}
-              title={sales.error ? 'Data tidak tersedia' : 'Belum ada penjualan pada rentang ini'}
-            />
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <BarChart3 size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: 0 }}>
+                {sales.error ? 'Data tidak tersedia' : 'Belum ada data distribusi penjualan'}
+              </p>
+            </div>
           )}
         </Card>
+      </div>
 
-        {can('inventory.read') && (
-          <Card
-            title={t('dashboard.lowStock')}
-            actions={
+      <div className="dash-columns">
+        <Card
+          title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><AlertTriangle size={16} /> Stok Rendah</span>}
+          actions={
+            can('inventory.read') ? (
               <Button variant="ghost" onClick={() => go('inventory')}>
                 {t('dashboard.viewAll')} →
               </Button>
+            ) : undefined
+          }
+        >
+          {(lowStock.data?.length ?? 0) > 0 ? (
+            <>
+              <p className="muted" style={{ fontSize: '0.82rem', marginBottom: '0.5rem' }}>{t('dashboard.lowStockHint')}</p>
+              <ul className="mini-list mini-list--stock">
+                {lowStock.data!.slice(0, 8).map((row: any) => (
+                  <li key={row.id}>
+                    <b>{row.product?.name ?? row.product_id}</b>
+                    <span>{row.branch?.name ?? '—'}</span>
+                    <StatusBadge
+                      status={Number(row.quantity) <= 0 ? 'OUT_OF_STOCK' : 'LOW_STOCK'}
+                    />
+                    <em>
+                      {row.quantity}/{row.minimum_stock}
+                    </em>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <Boxes size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <p className="muted" style={{ margin: '0 0 0.5rem' }}>
+                {lowStock.error ? 'Data tidak tersedia' : t('inventory.stockSafe')}
+              </p>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                {lowStock.error ? undefined : t('dashboard.lowStockHint')}
+              </span>
+            </div>
+          )}
+        </Card>
+
+        <Card title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Shift Mendatang</span>}>
+          {(() => {
+            const now = new Date();
+            const todayStr = isoDay(now);
+            const todaySales = (sales.data ?? []).filter((s) => s.created_at.slice(0, 10) === todayStr);
+            if (todaySales.length > 0) {
+              const total = fmtRp(todaySales.reduce((n, s) => n + Number(s.grand_total), 0));
+              return (
+                <div style={{ padding: '0.5rem 0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0', borderBottom: '1px solid var(--border-color, #E5E7EB)' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary, #2563EB)', fontSize: '0.78rem', fontWeight: 700 }}>
+                      {ctx.accessible_branches.length > 0 ? ctx.accessible_branches[0].name?.[0] ?? '?' : '?'}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary, #111827)' }}>
+                        {branch?.name ?? ctx.accessible_branches[0]?.name ?? 'Semua Cabang'}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted, #6B7280)' }}>
+                        {todaySales.length} transaksi hari ini
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #111827)' }}>{total}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', fontSize: '0.78rem' }}>
+                    <span style={{ color: 'var(--text-muted, #6B7280)' }}>Rata-rata per transaksi</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary, #111827)' }}>{fmtRp(todaySales.length ? Number(todaySales.reduce((n, s) => n + Number(s.grand_total), 0)) / todaySales.length : 0)}</span>
+                  </div>
+                </div>
+              );
             }
-          >
-            {(lowStock.data?.length ?? 0) > 0 ? (
-              <>
-                <p className="muted">{t('dashboard.lowStockHint')}</p>
-                <ul className="mini-list mini-list--stock">
-                  {lowStock.data!.slice(0, 8).map((row: any) => (
-                    <li key={row.id}>
-                      <b>{row.product?.name ?? row.product_id}</b>
-                      <span>{row.branch?.name ?? '—'}</span>
-                      <StatusBadge
-                        status={Number(row.quantity) <= 0 ? 'OUT_OF_STOCK' : 'LOW_STOCK'}
-                      />
-                      <em>
-                        {row.quantity}/{row.minimum_stock}
-                      </em>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <EmptyState
-                icon={<Boxes size={28} />}
-                title={
-                  lowStock.error ? 'Data tidak tersedia' : t('inventory.stockSafe')
-                }
-                description={lowStock.error ? undefined : t('dashboard.lowStockHint')}
-              />
-            )}
-          </Card>
-        )}
+            return (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                <CalendarDays size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+                <p className="muted" style={{ margin: '0 0 0.5rem' }}>Belum ada shift aktif hari ini</p>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                  Mulai shift dari halaman POS untuk memulai pencatatan.
+                </span>
+              </div>
+            );
+          })()}
+        </Card>
       </div>
     </>
   );
