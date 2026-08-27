@@ -28,6 +28,7 @@ export function Link({
   ariaLabel,
   ariaCurrent,
   onClick,
+  preventNavigation,
 }: {
   to: string;
   children: ReactNode;
@@ -35,6 +36,7 @@ export function Link({
   ariaLabel?: string;
   ariaCurrent?: 'page';
   onClick?: () => void;
+  preventNavigation?: boolean;
 }) {
   const go = useContext(NavigateContext);
   return (
@@ -47,7 +49,7 @@ export function Link({
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         e.preventDefault();
         onClick?.();
-        go(to);
+        if (!preventNavigation) go(to);
       }}
     >
       {children}

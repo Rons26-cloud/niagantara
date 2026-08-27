@@ -9,6 +9,7 @@ import {
   LazySection,
 } from './chrome';
 import { Link } from './router';
+import { DemoPreview } from './demo/demo-app';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
 import {
   LayoutDashboard,
@@ -164,7 +165,7 @@ export function ShowcaseSection() {
           title={w.showcase.title}
           text={w.showcase.subtitle}
         />
-        <Dashboard w={w} />
+        <DemoPreview />
       </div>
     </section>
   );

@@ -74,9 +74,11 @@ function pageTitle(
 export function DemoShell({
   children,
   currentPage,
+  onNavigate,
 }: {
   children: React.ReactNode;
   currentPage: string;
+  onNavigate?: (page: string) => void;
 }) {
   const { t } = useTranslation();
   const {
@@ -190,7 +192,13 @@ export function DemoShell({
         to={`/demo/${id}`}
         className={currentPage === id ? 'active' : ''}
         aria-current={currentPage === id ? 'page' : undefined}
-        onClick={() => setMenuOpen(false)}
+        preventNavigation={Boolean(onNavigate)}
+        onClick={() => {
+          setMenuOpen(false);
+          if (onNavigate) {
+            onNavigate(id);
+          }
+        }}
       >
         {Icon && <SidebarIcon icon={Icon} size={18} />}
         <span>{pageTitle(id, label, t)}</span>

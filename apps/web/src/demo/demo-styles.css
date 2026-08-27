@@ -1687,6 +1687,32 @@
   }
 }
 
+/* Embedded owner dashboard preview on the marketing page. */
+.demo-preview-shell {
+  width: min(100%, 1320px);
+  margin: 2rem auto 0;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+}
+.demo-preview-shell .demo-shell { min-height: 720px; }
+.demo-preview-shell .demo-banner { position: absolute; }
+.demo-preview-shell .demo-sidebar { top: 2.1rem; }
+.demo-preview-shell .demo-workspace { min-height: 720px; }
+.demo-preview-shell .demo-topbar { top: 2.1rem; }
+@media (max-width: 1023px) {
+  .demo-preview-shell .demo-sidebar { display: none; }
+  .demo-preview-shell .demo-workspace { margin-left: 0; }
+}
+@media (max-width: 767px) {
+  .demo-preview-shell { margin-top: 1.25rem; border-radius: 14px; }
+  .demo-preview-shell .demo-shell,
+  .demo-preview-shell .demo-workspace { min-height: 640px; }
+  .demo-preview-shell .demo-banner { position: relative; }
+  .demo-preview-shell .demo-sidebar { display: none; }
+}
+
 @media (max-width: 420px) {
   .demo-banner {
     gap: 0.4rem;

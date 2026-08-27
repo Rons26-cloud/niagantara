@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ToastViewport, useTranslation } from '@niagantara/ui';
 import { DemoStoreProvider } from './demo-store';
 import { DemoShell } from './demo-shell';
@@ -69,7 +69,7 @@ function readDemoPage(path: string): DemoPage {
   return 'dashboard';
 }
 
-function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
+export function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
   switch (currentPage) {
     case 'products':
     case 'barcode':
@@ -120,6 +120,19 @@ function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
     default:
       return <DemoDashboard />;
   }
+}
+
+export function DemoPreview() {
+  const [currentPage, setCurrentPage] = useState<DemoPage>('dashboard');
+  return (
+    <DemoStoreProvider>
+      <div className="demo-preview-shell">
+        <DemoShell currentPage={currentPage} onNavigate={(page) => setCurrentPage(page as DemoPage)}>
+          <DemoPageContent currentPage={currentPage} />
+        </DemoShell>
+      </div>
+    </DemoStoreProvider>
+  );
 }
 
 export function DemoApp() {
