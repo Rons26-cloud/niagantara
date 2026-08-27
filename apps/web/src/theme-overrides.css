@@ -14,18 +14,34 @@ body {
 }
 
 .navbar {
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.94);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+  color: #f8fafc;
 }
 
 .nav-inner nav a,
 .login {
-  color: var(--text-secondary);
+  color: #cbd5e1;
 }
 
 .nav-inner nav a:hover,
 .login:hover {
   color: var(--brand-blue);
+}
+
+.menu span {
+  background: #f8fafc;
+}
+
+@media (max-width: 820px) {
+  .nav-inner nav {
+    background: #0f172a;
+    border-bottom-color: rgba(51, 65, 85, 0.8);
+  }
+  .nav-inner nav a,
+  .nav-inner nav a.active {
+    color: #cbd5e1;
+  }
 }
 
 /* Override button backgrounds */
@@ -135,8 +151,8 @@ footer {
 
 /* Navbar */
 [data-theme='blue'] .navbar {
-  background: rgba(15, 23, 42, 0.85);
-  border-bottom-color: rgba(51, 65, 85, 0.7);
+  background: rgba(15, 23, 42, 0.94);
+  border-bottom-color: rgba(51, 65, 85, 0.8);
 }
 
 /* Logo strip */

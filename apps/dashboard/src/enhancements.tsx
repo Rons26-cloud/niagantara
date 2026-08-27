@@ -631,6 +631,68 @@ export function DashboardHome({
   );
 }
 
+export function CommandCenter({
+  company,
+  token,
+  ctx,
+  branch,
+  go,
+}: {
+  company: string;
+  token: string;
+  ctx: OrgCtx;
+  branch: any;
+  go: (page: string) => void;
+}) {
+  const { t } = useTranslation();
+  const lowStock = useResource<any[]>(
+    () => api<any[]>('/inventory/low-stock', token, company),
+    [company, token],
+  );
+  const shifts = useResource<any[]>(
+    () => api<any[]>('/shifts', token, company),
+    [company, token],
+  );
+  const sheets = useResource<any>(
+    () => (ctx.permissions.includes('sheet.read') ? api('/google-sheets', token, company) : Promise.resolve(null)),
+    [company, token, ctx.permissions],
+  );
+  const activeShifts = (shifts.data ?? []).filter((item) => item.status === 'OPEN' || item.status === 'ACTIVE');
+  const hasError = lowStock.error || shifts.error || sheets.error;
+  const retry = () => { lowStock.reload(); shifts.reload(); sheets.reload(); };
+  const status = lowStock.data?.length ? 'WARNING' : 'HEALTHY';
+  return (
+    <div className="command-center">
+      <div className="ng-filterbar">
+        <Badge tone="info">{t('context.branch')}: {branch?.name ?? t('context.allBranches')}</Badge>
+        <span className="muted">Status operasional berbasis data yang tersedia</span>
+      </div>
+      {hasError && <ErrorState message="Sebagian data operasional tidak dapat dimuat." onRetry={retry} retryLabel="Coba lagi" />}
+      <div className="metrics command-center__summary">
+        <StatCard label="Cabang Aktif" value={String(ctx.accessible_branches.length)} loading={false} />
+        <StatCard label="Shift Aktif" value={String(activeShifts.length)} loading={shifts.loading} error={!!shifts.error} onRetry={shifts.reload} />
+        <StatCard label="Stok Kritis" value={String(lowStock.data?.length ?? 0)} tone={lowStock.data?.length ? 'warning' : 'default'} loading={lowStock.loading} error={!!lowStock.error} onRetry={lowStock.reload} />
+        <StatCard label="Integrasi Sheets" value={sheets.loading ? '...' : sheets.data?.connection?.status ?? 'Belum terhubung'} loading={false} />
+      </div>
+      <div className="dash-columns">
+        <Card title="Kesehatan Cabang">
+          <ul className="mini-list">
+            {ctx.accessible_branches.length ? ctx.accessible_branches.map((item: any) => (
+              <li key={item.id}><b>{item.name}</b><StatusBadge status={status} /><span>{status === 'WARNING' ? 'Ada stok rendah' : 'Tidak ada peringatan'}</span></li>
+            )) : <EmptyState title="Belum ada cabang" description="Tambahkan cabang untuk melihat status operasional." />}
+          </ul>
+        </Card>
+        <Card title="Shift Berjalan">
+          {activeShifts.length ? <ul className="mini-list">{activeShifts.slice(0, 6).map((item: any) => <li key={item.id}><b>{item.cashier?.name ?? item.cashier_id ?? 'Kasir'}</b><span>{item.opened_at ? new Date(item.opened_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Waktu tidak tersedia'}</span></li>)}</ul> : <EmptyState title="Tidak ada shift aktif" description="Shift aktif akan tampil ketika kasir membuka shift." />}
+        </Card>
+      </div>
+      <Card title="Peringatan Operasional">
+        {lowStock.data?.length ? <ul className="mini-list">{lowStock.data.slice(0, 8).map((item: any) => <li key={item.id}><AlertTriangle size={15} aria-hidden="true" /><b>{item.product?.name ?? 'Produk'}</b><span>{item.quantity} / minimum {item.minimum_stock}</span><Button variant="ghost" onClick={() => go('inventory')}>Lihat stok</Button></li>)}</ul> : <EmptyState title="Tidak ada peringatan" description="Belum ada stok di bawah batas minimum." />}
+      </Card>
+    </div>
+  );
+}
+
 export function MiniBars({
   data,
 }: {

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import {
   DashboardHome,
+  CommandCenter,
   Onboarding,
   loadStoredBranch,
   storeBranch,
@@ -54,6 +55,7 @@ type Ctx = OrgCtx;
 
 const nav = [
   ['dashboard', 'Beranda'],
+  ['command-center', 'Command Center'],
   ['pos', 'POS / Kasir'],
   ['products', 'Produk'],
   ['categories', 'Kategori'],
@@ -80,7 +82,7 @@ const nav = [
 ] as const;
 
 const NAV_GROUPS: [string, string[]][] = [
-  ['main', ['dashboard', 'pos']],
+  ['main', ['dashboard', 'command-center', 'pos']],
   ['catalog', ['products', 'categories', 'barcode', 'inventory']],
   ['sales', ['sales', 'shifts', 'customers']],
   ['purchasing', ['purchases', 'suppliers']],
@@ -219,7 +221,7 @@ export function DashboardApp() {
     };
   }, [menuOpen]);
 
-  if (!accessToken)
+  if (!accessToken || !authUser)
     return (
       <State
         text={t('auth.loginRequired')}
@@ -545,6 +547,7 @@ export function DashboardApp() {
             page={page}
             ctx={scopedCtx}
             token={accessToken}
+            userId={authUser.id}
             companyName={companyName}
             title={title}
           />
@@ -602,6 +605,7 @@ function RealtimePage(props: {
   page: string;
   ctx: Ctx;
   token: string;
+  userId: string;
   companyName: string;
   title: string;
 }) {
@@ -625,12 +629,14 @@ function Page({
   page,
   ctx,
   token,
+  userId,
   companyName,
   title,
 }: {
   page: string;
   ctx: Ctx;
   token: string;
+  userId: string;
   companyName: string;
   title: string;
 }) {
@@ -656,8 +662,11 @@ function Page({
           go={go2}
         />
       </>
-    );
-  if (page === 'pos') return <Pos company={c} token={token} ctx={ctx} />;
+      );
+  if (page === 'command-center')
+    return <CommandCenter company={c} token={token} ctx={ctx} branch={branch} go={go2} />;
+  if (page === 'pos')
+    return <Pos company={c} token={token} userId={userId} ctx={ctx} />;
   if (page === 'sales')
     return <SalesPage company={c} token={token} ctx={ctx} />;
   if (page === 'shifts')

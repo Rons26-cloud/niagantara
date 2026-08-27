@@ -48,3 +48,24 @@ NestJS guards and Supabase/RPC policies remain authoritative.
 Dashboard lint, typecheck, and production build pass. Full repository validation
 must still be run after any follow-up page refinements; no commit, push, or deploy
 was performed.
+
+## Phase C aggregation checkpoint
+
+`GET /dashboard/overview` and `GET /dashboard/command-center` provide typed,
+tenant-scoped aggregates for paid sales, transactions, average order value,
+products sold, low stock, sales trend, branch performance, and active shifts.
+Comparison ranges use UTC day boundaries because no company business-timezone
+setting is currently available. Gross/net profit, expenses, receivables, and
+payables remain unavailable rather than being estimated. Branch health is
+derived from known stock warnings and shift data; absence of sales is never
+treated as offline. Queries are bounded and branch aggregation avoids per-branch
+API calls. POS presence telemetry and persistent alert storage remain future
+backend gaps.
+
+### Phase C closeout audit
+
+Existing indexes cover the aggregation paths: `sales_scope_created_idx` and
+`sales_status_created_idx`, `sale_items_sale_idx` and `sale_items_product_idx`,
+`inventory_low_stock_idx`, `cashier_shifts_scope_idx`, `audit_logs_tenant_idx`,
+and the Google Sheets queue/history indexes. No additive migration is required.
+Focused comparison tests live in `services/api/test/dashboard-phase-c.test.ts`.

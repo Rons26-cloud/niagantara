@@ -6,6 +6,8 @@ export type SaleQuery = {
   status?: string;
   from?: string;
   to?: string;
+  limit?: number;
+  offset?: number;
 };
 export type CancelSaleInput = { reason: string };
 export type RefundSaleInput = {

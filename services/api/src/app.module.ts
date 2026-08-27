@@ -23,6 +23,7 @@ import { ExpensesModule } from './modules/expenses/expenses.module.js';
 import { FinanceModule } from './modules/finance/finance.module.js';
 import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { SupabaseService } from './integrations/supabase/supabase.service.js';
 import { validateServerEnvironment } from './config/environment.js';
 
@@ -74,6 +75,7 @@ class HealthController {
     FinanceModule,
     GoogleSheetsModule,
     UsersModule,
+    DashboardModule,
   ],
   controllers: [HealthController],
 })

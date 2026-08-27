@@ -20,7 +20,7 @@ import {
 import '@niagantara/ui/design-tokens.css';
 import '@niagantara/ui/components.css';
 import '@niagantara/ui/ui.css';
-import { PosPage } from '@niagantara/pos-core';
+import { PosPage, PosHistory } from '@niagantara/pos-core';
 import './app.css';
 
 const BRANCH_KEY = 'niagantara.pos.branch';
@@ -37,7 +37,7 @@ export function PosApp() {
   const { user, accessToken, setSession, clearSession } = useAuth();
   const { t } = useTranslation();
   const [ctx, setCtx] = useState<any>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'denied' | 'error' | 'noctx'>(
+  const [status, setStatus] = useState<'loading' | 'ready' | 'denied' | 'expired' | 'error' | 'noctx'>(
     'loading',
   );
   const [branchId, setBranchId] = useState(
@@ -63,7 +63,7 @@ export function PosApp() {
       })
       .catch((e) => {
         if (!alive) return;
-        setStatus(e instanceof ApiError && e.status === 403 ? 'denied' : 'error');
+        setStatus(e instanceof ApiError && e.status === 403 ? 'denied' : e instanceof ApiError && e.status === 401 ? 'expired' : 'error');
       });
     return () => {
       alive = false;
@@ -173,6 +173,7 @@ export function PosApp() {
       <main className="pos-main">
         {status === 'loading' && <LoadingState label={t('dashboard.loadingContext')} />}
         {status === 'denied' && <ErrorState message={t('dashboard.permissionDenied')} />}
+        {status === 'expired' && <ErrorState message="Sesi POS berakhir. Silakan masuk kembali." onRetry={() => { clearSession(); location.reload(); }} />}
         {status === 'noctx' && (
           <ErrorState
             message={
@@ -188,6 +189,7 @@ export function PosApp() {
             <PosPage
               company={ctx.active_company}
               token={accessToken!}
+              userId={user.id}
               ctx={{
                 permissions: ctx.permissions,
                 stores: store ? [store] : [],
@@ -198,10 +200,7 @@ export function PosApp() {
             <ErrorState message={t('dashboard.permissionDenied')} />
           ))}
         {status === 'ready' && activePage === 'history' && (
-          <div className="pos-gap-page">
-            <h2>Riwayat Transaksi</h2>
-            <p>Fitur ini akan segera tersedia.</p>
-          </div>
+          <PosHistory company={ctx.active_company} token={accessToken!} branchId={branch.id} />
         )}
         {status === 'ready' && activePage === 'settings' && (
           <div className="pos-gap-page">

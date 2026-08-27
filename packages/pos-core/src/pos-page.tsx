@@ -1,5 +1,8 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import { cashChange } from './pos-logic';
+import { normalizeReceipt } from './receipt-model';
+import { useDialogFocus } from './dialog-focus';
 
 export type PosCtx = {
   permissions: string[];
@@ -29,10 +32,12 @@ type Customer = {
 export function PosPage({
   company,
   token,
+  userId,
   ctx,
 }: {
   company: string;
   token: string;
+  userId: string;
   ctx: PosCtx;
 }) {
   const branch = ctx.accessible_branches[0],
@@ -55,6 +60,20 @@ export function PosPage({
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerPicker, setShowCustomerPicker] = useState(false);
+  const [openingCash, setOpeningCash] = useState('');
+  const [showOpenShift, setShowOpenShift] = useState(false);
+  const [showCloseShift, setShowCloseShift] = useState(false);
+  const [closingCash, setClosingCash] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [online, setOnline] = useState(() => navigator.onLine);
+  const [catalogState, setCatalogState] = useState<'LOADING'|'ERROR'|'EMPTY'|'NO_RESULTS'|'READY'>('LOADING');
+  const [catalogError, setCatalogError] = useState('');
+  const [barcodeState, setBarcodeState] = useState<'IDLE'|'SCANNING'|'LOOKING_UP'|'FOUND'|'UNKNOWN'|'INACTIVE'|'OUT_OF_STOCK'|'INSUFFICIENT_STOCK'|'OFFLINE'|'ERROR'>('IDLE');
+  const [barcodeMessage, setBarcodeMessage] = useState('');
+  const lastScan = useRef<{ code: string; at: number } | null>(null);
+  const customerDialog = useDialogFocus(showCustomerPicker, () => setShowCustomerPicker(false));
+  const openShiftDialog = useDialogFocus(showOpenShift, () => setShowOpenShift(false));
+  const closeShiftDialog = useDialogFocus(showCloseShift, () => setShowCloseShift(false));
 
   useEffect(() => {
     Promise.all([
@@ -72,18 +91,27 @@ export function PosPage({
       .catch(() => setMsg('Konteks POS gagal dimuat.'));
   }, [company, token, branch?.id]);
 
+  useEffect(() => { const handler = (event: KeyboardEvent) => { const target = event.target as HTMLElement; if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable) return; if (event.key === 'F2') { event.preventDefault(); document.querySelector<HTMLInputElement>('.pos-products-panel .search input')?.focus(); } if (event.key === 'F4') { event.preventDefault(); setShowCustomerPicker(true); } if (event.key === 'F8') { event.preventDefault(); document.querySelector<HTMLButtonElement>('.pos-pay-btn')?.focus(); } if (event.key === 'Escape') { setShowCustomerPicker(false); setShowOpenShift(false); setShowCloseShift(false); } }; addEventListener('keydown', handler); return () => removeEventListener('keydown', handler); }, []);
+
+  useEffect(() => { const on = () => setOnline(true); const off = () => setOnline(false); addEventListener('online', on); addEventListener('offline', off); return () => { removeEventListener('online', on); removeEventListener('offline', off); }; }, []);
+
   const search = async (e?: FormEvent) => {
     e?.preventDefault();
-    if (branch && warehouse)
-      setProducts(
-        await api(
+    if (branch && warehouse) {
+      setCatalogState('LOADING'); setCatalogError('');
+      try {
+        const result = await api<any[]>(
           `/pos/products?warehouseId=${warehouse}&search=${encodeURIComponent(q)}${category ? `&categoryId=${encodeURIComponent(category)}` : ''}`,
           token,
           company,
           { headers: { 'x-branch-id': branch.id } },
-        ),
-      );
+        );
+        setProducts(Array.isArray(result) ? result : []);
+        setCatalogState(result.length ? 'READY' : (q || category ? 'NO_RESULTS' : 'EMPTY'));
+      } catch { setCatalogState('ERROR'); setCatalogError('Katalog produk tidak dapat dimuat.'); }
+    }
   };
+  useEffect(() => { if (warehouse) void search(); }, [warehouse]);
 
   const add = (p: any) =>
     setCart((old) => {
@@ -109,20 +137,28 @@ export function PosPage({
     });
 
   const scan = async () => {
-    if (!branch) return;
+    if (!branch || !online) { setBarcodeState('OFFLINE'); setBarcodeMessage('Koneksi diperlukan untuk memindai produk.'); return; }
+    const code = q.trim(); if (!code) return;
+    const now = Date.now(); if (lastScan.current && lastScan.current.code === code && now - lastScan.current.at < 700) return;
+    lastScan.current = { code, at: now }; setBarcodeState('SCANNING'); setBarcodeMessage('Memindai barcode…');
     try {
-      add(
-        await api(
-          `/pos/barcode?warehouseId=${warehouse}&code=${encodeURIComponent(q)}`,
+      setBarcodeState('LOOKING_UP');
+      const product = await api<any>(
+          `/pos/barcode?warehouseId=${warehouse}&code=${encodeURIComponent(code)}`,
           token,
           company,
           { headers: { 'x-branch-id': branch.id } },
-        ),
       );
+      if (product.status && product.status !== 'active') { setBarcodeState('INACTIVE'); setBarcodeMessage('Produk tidak aktif.'); return; }
+      const stock = Number(product.inventory?.quantity ?? 0);
+      if (stock <= 0) { setBarcodeState('OUT_OF_STOCK'); setBarcodeMessage('Stok produk habis.'); return; }
+      add(product); setBarcodeState('FOUND'); setBarcodeMessage(`${product.name} ditambahkan ke keranjang.`);
       setQ('');
-    } catch {
-      setMsg('PRODUCT_NOT_FOUND');
+    } catch (error) {
+      const text = error instanceof Error && error.message.includes('offline') ? 'Koneksi diperlukan untuk memindai produk.' : 'Barcode tidak ditemukan atau gagal diproses.';
+      setBarcodeState(text.startsWith('Koneksi') ? 'OFFLINE' : 'UNKNOWN'); setBarcodeMessage(text);
     }
+    window.setTimeout(() => setBarcodeState('IDLE'), 1200);
   };
 
   const subtotal = cart.reduce((n, x) => n + x.selling_price * x.quantity, 0),
@@ -139,14 +175,19 @@ export function PosPage({
     }, 0),
     disc = Math.min(subtotal - itemDiscount, Number(discount)),
     total = (subtotal - itemDiscount - disc) * (1 + Number(tax) / 100);
-  const changeAmount = method === 'CASH' ? Math.max(0, Number(received || 0) - total) : 0;
+  const changeAmount = method === 'CASH' ? (cashChange(total, Number(received || 0)) ?? 0) : 0;
   const itemCount = cart.reduce((n, x) => n + x.quantity, 0);
 
   const checkout = async () => {
+    if (!online) return setMsg('Koneksi diperlukan untuk menyelesaikan transaksi.');
+    if (submitting) return;
     if (!branch || !store || !shift || !warehouse)
       return setMsg('Active shift required.');
     if (cart.some((x) => x.quantity > x.available))
       return setMsg('INSUFFICIENT_STOCK');
+    if (method === 'CASH' && (!Number.isFinite(Number(received)) || Number(received) < total))
+      return setMsg('Uang diterima belum mencukupi.');
+    setSubmitting(true);
     try {
       const r = await api<{ saleId: string }>('/pos/checkout', token, company, {
         method: 'POST',
@@ -180,7 +221,17 @@ export function PosPage({
       setMsg('PAID');
     } catch {
       setMsg('Checkout ditolak tanpa perubahan stok.');
+    } finally { setSubmitting(false);
     }
+  };
+
+  const openShift = async () => {
+    if (!branch || !store || !Number.isFinite(Number(openingCash)) || Number(openingCash) < 0) return setMsg('Masukkan kas awal yang valid.');
+    try { await api('/shifts/open', token, company, { method: 'POST', headers: { 'x-branch-id': branch.id }, body: JSON.stringify({ storeId: store.id, branchId: branch.id, openingCash: Number(openingCash) }) }); setShowOpenShift(false); const shifts = await api<any[]>('/shifts', token, company); setShift(shifts.find((x) => x.branch_id === branch.id && x.status === 'OPEN')); setMsg('Shift berhasil dibuka.'); } catch { setMsg('Shift gagal dibuka.'); }
+  };
+  const closeShift = async () => {
+    if (!shift || !Number.isFinite(Number(closingCash)) || Number(closingCash) < 0) return setMsg('Masukkan kas akhir yang valid.');
+    try { await api(`/shifts/${shift.id}/close`, token, company, { method: 'POST', headers: { 'x-branch-id': branch.id }, body: JSON.stringify({ closingCash: Number(closingCash) }) }); setShowCloseShift(false); setShift(undefined); setMsg('Shift berhasil ditutup.'); } catch { setMsg('Shift gagal ditutup.'); }
   };
 
   const filteredCustomers = customers.filter(
@@ -204,6 +255,7 @@ export function PosPage({
           <button type="submit">Cari</button>
           <button type="button" onClick={scan}>Scan</button>
         </form>
+        <p className="barcode-feedback" aria-live="polite">{barcodeMessage || barcodeState}</p>
 
         <div className="pos-category-filter">
           <button
@@ -224,16 +276,15 @@ export function PosPage({
         </div>
 
         <div className="product-grid">
-          {products.length === 0 ? (
-            <div className="pos-empty-products">
-              <p>Cari produk menggunakan barcode, SKU, atau nama.</p>
-            </div>
-          ) : (
-            products.map((x: any) => (
+          {catalogState === 'LOADING' && <div className="pos-empty-products" aria-live="polite"><p>Memuat katalog produk…</p></div>}
+          {catalogState === 'ERROR' && <div className="pos-empty-products" role="alert"><p>{catalogError}</p><button type="button" onClick={() => void search()}>Coba lagi</button></div>}
+          {catalogState === 'EMPTY' && <div className="pos-empty-products"><p>Belum ada produk untuk cabang ini.</p></div>}
+          {catalogState === 'NO_RESULTS' && <div className="pos-empty-products"><p>Produk tidak ditemukan.</p></div>}
+          {catalogState === 'READY' && (products.map((x: any) => (
               <button
                 className="product-card"
                 key={x.id}
-                disabled={!Number(x.inventory?.quantity)}
+                disabled={x.status !== 'active' || Number(x.inventory?.quantity ?? 0) <= 0}
                 onClick={() => add(x)}
               >
                 <b>{x.name}</b>
@@ -243,9 +294,9 @@ export function PosPage({
                 </em>
                 <small className={
                   Number(x.inventory?.quantity) <= 0 ? 'stock-out' :
-                  Number(x.inventory?.quantity) <= 5 ? 'stock-low' : ''
+                  Number(x.inventory?.quantity) <= Number(x.inventory?.minimum_stock ?? 0) ? 'stock-low' : ''
                 }>
-                  Stok: {x.inventory?.quantity ?? 0}
+                  {x.status !== 'active' ? 'Tidak aktif' : Number(x.inventory?.quantity ?? 0) <= 0 ? 'Stok habis' : `Stok: ${x.inventory?.quantity ?? 0}`}
                 </small>
               </button>
             ))
@@ -258,21 +309,21 @@ export function PosPage({
           <h2>Keranjang ({itemCount})</h2>
           {shift && (
             <span className="pos-shift-badge">
-              ● Shift Aktif — {shift.branch?.name ?? ''}
+              Shift Aktif — {shift.branch?.name ?? ''} <button type="button" onClick={() => setShowCloseShift(true)}>Tutup Shift</button>
             </span>
           )}
         </div>
 
         {!shift && (
           <div className="pos-no-shift">
-            <p>⚠ Tidak ada shift aktif. Buka shift terlebih dahulu.</p>
+            <p role="alert">Tidak ada shift aktif. Buka shift terlebih dahulu.</p><button type="button" onClick={() => setShowOpenShift(true)}>Buka Shift</button>
           </div>
         )}
 
         {customer && (
           <div className="pos-customer-bar">
-            <span>👤 {customer.name}{customer.phone ? ` (${customer.phone})` : ''}</span>
-            <button onClick={() => setCustomer(null)}>✕</button>
+            <span>Pelanggan: {customer.name}{customer.phone ? ` (${customer.phone})` : ''}</span>
+            <button aria-label="Hapus pelanggan" onClick={() => setCustomer(null)}>×</button>
           </div>
         )}
 
@@ -334,7 +385,7 @@ export function PosPage({
                     Rp {(x.selling_price * x.quantity).toLocaleString('id-ID')}
                   </span>
                   <button className="cart-line-remove" onClick={() => setCart(cart.filter((y) => y.id !== x.id))} aria-label={`Hapus ${x.name}`}>
-                    ✕
+                    ×
                   </button>
                 </div>
               </div>
@@ -458,10 +509,10 @@ export function PosPage({
 
         <button
           className="pos-pay-btn"
-          disabled={!cart.length || !shift}
+          disabled={!cart.length || !shift || !online || submitting}
           onClick={checkout}
         >
-          💳 Bayar Rp {Math.round(total).toLocaleString('id-ID')}
+          {submitting ? 'Memproses…' : `Bayar Rp ${Math.round(total).toLocaleString('id-ID')}`}
         </button>
 
         {msg && <p className="pos-msg" role="status">{msg}</p>}
@@ -481,10 +532,10 @@ export function PosPage({
 
       {showCustomerPicker && (
         <div className="pos-modal-overlay" onClick={() => setShowCustomerPicker(false)}>
-          <div className="pos-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="pos-modal" ref={customerDialog.dialogRef} onKeyDown={customerDialog.onKeyDown} role="dialog" aria-modal="true" aria-labelledby="customer-dialog-title" tabIndex={-1} onClick={(e) => e.stopPropagation()}>
             <div className="pos-modal-header">
-              <h3>Pilih Pelanggan</h3>
-              <button onClick={() => setShowCustomerPicker(false)}>✕</button>
+              <h3 id="customer-dialog-title">Pilih Pelanggan</h3>
+              <button aria-label="Tutup pemilih pelanggan" onClick={() => setShowCustomerPicker(false)}>×</button>
             </div>
             <input
               className="pos-modal-search"
@@ -515,54 +566,36 @@ export function PosPage({
           </div>
         </div>
       )}
+      {showOpenShift && <div className="pos-modal-overlay"><div className="pos-modal" ref={openShiftDialog.dialogRef} onKeyDown={openShiftDialog.onKeyDown} role="dialog" aria-modal="true" aria-labelledby="open-shift-title" tabIndex={-1}><h3 id="open-shift-title">Buka Shift</h3><label>Kas Awal<input type="number" min="0" value={openingCash} onChange={(e) => setOpeningCash(e.target.value)} /></label><button onClick={openShift}>Konfirmasi</button><button onClick={() => setShowOpenShift(false)}>Batal</button></div></div>}
+      {showCloseShift && <div className="pos-modal-overlay"><div className="pos-modal" ref={closeShiftDialog.dialogRef} onKeyDown={closeShiftDialog.onKeyDown} role="dialog" aria-modal="true" aria-labelledby="close-shift-title" tabIndex={-1}><h3 id="close-shift-title">Tutup Shift</h3><label>Kas Akhir<input type="number" min="0" value={closingCash} onChange={(e) => setClosingCash(e.target.value)} /></label><button onClick={closeShift}>Konfirmasi</button><button onClick={() => setShowCloseShift(false)}>Batal</button></div></div>}
     </div>
   );
 }
 
 export function Receipt({ sale, customer, onClose }: { sale: any; customer?: Customer | null; onClose: () => void }) {
-  const payment = Array.isArray(sale.payments) ? sale.payments[0] : sale.payment;
+  const receipt = normalizeReceipt(sale, customer);
   return (
     <article className="receipt-paper">
       <img className="receipt-logo" src="/logo.png" alt="NIAGANTARA" />
-      <p>
-        {sale.store?.name ?? 'Store'} · {sale.branch?.name ?? sale.branch_id}
-      </p>
-      <b>{sale.transaction_number}</b>
-      <small>{new Date(sale.created_at).toLocaleString('id-ID')}</small>
-      {customer && (
-        <small>Pelanggan: {customer.name}</small>
-      )}
+      <p>{receipt.store ?? 'Store'} · {receipt.branch ?? 'Branch'}</p>
+      <b>{receipt.receiptNumber}</b><small>{new Date(receipt.createdAt).toLocaleString('id-ID')}</small>
+      {receipt.customer && <small>Pelanggan: {receipt.customer}</small>}
       <hr />
-      {sale.items?.map((x: any) => (
-        <div key={x.id} className="receipt-line">
-          <span>
-            {x.product_name} × {x.quantity}
-          </span>
-          <b>Rp {Number(x.line_total).toLocaleString('id-ID')}</b>
+      {receipt.items.map((x, index) => (
+        <div key={index} className="receipt-line">
+          <span>{x.name} × {x.quantity}</span><b>Rp {Number(x.lineTotal ?? 0).toLocaleString('id-ID')}</b>
         </div>
       ))}
       <hr />
-      <p>Subtotal Rp {Number(sale.subtotal).toLocaleString('id-ID')}</p>
-      <p>
-        Discount Rp{' '}
-        {(
-          Number(sale.item_discount_total ?? 0) + Number(sale.transaction_discount ?? 0)
-        ).toLocaleString('id-ID')}
-      </p>
-      {Number(sale.tax ?? 0) > 0 && (
-        <p>Pajak Rp {Number(sale.tax).toLocaleString('id-ID')}</p>
-      )}
-      <h3>Total Rp {Number(sale.grand_total).toLocaleString('id-ID')}</h3>
-      <p>
-        {payment?.method} · Received Rp{' '}
-        {Number(payment?.amount_received ?? payment?.amount).toLocaleString('id-ID')}{' '}
-        · Change Rp{' '}
-        {Number(payment?.change_amount ?? 0).toLocaleString('id-ID')}
-      </p>
+      {receipt.subtotal != null && <p>Subtotal Rp {receipt.subtotal.toLocaleString('id-ID')}</p>}
+      {receipt.discount != null && <p>Diskon Rp {receipt.discount.toLocaleString('id-ID')}</p>}
+      {receipt.tax != null && receipt.tax > 0 && <p>Pajak Rp {receipt.tax.toLocaleString('id-ID')}</p>}
+      <h3>Total Rp {receipt.grandTotal.toLocaleString('id-ID')}</h3>
+      {receipt.paymentMethod && <p>{receipt.paymentMethod}{receipt.cashReceived != null ? ` · Diterima Rp ${receipt.cashReceived.toLocaleString('id-ID')}` : ''}{receipt.change != null ? ` · Kembalian Rp ${receipt.change.toLocaleString('id-ID')}` : ''}</p>}
       {sale.note && <p>Catatan: {sale.note}</p>}
       <div className="receipt-actions">
-        <button onClick={() => window.print()}>Print</button>
-        <button onClick={onClose}>Close</button>
+        <button onClick={() => window.print()}>Cetak Struk</button>
+        <button onClick={onClose}>Transaksi Baru</button>
       </div>
     </article>
   );
