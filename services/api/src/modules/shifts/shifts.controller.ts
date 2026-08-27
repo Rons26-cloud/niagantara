@@ -37,9 +37,10 @@ export class ShiftsController {
   @Post(':id/close') @RequirePermission('shift.close') close(
     @Req() r: any,
     @Headers('x-company-id') c: string,
+    @Headers('x-branch-id') b: string | undefined,
     @Param('id') id: string,
     @Body() d: CloseShiftInput,
   ) {
-    return this.s.close(c, r.user.id, id, d.closingCash);
+    return this.s.close(c, r.user.id, b, id, d.closingCash);
   }
 }

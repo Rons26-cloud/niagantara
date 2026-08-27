@@ -308,7 +308,7 @@ export const id = {
     },
     hero: {
       title: 'Semua Bisnis Anda<br /><span>Dalam Satu Kendali</span>',
-      subtitle: 'Kelola penjualan, POS, stok, keuangan, cabang, pelanggan, dan laporan bisnis dalam satu platform terintegrasi.',
+      subtitle: 'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan—kelola POS, penjualan, stok, keuangan, cabang, dan laporan dalam satu sistem terintegrasi.',
       cta: 'Mulai Sekarang',
       demo: 'Lihat Demonstrasi',
       trust: ['Multi-Cabang', 'Waktu Nyata', 'Aman', 'Terintegrasi'],

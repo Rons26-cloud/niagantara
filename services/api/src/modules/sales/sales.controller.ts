@@ -26,7 +26,9 @@ export class SalesController {
   private branches(r: any) {
     return ['owner', 'company_admin'].includes(r.authz.companyRole)
       ? undefined
-      : r.authz.branchIds;
+      : r.headers['x-branch-id']
+        ? [r.headers['x-branch-id']]
+        : r.authz.branchIds;
   }
   @Get() @RequirePermission('sale.read') list(
     @Req() r: any,

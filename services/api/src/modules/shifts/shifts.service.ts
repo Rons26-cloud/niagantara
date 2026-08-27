@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ShiftsRepository } from './shifts.repository.js';
 import type { OpenShiftInput } from './dto/shift.dto.js';
 @Injectable()
@@ -19,11 +23,28 @@ export class ShiftsService {
     if (error) throw error;
     return data;
   }
-  async close(c: string, u: string, id: string, amount: number) {
+  async close(
+    c: string,
+    u: string,
+    branchId: string | undefined,
+    id: string,
+    amount: number,
+  ) {
     if (!Number.isFinite(amount) || amount < 0)
       throw new BadRequestException({
         code: 'INVALID_CLOSING_CASH',
         message: 'Closing cash must be non-negative.',
+      });
+    const { data: shift, error: findError } = await this.repo.get(
+      c,
+      id,
+      branchId,
+    );
+    if (findError) throw findError;
+    if (!shift)
+      throw new NotFoundException({
+        code: 'SHIFT_NOT_FOUND',
+        message: 'Shift not found.',
       });
     const { data, error } = await this.repo.close(c, u, id, amount);
     if (error) throw error;

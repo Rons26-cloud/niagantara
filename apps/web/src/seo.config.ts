@@ -11,13 +11,18 @@ export interface SeoMeta {
 }
 
 const home: SeoMeta = {
-  title: 'NIAGANTARA — Platform POS & Manajemen Bisnis Terintegrasi',
+  title: 'NIAGANTARA — Platform Dashboard Bisnis Nusantara',
   description:
-    'NIAGANTARA membantu mengelola penjualan, stok, keuangan, cabang, pelanggan, dan laporan bisnis dalam satu platform terintegrasi untuk UMKM dan bisnis multi-cabang.',
-  ogTitle: 'NIAGANTARA — Platform POS & Manajemen Bisnis Terintegrasi',
+    'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan, mengelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan dalam satu sistem terintegrasi.',
+  ogTitle: 'NIAGANTARA — Platform Dashboard Bisnis Nusantara',
   ogDescription:
-    'Kelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan bisnis dalam satu platform terintegrasi.',
+    'Kelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan bisnis dari satu dashboard terintegrasi.',
   robots: 'index, follow',
+  schema: [
+    { '@context': 'https://schema.org', '@type': 'Organization', name: 'NIAGANTARA', alternateName: 'Platform Dashboard Bisnis Nusantara', url: SITE_URL, logo: `${SITE_URL}/logo.png`, description: 'Platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan di Indonesia.', email: 'hello@niagantara.com', contactPoint: { '@type': 'ContactPoint', email: 'support@niagantara.com', contactType: 'customer support', availableLanguage: ['id', 'en'] } },
+    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'NIAGANTARA', alternateName: 'Platform Dashboard Bisnis Nusantara', url: SITE_URL, inLanguage: 'id-ID', description: 'Platform dashboard bisnis Nusantara untuk membantu UMKM hingga perusahaan mengelola operasional di Indonesia.' },
+    { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'NIAGANTARA', applicationCategory: 'BusinessApplication', operatingSystem: 'Web', url: `${SITE_URL}/demo`, description: 'Dashboard bisnis untuk POS, stok, penjualan, keuangan, laporan, dan manajemen cabang.', featureList: ['POS dan kasir', 'Manajemen stok', 'Laporan keuangan', 'Manajemen multi-cabang', 'Integrasi Google Sheets'] },
+  ],
 };
 
 const features: SeoMeta = {
@@ -172,7 +177,7 @@ const faq: SeoMeta = {
           name: 'Apa itu NIAGANTARA?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'NIAGANTARA adalah Business Control Platform untuk mengelola operasional bisnis—mulai dari POS, penjualan, stok, keuangan, hingga laporan—dalam satu sistem terintegrasi.',
+            text: 'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan, dengan POS, penjualan, stok, keuangan, cabang, dan laporan dalam satu sistem terintegrasi.',
           },
         },
         {

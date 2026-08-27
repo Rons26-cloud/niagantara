@@ -79,10 +79,14 @@ export function Seo({ path }: { path: string }) {
     setMeta('og:title', seo.ogTitle, 'property');
     setMeta('og:description', seo.ogDescription, 'property');
     setMeta('og:image', OG_IMAGE, 'property');
+    setMeta('og:type', 'website', 'property');
+    setMeta('og:site_name', 'NIAGANTARA', 'property');
+    setMeta('og:locale', 'id_ID', 'property');
 
     setMeta('twitter:title', seo.ogTitle);
     setMeta('twitter:description', seo.ogDescription);
     setMeta('twitter:image', OG_IMAGE);
+    setMeta('twitter:card', 'summary_large_image');
 
     document.querySelectorAll('script[type="application/ld+json"][data-seo]').forEach((el) => el.remove());
     if (seo.schema?.length) {

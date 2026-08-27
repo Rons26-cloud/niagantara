@@ -34,4 +34,13 @@ export class ShiftsRepository {
       target_closing_cash: closingCash,
     });
   }
+  get(c: string, id: string, branchId?: string) {
+    let query = this.db.client
+      .from('cashier_shifts')
+      .select('id,branch_id')
+      .eq('company_id', c)
+      .eq('id', id);
+    if (branchId) query = query.eq('branch_id', branchId);
+    return query.maybeSingle();
+  }
 }

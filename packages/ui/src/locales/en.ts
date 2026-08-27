@@ -273,7 +273,7 @@ export const en = {
     seeMore: 'See more',
     hero: {
       title: 'All Your Business<br /><span>In One Control</span>',
-      subtitle: 'Manage sales, POS, inventory, finance, branches, customers, and business reporting in one integrated platform.',
+      subtitle: 'NIAGANTARA is a Nusantara business dashboard platform for UMKM through enterprises—manage POS, sales, inventory, finance, branches, and reporting in one integrated system.',
       cta: 'Get Started',
       demo: 'View Demo',
       trust: ['Multi-Branch', 'Realtime', 'Secure', 'Integrated'],

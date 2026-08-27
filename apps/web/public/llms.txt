@@ -1,6 +1,6 @@
 # NIAGANTARA
 
-NIAGANTARA is a business operations platform for managing POS, inventory, sales, finance, branches, customers, suppliers and reporting.
+NIAGANTARA is a Nusantara business dashboard platform for businesses across Indonesia, from micro and small UMKM to growing companies and enterprises. It brings POS, inventory, sales, finance, branches, customers, suppliers and reporting into one integrated system.
 
 ## Official pages
 
@@ -14,7 +14,7 @@ NIAGANTARA is a business operations platform for managing POS, inventory, sales,
 
 ## Product
 
-NIAGANTARA is a Business Control Platform designed for UMKM and multi-branch businesses in Indonesia. It provides integrated tools for point of sale, inventory management, financial tracking, employee management, and business reporting.
+NIAGANTARA is a business dashboard platform designed for UMKM through enterprises across Indonesia. It provides integrated tools for point of sale, inventory management, financial tracking, employee management, multi-branch operations, and business reporting.
 
 ### Key features
 

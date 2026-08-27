@@ -1721,3 +1721,175 @@
     margin-left: 0;
   }
 }
+
+/* owner-dashboard visual refinement
+   Keep the demo on the same visual language as the authenticated owner app:
+   quiet surfaces, clear hierarchy, and readable contrast in both themes. */
+.demo-shell {
+  --demo-content-max: 1560px;
+  --demo-focus: #2563eb;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+}
+.demo-workspace {
+  background: var(--bg-primary);
+}
+.demo-page,
+.demo-dashboard,
+.demo-products,
+.demo-pos,
+.demo-sales,
+.demo-inventory,
+.demo-stock-transfer,
+.demo-shifts,
+.demo-customers,
+.demo-suppliers,
+.demo-purchases,
+.demo-employees,
+.demo-attendance,
+.demo-expenses,
+.demo-categories,
+.demo-finance,
+.demo-reports,
+.demo-google-sheets,
+.demo-warehouses,
+.demo-branches,
+.demo-stores,
+.demo-settings,
+.demo-help {
+  width: min(100%, var(--demo-content-max));
+  margin-inline: auto;
+  padding: clamp(1.25rem, 2.6vw, 2.5rem);
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+}
+.demo-topbar {
+  min-height: 76px;
+  padding-inline: clamp(1.25rem, 2.6vw, 2.5rem);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border-color) 65%, transparent);
+}
+.demo-topbar h1 {
+  font-size: clamp(1.25rem, 1.5vw, 1.55rem);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.demo-topbar .eyebrow,
+.demo-nav-group-label,
+.demo-owner-filterbar label,
+.demo-table-header {
+  color: var(--text-muted);
+}
+.demo-banner {
+  min-height: 38px;
+  padding-block: 0.45rem;
+  background: linear-gradient(100deg, #92400e, #b45309 52%, #c2410c);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
+}
+.demo-sidebar {
+  width: 264px;
+  padding-inline: 1rem;
+  background: var(--brand-navy, #0f172a);
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
+}
+.demo-workspace { margin-left: 264px; }
+.demo-sidebar nav a {
+  min-height: 40px;
+  padding: 0.6rem 0.8rem;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+}
+.demo-sidebar nav a.active {
+  background: #2563eb;
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
+}
+.demo-nav-group { margin-bottom: 1.15rem; }
+.demo-nav-group-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+.demo-metrics-grid { gap: 1.15rem; }
+.demo-metrics-grid .ng-stat,
+.demo-dashboard .ng-card,
+.demo-page .ng-card {
+  border-color: color-mix(in srgb, var(--border-color) 82%, transparent);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
+}
+.demo-owner-filterbar {
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+}
+.demo-owner-filterbar input,
+.demo-topbar-search input,
+.demo-ctx-select select,
+.demo-mobile-context select {
+  min-height: 42px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+.demo-owner-branch { font-size: 0.84rem; }
+.demo-chart-container { min-height: 210px; padding-top: 0.35rem; }
+.demo-bar-chart { height: 168px; gap: 8px; }
+.demo-bar { border-radius: 8px 8px 3px 3px; }
+.demo-bar-label,
+.demo-mini-list .demo-mini-main small,
+.demo-mini-list .demo-mini-value { font-size: 0.78rem; }
+.demo-dist-list li,
+.demo-mini-list li,
+.demo-table-row { font-size: 0.9rem; }
+.demo-table-header { font-size: 0.74rem; }
+.demo-quick-action {
+  min-height: 108px;
+  padding: 1rem 0.7rem;
+  border-radius: 12px;
+  background: var(--surface);
+}
+.demo-shell :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--demo-focus) 75%, white);
+  outline-offset: 3px;
+}
+[data-theme='blue'] .demo-shell {
+  --demo-focus: #60a5fa;
+}
+[data-theme='blue'] .demo-dashboard .ng-card,
+[data-theme='blue'] .demo-page .ng-card,
+[data-theme='blue'] .demo-metrics-grid .ng-stat {
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.24);
+}
+[data-theme='blue'] .demo-owner-filterbar,
+[data-theme='blue'] .demo-quick-action {
+  background: var(--surface-elevated);
+}
+[data-theme='blue'] .demo-table-row,
+[data-theme='blue'] .demo-table-header {
+  background: color-mix(in srgb, var(--surface) 88%, var(--bg-primary));
+}
+[data-theme='blue'] .demo-banner { background: linear-gradient(100deg, #78350f, #92400e 52%, #9a3412); }
+@media (max-width: 1023px) {
+  .demo-workspace { margin-left: 0; }
+}
+@media (max-width: 767px) {
+  .demo-page,
+  .demo-dashboard,
+  .demo-products,
+  .demo-pos,
+  .demo-sales,
+  .demo-inventory,
+  .demo-stock-transfer,
+  .demo-shifts,
+  .demo-customers,
+  .demo-suppliers,
+  .demo-purchases,
+  .demo-employees,
+  .demo-attendance,
+  .demo-expenses,
+  .demo-categories,
+  .demo-finance,
+  .demo-reports,
+  .demo-google-sheets,
+  .demo-warehouses,
+  .demo-branches,
+  .demo-stores,
+  .demo-settings,
+  .demo-help { padding: 1rem; }
+  .demo-topbar { min-height: 64px; }
+}
