@@ -61,7 +61,7 @@ export function useAuth() {
 }
 
 export async function login(email: string, password: string) {
-  const response = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/auth/login`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1')}/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ email, password }),

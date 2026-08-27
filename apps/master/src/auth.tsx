@@ -69,7 +69,7 @@ export function useAuth() {
 }
 
 export async function login(email: string, password: string) {
-  const base = import.meta.env.VITE_API_URL || '/api/v1';
+  const base = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1');
   const res = await fetch(`${base}/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

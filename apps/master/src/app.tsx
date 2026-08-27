@@ -22,7 +22,7 @@ import '@niagantara/ui/components.css';
 import '@niagantara/ui/ui.css';
 import './app.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1');
 
 const GAP_MODULES: Record<string, string> = {
   companies: 'master.companies',
