@@ -1702,7 +1702,7 @@
 .demo-preview-shell .demo-workspace { min-height: 720px; }
 .demo-preview-shell .demo-topbar { top: 2.1rem; }
 @media (max-width: 1023px) {
-  .demo-preview-shell .demo-sidebar { display: none; }
+  .demo-preview-shell .demo-sidebar { top: 0; }
   .demo-preview-shell .demo-workspace { margin-left: 0; }
 }
 @media (max-width: 767px) {
@@ -1710,7 +1710,7 @@
   .demo-preview-shell .demo-shell,
   .demo-preview-shell .demo-workspace { min-height: 640px; }
   .demo-preview-shell .demo-banner { position: relative; }
-  .demo-preview-shell .demo-sidebar { display: none; }
+  .demo-preview-shell .demo-sidebar { top: 0; }
 }
 
 @media (max-width: 420px) {
