@@ -25,17 +25,19 @@ import type {
 export class PurchasesController {
   constructor(private readonly s: PurchasesService) {}
   @Get() @RequirePermission('purchase.read') list(
+    @Req() r: any,
     @Headers('x-company-id') c: string,
     @Query() q: PurchaseQuery,
   ) {
-    return this.s.list(c, q);
+    return this.s.list(c, q, r.authz.companyPermissions.includes('purchase.read') ? undefined : r.headers['x-branch-id'] ? [r.headers['x-branch-id']] : []);
   }
   @Get(':id') @RequirePermission('purchase.read') get(
+    @Req() r: any,
     @Headers('x-company-id') c: string,
     @Headers('x-branch-id') b: string | undefined,
     @Param('id') id: string,
   ) {
-    return this.s.get(c, id, b);
+    return this.s.get(c, id, b, r.authz.companyPermissions.includes('purchase.read') ? undefined : b ? [b] : []);
   }
   @Post() @UseGuards(BranchGuard) @RequirePermission('purchase.create') create(
     @Req() r: any,
@@ -52,7 +54,7 @@ export class PurchasesController {
     @Param('id') id: string,
     @Body() d: ReceiveInput,
   ) {
-    return this.s.receive(r.user.id, c, b, id, d);
+    return this.s.receive(r.user.id, c, b, id, d, r.authz.companyPermissions.includes('purchase.receive') ? undefined : b ? [b] : []);
   }
   @Post(':id/cancel') @RequirePermission('purchase.cancel') cancel(
     @Req() r: any,
@@ -61,6 +63,6 @@ export class PurchasesController {
     @Param('id') id: string,
     @Body() d: { reason: string },
   ) {
-    return this.s.cancel(r.user.id, c, b, id, d.reason);
+    return this.s.cancel(r.user.id, c, b, id, d.reason, r.authz.companyPermissions.includes('purchase.cancel') ? undefined : b ? [b] : []);
   }
 }

@@ -14,7 +14,7 @@ import {
   usePaged,
   useTranslation,
 } from '@niagantara/ui';
-import { Boxes, Download, ArrowRightLeft, Filter } from 'lucide-react';
+import { Boxes, Download, ArrowRightLeft, Search } from 'lucide-react';
 import { TransferForm } from '../enhancements';
 
 type Ctx = {
@@ -58,38 +58,41 @@ export function InventoryPage({
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
   const [showAdjust, setShowAdjust] = useState(false);
-  const [filterStore, setFilterStore] = useState('');
+  const [search, setSearch] = useState('');
+  const [branchFilter, setBranchFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [moveFilterType, setMoveFilterType] = useState('');
   const [moveFilterFrom, setMoveFilterFrom] = useState('');
   const [moveFilterTo, setMoveFilterTo] = useState('');
-  const [showAlerts, setShowAlerts] = useState(false);
-  const [alertThreshold, setAlertThreshold] = useState('5');
-
-  const branch = ctx.accessible_branches[0];
-  const store = ctx.stores.find((x: any) => x.id === branch?.store_id);
-
   const [form, setForm] = useState({
     branchId: ctx.accessible_branches[0]?.id ?? '',
     warehouseId: '',
     productId: '',
     quantityDelta: '',
     minimumStock: '0',
-    movementType: 'ADJUSTMENT',
-    reason: '',
+    reason: 'CORRECTION',
+    notes: '',
   });
 
   const load = () => {
     setLoading(true);
     setError(null);
     Promise.all([
-      api<any[]>('/inventory', token, company),
-      api<any[]>('/inventory/movements', token, company),
+      api<any[]>(`/inventory?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}${categoryFilter ? `&categoryId=${encodeURIComponent(categoryFilter)}` : ''}${statusFilter !== 'ALL' ? `&status=${statusFilter}` : ''}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ''}`, token, company),
+      api<any[]>(`/inventory/movements?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}`, token, company),
       api<any[]>('/warehouses', token, company).catch(() => []),
+      api<any[]>('/categories?limit=100', token, company).catch(() => []),
+      api<any[]>('/products?status=active&limit=100', token, company).catch(() => []),
     ])
-      .then(([a, b, w]) => {
+      .then(([a, b, w, c, p]) => {
         setRows(a);
         setMoves(b);
         setWarehouses(w);
+        setCategories(c);
+        setProducts(p);
       })
       .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
       .finally(() => setLoading(false));
@@ -97,7 +100,7 @@ export function InventoryPage({
 
   useEffect(() => {
     void load();
-  }, [company, token]);
+  }, [company, token, branchFilter, categoryFilter, statusFilter]);
 
   async function adjust(e: FormEvent) {
     e.preventDefault();
@@ -114,7 +117,7 @@ export function InventoryPage({
       });
       setMsg(t('messages.saveSuccess'));
       setShowAdjust(false);
-      setForm({ ...form, productId: '', quantityDelta: '', reason: '' });
+      setForm({ ...form, productId: '', quantityDelta: '', notes: '' });
       load();
     } catch {
       setMsg(t('messages.saveError'));
@@ -125,7 +128,6 @@ export function InventoryPage({
   const totalStock = rows.reduce((n: number, r: any) => n + Number(r.quantity ?? 0), 0);
   const lowStock = rows.filter((r: any) => Number(r.quantity) > 0 && Number(r.quantity) <= Number(r.minimum_stock)).length;
   const outOfStock = rows.filter((r: any) => Number(r.quantity) <= 0).length;
-  const totalStockValue = rows.reduce((n: number, r: any) => n + Number(r.quantity ?? 0) * Number(r.product?.cost_price ?? 0), 0);
 
   const filteredMoves = useMemo(() => {
     return moves.filter((m: any) => {
@@ -165,29 +167,41 @@ export function InventoryPage({
         <StatCard label="Total Stok" value={String(totalStock)} />
         <StatCard label="Stok Rendah" value={String(lowStock)} tone={lowStock > 0 ? 'warning' : 'default'} />
         <StatCard label="Stok Habis" value={String(outOfStock)} tone={outOfStock > 0 ? 'danger' : 'default'} />
-        <StatCard label="Nilai Stok" value={`Rp ${totalStockValue.toLocaleString('id-ID')}`} />
       </div>
 
       <div className="ng-filterbar">
-        {ctx.stores.length > 1 && (
-          <Field label={t('context.store')}>
-            <Select value={filterStore} onChange={(e) => setFilterStore(e.target.value)}>
-              <option value="">Semua</option>
-              {ctx.stores.map((s: any) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </Select>
-          </Field>
-        )}
+        <Field label={t('common.search')}>
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nama produk atau SKU" />
+        </Field>
+        <Button variant="ghost" onClick={load}><Search size={14} /> Cari</Button>
+        <Field label="Cabang">
+          <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
+            <option value="">Semua cabang berizin</option>
+            {ctx.accessible_branches.map((b: any) => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Kategori">
+          <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+            <option value="">Semua kategori</option>
+            {categories.map((category: any) => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Status">
+          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="ALL">Semua</option>
+            <option value="IN_STOCK">Aman</option>
+            <option value="LOW_STOCK">Stok rendah</option>
+            <option value="OUT_OF_STOCK">Stok habis</option>
+          </Select>
+        </Field>
         <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
           <Button variant="ghost" onClick={handleExport}>
             <Download size={14} /> Export
           </Button>
-          {ctx.permissions.includes('inventory.transfer') && warehouses.length > 1 && (
-            <Button variant="ghost" onClick={() => setShowAlerts(true)}>
-              <Filter size={14} /> Alert
-            </Button>
-          )}
           {ctx.permissions.includes('inventory.adjust') && (
             <>
               <Button variant="ghost" onClick={() => setShowAdjust(true)}>
@@ -296,7 +310,7 @@ export function InventoryPage({
         {filteredMoves.length ? (
           <div className="table">
             <div className="tr head">
-              {['Tipe', 'Jumlah', 'Alasan', 'Tanggal'].map((k) => (
+              {['Tipe', 'Produk', 'Jumlah', 'Alasan', 'Aktor', 'Cabang', 'Referensi', 'Tanggal'].map((k) => (
                 <span key={k}>{k}</span>
               ))}
             </div>
@@ -315,8 +329,12 @@ export function InventoryPage({
                     {m.movement_type ?? m.type ?? '—'}
                   </span>
                 </span>
+                <span>{m.product?.name ?? '—'}</span>
                 <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{m.quantity}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{m.reason ?? '—'}</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{m.notes ?? '—'}</span>
+                <span>{m.actor?.full_name ?? m.actor_user_id ?? '—'}</span>
+                <span>{m.branch?.name ?? '—'}</span>
+                <span>{m.reference_type ? `${m.reference_type} · ${m.reference_id ?? '—'}` : '—'}</span>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                   {m.created_at
                     ? new Date(m.created_at).toLocaleString('id-ID')
@@ -358,17 +376,22 @@ export function InventoryPage({
               onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}
             >
               <option value="">—</option>
-              {warehouses.map((w: any) => (
+              {warehouses.filter((w: any) => w.branch_id === form.branchId).map((w: any) => (
                 <option key={w.id} value={w.id}>{w.name}</option>
               ))}
             </Select>
           </Field>
-          <Field label="Product ID">
-            <Input
+          <Field label="Produk">
+            <Select
               required
               value={form.productId}
               onChange={(e) => setForm({ ...form, productId: e.target.value })}
-            />
+            >
+              <option value="">Pilih produk</option>
+              {products.map((product: any) => (
+                <option key={product.id} value={product.id}>{product.name} · {product.sku}</option>
+              ))}
+            </Select>
           </Field>
           <Field label={t('common.quantity')}>
             <Input
@@ -386,49 +409,25 @@ export function InventoryPage({
             />
           </Field>
           <Field label="Alasan">
-            <Input
+            <Select
               value={form.reason}
               onChange={(e) => setForm({ ...form, reason: e.target.value })}
-              placeholder="Contoh: Stok masuk dari supplier, Koreksi data, dll"
-            />
+            >
+              <option value="CORRECTION">Koreksi stok</option>
+              <option value="DAMAGED">Barang rusak</option>
+              <option value="EXPIRED">Barang kedaluwarsa</option>
+              <option value="LOST">Barang hilang</option>
+              <option value="MANUAL_CORRECTION">Koreksi manual</option>
+              <option value="OTHER">Lainnya</option>
+            </Select>
+          </Field>
+          <Field label="Catatan">
+            <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </Field>
           {msg && <p style={{ color: 'var(--text-muted)' }}>{msg}</p>}
         </form>
       </Modal>
 
-      <Modal
-        open={showAlerts}
-        onClose={() => setShowAlerts(false)}
-        title="Konfigurasi Alert Stok"
-        footer={<Button onClick={() => setShowAlerts(false)}>Simpan</Button>}
-      >
-        <div className="inline-form">
-          <Field label="Batas Minimum (persentase stok minimum)">
-            <Input
-              type="number"
-              min="1"
-              max="100"
-              value={alertThreshold}
-              onChange={(e) => setAlertThreshold(e.target.value)}
-            />
-          </Field>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Produk dengan stok di bawah {alertThreshold}% dari minimum akan mendapat notifikasi.
-          </p>
-          <div style={{ marginTop: '1rem' }}>
-            <p style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.5rem' }}>Stok yang perlu perhatian:</p>
-            {rows
-              .filter((r: any) => Number(r.quantity) > 0 && Number(r.quantity) <= Number(r.minimum_stock))
-              .slice(0, 5)
-              .map((r: any) => (
-                <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border, #f3f4f6)' }}>
-                  <span style={{ color: 'var(--text-primary)' }}>{r.product?.name ?? '—'}</span>
-                  <span style={{ color: 'var(--color-warning, #f59e0b)', fontWeight: 600 }}>{r.quantity} / {r.minimum_stock}</span>
-                </div>
-              ))}
-          </div>
-        </div>
-      </Modal>
     </>
   );
 }

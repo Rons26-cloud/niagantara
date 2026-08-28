@@ -1273,6 +1273,16 @@ nav a:hover {
 .ng-filterbar__context {
   padding-bottom: 4px;
 }
+.purchase-line-editor {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) minmax(100px, 1fr) minmax(120px, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+  grid-column: 1 / -1;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.75rem;
+}
 .dash-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2725,6 +2735,9 @@ details summary {
 
 /* Responsive */
 @media (max-width: 640px) {
+  .purchase-line-editor {
+    grid-template-columns: 1fr;
+  }
   .sheets-header {
     flex-direction: column;
     align-items: flex-start;

@@ -41,6 +41,7 @@ export class TenantGuard implements CanActivate {
         return permission?.permission_key;
       })
       .filter((permission): permission is string => Boolean(permission));
+    const companyPermissions = [...permissions];
 
     const { data: branchMemberships } = await this.supabase.client
       .from('branch_members')
@@ -99,6 +100,7 @@ export class TenantGuard implements CanActivate {
       ...(request.authz ?? {}),
       companyRole: membership.role_key,
       branchIds: (branchMemberships ?? []).map((member: { branch_id: string }) => member.branch_id),
+      companyPermissions,
       permissions,
     };
     return true;

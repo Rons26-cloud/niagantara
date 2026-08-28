@@ -9,6 +9,7 @@ import {
   LoadingState,
   Modal,
   Pagination,
+  Select,
   StatusBadge,
   usePaged,
   useTranslation,
@@ -20,6 +21,10 @@ type Supplier = {
   name: string;
   email?: string;
   phone?: string;
+  supplier_code?: string;
+  contact_person?: string;
+  address?: string;
+  notes?: string;
   status?: string;
 };
 
@@ -44,12 +49,14 @@ export function SuppliersPage({
   const [msg, setMsg] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ name: '', phone: '', email: '' });
+  const emptyForm = { supplierCode: '', name: '', contactPerson: '', phone: '', email: '', address: '', notes: '', status: 'active' };
+  const [form, setForm] = useState(emptyForm);
+  const [status, setStatus] = useState('');
 
   const load = () => {
     setLoading(true);
     setError(null);
-    api<Supplier[]>('/suppliers', token, company)
+    api<Supplier[]>(`/suppliers?limit=100${status ? `&status=${status}` : ''}`, token, company)
       .then(setRows)
       .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
       .finally(() => setLoading(false));
@@ -57,7 +64,7 @@ export function SuppliersPage({
 
   useEffect(() => {
     void load();
-  }, [company, token]);
+  }, [company, token, status]);
 
   const filtered = rows.filter(
     (r) =>
@@ -75,13 +82,12 @@ export function SuppliersPage({
       await api('/suppliers', token, company, {
         method: 'POST',
         body: JSON.stringify({
-          supplierCode: form.phone,
           ...form,
         }),
       });
       setMsg(t('messages.saveSuccess'));
       setShowCreate(false);
-      setForm({ name: '', phone: '', email: '' });
+      setForm(emptyForm);
       load();
     } catch (e) {
       setMsg(
@@ -94,10 +100,24 @@ export function SuppliersPage({
 
   async function openDetail(r: Supplier) {
     try {
-      setDetail(await api<Supplier>('/suppliers/' + r.id, token, company));
+      const value = await api<Supplier>('/suppliers/' + r.id, token, company);
+      setDetail(value);
+      setForm({ supplierCode: value.supplier_code ?? '', name: value.name ?? '', contactPerson: value.contact_person ?? '', phone: value.phone ?? '', email: value.email ?? '', address: value.address ?? '', notes: value.notes ?? '', status: value.status ?? 'active' });
     } catch {
       setDetail(r);
     }
+  }
+
+  async function update(e: FormEvent) {
+    e.preventDefault();
+    if (!detail) return;
+    setMsg(t('common.saving'));
+    try {
+      const updated = await api<Supplier>('/suppliers/' + detail.id, token, company, { method: 'PATCH', body: JSON.stringify(form) });
+      setDetail(updated);
+      setMsg(t('messages.saveSuccess'));
+      load();
+    } catch (e) { setMsg(e instanceof ApiError ? `${e.status} · ${e.code}` : t('messages.saveError')); }
   }
 
   if (loading) return <LoadingState label={t('common.loading')} />;
@@ -113,6 +133,7 @@ export function SuppliersPage({
             onChange={(e) => setSearch(e.target.value)}
           />
         </Field>
+        <Field label="Status"><Select value={status} onChange={(e) => setStatus(e.target.value)}><option value="">Semua</option><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></Select></Field>
         {ctx.permissions.includes('supplier.create') && (
           <Button onClick={() => setShowCreate(true)}>
             <Plus size={14} /> {t('common.add')} {t('common.supplier')}
@@ -173,6 +194,8 @@ export function SuppliersPage({
             </Button>
           </div>
           <dl className="def-grid">
+            <dt>Kode</dt><dd>{detail.supplier_code ?? '—'}</dd>
+            <dt>Kontak</dt><dd>{detail.contact_person ?? '—'}</dd>
             <dt>Email</dt>
             <dd>{detail.email ?? '—'}</dd>
             <dt>Telepon</dt>
@@ -181,7 +204,22 @@ export function SuppliersPage({
             <dd>
               <StatusBadge status={detail.status ?? 'ACTIVE'} />
             </dd>
+            <dt>Alamat</dt><dd>{detail.address ?? '—'}</dd>
+            <dt>Catatan</dt><dd>{detail.notes ?? '—'}</dd>
           </dl>
+          {ctx.permissions.includes('supplier.update') && (
+            <form className="inline-form" onSubmit={update} style={{ marginTop: 16 }}>
+              <Field label="Kode"><Input required value={form.supplierCode} onChange={(e) => setForm({ ...form, supplierCode: e.target.value })} /></Field>
+              <Field label={t('common.name')}><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+              <Field label="Kontak"><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} /></Field>
+              <Field label={t('common.phone')}><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+              <Field label={t('common.email')}><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
+              <Field label="Alamat"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
+              <Field label="Catatan"><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
+              <Field label="Status"><Select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></Select></Field>
+              <Button type="submit">{t('common.save')}</Button>
+            </form>
+          )}
         </section>
       )}
 
@@ -196,6 +234,7 @@ export function SuppliersPage({
         }
       >
         <form id="supplier-create-form" className="inline-form" onSubmit={create}>
+          <Field label="Kode Supplier"><Input required value={form.supplierCode} onChange={(e) => setForm({ ...form, supplierCode: e.target.value })} /></Field>
           <Field label={t('common.name')}>
             <Input
               required
@@ -203,12 +242,15 @@ export function SuppliersPage({
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </Field>
+          <Field label="Kontak"><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} /></Field>
           <Field label={t('common.phone')}>
             <Input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
           </Field>
+          <Field label="Alamat"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
+          <Field label="Catatan"><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
           <Field label={t('common.email')}>
             <Input
               type="email"
