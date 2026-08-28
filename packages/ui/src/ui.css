@@ -8,36 +8,42 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
+  gap: 7px;
+  padding: 8px 14px;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   font-family: inherit;
   line-height: 1.2;
   cursor: pointer;
   transition: background var(--transition-fast), border-color var(--transition-fast),
-    color var(--transition-fast), transform var(--transition-fast);
-  min-height: 40px;
+    color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  min-height: 36px;
+  white-space: nowrap;
 }
 .ng-btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
+}
+.ng-btn:active:not(:disabled) {
+  transform: translateY(1px);
 }
 .ng-btn--primary {
   background: var(--accent-primary, var(--brand-blue));
   color: #fff;
 }
 .ng-btn--primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: var(--accent-primary-strong, var(--brand-blue-strong, #1D4ED8));
 }
 .ng-btn--secondary {
-  background: var(--surface-elevated);
+  background: var(--surface);
   color: var(--text-primary);
   border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 .ng-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
   border-color: var(--accent-primary);
 }
 .ng-btn--ghost {
@@ -45,29 +51,42 @@
   color: var(--text-secondary);
 }
 .ng-btn--ghost:hover:not(:disabled) {
-  background: var(--surface-elevated);
+  background: var(--surface-hover);
   color: var(--text-primary);
 }
 .ng-btn--danger {
   background: var(--danger, #ef4444);
   color: #fff;
 }
+.ng-btn--danger:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.ng-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
 
 .ng-icon-btn {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--surface);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 14px;
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
 .ng-icon-btn:hover {
-  border-color: var(--accent-primary);
+  background: var(--surface-hover);
+  border-color: var(--border-color);
   color: var(--text-primary);
+}
+.ng-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
 }
 
 /* ---------- Spinner / skeleton ---------- */
@@ -123,20 +142,23 @@
 /* ---------- Forms ---------- */
 .ng-input {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 11px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13.5px;
   font-family: inherit;
-  min-height: 40px;
-  transition: border-color var(--transition-fast);
+  min-height: 36px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.ng-input:hover {
+  border-color: var(--text-muted);
 }
 .ng-input:focus-visible {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22);
+  box-shadow: var(--ring-focus);
 }
 .ng-input::placeholder {
   color: var(--text-muted);
@@ -148,10 +170,10 @@ textarea.ng-input {
 
 .ng-field {
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 .ng-field__label {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -168,22 +190,24 @@ textarea.ng-input {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 12px;
+  padding: 0 11px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--surface);
-  min-height: 40px;
+  min-height: 36px;
   color: var(--text-muted);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .ng-search:focus-within {
   border-color: var(--accent-primary);
+  box-shadow: var(--ring-focus);
 }
 .ng-search input {
   flex: 1;
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13.5px;
   min-width: 0;
 }
 .ng-search input:focus-visible {
@@ -237,7 +261,7 @@ textarea.ng-input {
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   box-shadow: var(--shadow-sm);
 }
 .ng-card__head {
@@ -249,9 +273,10 @@ textarea.ng-input {
   flex-wrap: wrap;
 }
 .ng-card__head h2 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 .ng-card__actions {
   display: flex;
@@ -260,30 +285,49 @@ textarea.ng-input {
 }
 
 .ng-stat {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 16px 18px;
+  padding: 13px 15px;
   display: grid;
-  gap: 6px;
+  gap: 3px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
+.ng-stat::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.ng-stat:hover::before { opacity: 1; }
 .ng-stat__label {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--text-muted);
 }
 .ng-stat strong {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 .ng-stat small {
   font-size: 12px;
   color: var(--text-muted);
 }
+.ng-stat--success::before { background: var(--success, #10b981); }
+.ng-stat--warning::before { background: var(--warning, #f59e0b); }
+.ng-stat--danger::before { background: var(--danger, #ef4444); }
 .ng-stat--success strong { color: var(--success, #10b981); }
 .ng-stat--warning strong { color: var(--warning, #f59e0b); }
 .ng-stat--danger strong { color: var(--danger, #ef4444); }
@@ -301,12 +345,15 @@ textarea.ng-input {
 .ng-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
+  gap: 5px;
+  padding: 3px 9px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   border: 1px solid transparent;
+  line-height: 1;
+  white-space: nowrap;
 }
 .ng-badge--neutral {
   background: var(--surface-elevated);
@@ -314,19 +361,19 @@ textarea.ng-input {
   border-color: var(--border-color);
 }
 .ng-badge--info {
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--brand-blue);
+  background: var(--info-soft, rgba(37, 99, 235, 0.12));
+  color: var(--accent-primary, var(--brand-blue));
 }
 .ng-badge--success {
-  background: rgba(16, 185, 129, 0.14);
+  background: var(--success-soft, rgba(16, 185, 129, 0.14));
   color: var(--success, #10b981);
 }
 .ng-badge--warning {
-  background: rgba(245, 158, 11, 0.16);
+  background: var(--warning-soft, rgba(245, 158, 11, 0.16));
   color: var(--warning, #d97706);
 }
 .ng-badge--danger {
-  background: rgba(239, 68, 68, 0.14);
+  background: var(--danger-soft, rgba(239, 68, 68, 0.14));
   color: var(--danger, #ef4444);
 }
 
@@ -335,28 +382,28 @@ textarea.ng-input {
   gap: var(--space-md);
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 13.5px;
   border: 1px solid;
 }
 .ng-alert--info {
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--info-soft, rgba(37, 99, 235, 0.1));
   border-color: rgba(37, 99, 235, 0.35);
   color: var(--text-primary);
 }
 .ng-alert--success {
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--success-soft, rgba(16, 185, 129, 0.1));
   border-color: rgba(16, 185, 129, 0.4);
   color: var(--text-primary);
 }
 .ng-alert--warning {
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--warning-soft, rgba(245, 158, 11, 0.1));
   border-color: rgba(245, 158, 11, 0.4);
   color: var(--text-primary);
 }
 .ng-alert--danger {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--danger-soft, rgba(239, 68, 68, 0.1));
   border-color: rgba(239, 68, 68, 0.4);
   color: var(--text-primary);
 }
@@ -384,9 +431,14 @@ textarea.ng-input {
   color: var(--text-secondary);
 }
 .ng-empty > span {
-  font-size: 34px;
-  color: var(--brand-blue);
-  opacity: 0.65;
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-primary-soft, rgba(37, 99, 235, 0.1));
+  color: var(--accent-primary);
+  font-size: 24px;
 }
 .ng-empty h3 {
   color: var(--text-primary);
@@ -404,16 +456,20 @@ textarea.ng-input {
   justify-content: space-between;
   gap: var(--space-md);
   flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
 }
 .ng-pagehead h1 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 .ng-pagehead__desc {
   color: var(--text-secondary);
-  font-size: 14px;
-  margin-top: 4px;
+  font-size: 13.5px;
+  margin-top: 5px;
+  max-width: 64ch;
 }
 .ng-pagehead__actions {
   display: flex;
@@ -423,37 +479,41 @@ textarea.ng-input {
 
 .ng-tabs {
   display: inline-flex;
-  gap: 4px;
-  background: var(--surface-elevated);
+  gap: 2px;
+  background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 4px;
+  padding: 3px;
 }
 .ng-tabs button {
   border: none;
   background: transparent;
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.ng-tabs button:hover {
+  color: var(--text-primary);
 }
 .ng-tabs button.active {
   background: var(--accent-primary);
   color: #fff;
 }
 .ng-tabs button:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 1px;
+  outline: none;
+  box-shadow: var(--ring-focus);
 }
 
 /* ---------- Modal ---------- */
 .ng-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(2px);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
   display: grid;
   place-items: center;
   padding: var(--space-md);
@@ -464,39 +524,47 @@ textarea.ng-input {
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  width: min(520px, 100%);
+  width: min(560px, 100%);
   max-height: 86vh;
   overflow: auto;
   box-shadow: var(--shadow-xl);
 }
 .ng-modal__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 15px 20px;
   border-bottom: 1px solid var(--border-color);
+  background: var(--surface);
 }
 .ng-modal__head h2 {
-  font-size: 16px;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
 }
 .ng-modal__body {
-  padding: 20px;
+  padding: 18px 20px;
 }
 .ng-modal__foot {
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 14px 20px;
+  padding: 13px 20px;
   border-top: 1px solid var(--border-color);
+  background: var(--surface);
 }
 
 /* ---------- Pagination / toasts ---------- */
 .ng-pagination {
   display: flex;
   align-items: center;
-  gap: 12px;
-  justify-content: center;
-  padding: var(--space-md) 0;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: var(--space-md) 0 0;
   color: var(--text-secondary);
   font-size: 13px;
 }
@@ -508,6 +576,11 @@ textarea.ng-input {
   background: var(--surface);
   color: var(--text-primary);
   cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.ng-pagination button:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--accent-primary);
 }
 .ng-pagination button:disabled {
   opacity: 0.4;

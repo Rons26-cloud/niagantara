@@ -504,15 +504,12 @@
   z-index: 30;
   height: 100dvh;
   min-width: 0;
-  gap: 12px;
-  padding: 16px;
+  gap: 10px;
+  padding: 14px 12px;
   overflow: hidden;
-  background: color-mix(
-    in srgb,
-    var(--bg-secondary) 96%,
-    var(--accent-primary)
-  );
-  box-shadow: 8px 0 30px rgb(15 23 42 / 4%);
+  background: var(--sidebar-bg, #0E1726);
+  border-right: 1px solid var(--sidebar-border, rgba(255, 255, 255, 0.06));
+  color: var(--sidebar-text-active, #fff);
 }
 
 .sidebar-brand-row {
@@ -526,11 +523,11 @@
   align-items: center;
   gap: 9px;
   min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--surface-elevated);
-  color: var(--text-secondary);
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md, 8px);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text, #94A3B8);
 }
 
 .sidebar-workspace-icon {
@@ -552,7 +549,7 @@
 
 .sidebar-workspace-copy small,
 .sidebar-account-copy small {
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--sidebar-text, #94A3B8) 85%, transparent);
   font-size: 10px;
   letter-spacing: 0.04em;
   text-transform: capitalize;
@@ -561,7 +558,7 @@
 .sidebar-workspace-copy b,
 .sidebar-account-copy b {
   overflow: hidden;
-  color: var(--text-primary);
+  color: #fff;
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -592,7 +589,7 @@
 
 .nav-group + .nav-group {
   padding-top: 7px;
-  border-top: 1px solid color-mix(in srgb, var(--border-color) 72%, transparent);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .nav-group-label {
@@ -600,48 +597,47 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 25px;
-  padding: 3px 10px;
-  color: var(--text-muted);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
+  min-height: 24px;
+  padding: 2px 8px;
+  color: color-mix(in srgb, var(--sidebar-text, #94A3B8) 78%, transparent);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .nav-group-label small {
   display: grid;
   place-items: center;
-  min-width: 19px;
-  height: 19px;
+  min-width: 18px;
+  height: 18px;
   border-radius: 99px;
-  background: var(--surface-elevated);
-  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--sidebar-text, #94A3B8);
   font-size: 9px;
   letter-spacing: 0;
 }
 
 .sidebar nav button {
-  min-height: 40px;
-  padding: 9px 11px;
+  min-height: 36px;
+  padding: 7px 10px;
   border: 1px solid transparent;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.2;
+  color: var(--sidebar-text, #94A3B8);
 }
 
 .sidebar nav button:hover {
-  border-color: var(--border-color);
+  background: var(--sidebar-bg-2, #13203A);
+  border-color: transparent;
+  color: #fff;
 }
 
 .sidebar nav button.active {
-  border-color: color-mix(in srgb, var(--accent-primary) 58%, transparent);
-  background: linear-gradient(
-    135deg,
-    var(--accent-primary),
-    color-mix(in srgb, var(--accent-primary) 72%, var(--accent-secondary))
-  );
-  box-shadow: 0 8px 20px
-    color-mix(in srgb, var(--accent-primary) 24%, transparent);
+  background: var(--accent-primary, #2563EB);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
 }
 
 .sidebar-controls {
@@ -709,8 +705,9 @@
   grid-template-columns: auto minmax(180px, 1fr) auto;
   align-items: center;
   gap: 14px;
-  margin-bottom: 22px;
-  padding: 0 0 18px;
+  margin-bottom: 18px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--border-subtle, #EDF1F5);
 }
 
 .workspace header .eyebrow {
@@ -800,8 +797,7 @@
 }
 
 :root[data-theme='blue'] .sidebar {
-  background: color-mix(in srgb, var(--bg-secondary) 88%, #020617);
-  box-shadow: 8px 0 32px rgb(0 0 0 / 18%);
+  background: var(--sidebar-bg, #0E1726);
 }
 
 :root[data-theme='blue'] .panel,

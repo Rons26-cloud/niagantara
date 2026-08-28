@@ -283,38 +283,51 @@
 .pos-grid .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 9px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 14px;
 }
 .pos-grid .product-card {
   text-align: left;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg, 12px);
   background: var(--surface-elevated);
   color: var(--text-primary);
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   display: grid;
-  gap: 4px;
-  min-height: 84px;
+  gap: 5px;
+  min-height: 88px;
+  position: relative;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
 }
 .pos-grid .product-card:hover:not(:disabled) {
-  border-color: var(--brand-blue);
+  border-color: var(--accent-primary);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.pos-grid .product-card.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-soft, rgba(37, 99, 235, 0.08));
+}
+.pos-grid .product-card:active:not(:disabled) {
+  transform: translateY(1px);
 }
 .pos-grid .product-card:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 .pos-grid .product-card span {
   color: var(--text-muted);
   font-size: 11px;
+  line-height: 1.3;
 }
 .pos-grid .product-card em {
   font-style: normal;
-  font-weight: 700;
-  font-size: 12.5px;
+  font-weight: 800;
+  font-size: 14px;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .pos-mobile-cta {
@@ -392,33 +405,51 @@
 }
 .pos-grid .cart {
   position: sticky;
-  top: 74px;
+  top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 .pos-grid .cart h2 {
-  margin: 0 0 6px;
-  font-size: 16px;
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 800;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .pos-grid .cart-line {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 6px;
-  padding-bottom: 8px;
+  gap: 8px;
+  padding: 4px 0 10px;
   border-bottom: 1px dashed var(--border-color);
   font-size: 13.5px;
   color: var(--text-primary);
+  align-items: center;
 }
 .pos-grid .cart-line input,
 .pos-grid .cart-line select {
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 6px;
+  border-radius: var(--radius-md, 8px);
+  padding: 6px 8px;
   background: var(--surface-elevated);
   color: var(--text-primary);
   width: 100%;
+  font: inherit;
+  font-size: 13px;
+}
+.pos-grid .cart-line input:focus,
+.pos-grid .cart-line select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--ring-focus);
 }
 .pos-grid .cart-line button {
   border: none;
@@ -428,15 +459,26 @@
   font-size: 12px;
   text-align: right;
 }
+.pos-grid .cart-line button:hover {
+  color: var(--danger, #dc2626);
+}
 .pos-grid .cart > strong {
-  font-size: 20px;
+  font-size: 26px;
   text-align: right;
   color: var(--text-primary);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 .pos-grid .cart > button {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   font-size: 15px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--accent-primary);
+}
+.pos-grid .cart > button:hover:not(:disabled) {
+  background: var(--accent-primary-strong);
 }
 .pos-grid .cart > button:disabled {
   opacity: 0.5;
@@ -450,10 +492,11 @@
 .pos-grid .cart > input,
 .pos-grid .cart > select {
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: var(--radius-md, 8px);
   padding: 10px;
   background: var(--surface-elevated);
   color: var(--text-primary);
+  font: inherit;
 }
 
 /* Gap page for placeholder pages */
