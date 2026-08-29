@@ -63,6 +63,7 @@ export function PosPage({
   const [openingCash, setOpeningCash] = useState('');
   const [showOpenShift, setShowOpenShift] = useState(false);
   const [showCloseShift, setShowCloseShift] = useState(false);
+  const [showMobileCart, setShowMobileCart] = useState(false);
   const [closingCash, setClosingCash] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [online, setOnline] = useState(() => navigator.onLine);
@@ -74,6 +75,7 @@ export function PosPage({
   const customerDialog = useDialogFocus(showCustomerPicker, () => setShowCustomerPicker(false));
   const openShiftDialog = useDialogFocus(showOpenShift, () => setShowOpenShift(false));
   const closeShiftDialog = useDialogFocus(showCloseShift, () => setShowCloseShift(false));
+  const mobileCartDialog = useDialogFocus(showMobileCart, () => setShowMobileCart(false));
 
   useEffect(() => {
     Promise.all([
@@ -94,6 +96,13 @@ export function PosPage({
   useEffect(() => { const handler = (event: KeyboardEvent) => { const target = event.target as HTMLElement; if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable) return; if (event.key === 'F2') { event.preventDefault(); document.querySelector<HTMLInputElement>('.pos-products-panel .search input')?.focus(); } if (event.key === 'F4') { event.preventDefault(); setShowCustomerPicker(true); } if (event.key === 'F8') { event.preventDefault(); document.querySelector<HTMLButtonElement>('.pos-pay-btn')?.focus(); } if (event.key === 'Escape') { setShowCustomerPicker(false); setShowOpenShift(false); setShowCloseShift(false); } }; addEventListener('keydown', handler); return () => removeEventListener('keydown', handler); }, []);
 
   useEffect(() => { const on = () => setOnline(true); const off = () => setOnline(false); addEventListener('online', on); addEventListener('offline', off); return () => { removeEventListener('online', on); removeEventListener('offline', off); }; }, []);
+
+  useEffect(() => {
+    if (!showMobileCart) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [showMobileCart]);
 
   const search = async (e?: FormEvent) => {
     e?.preventDefault();
@@ -177,6 +186,11 @@ export function PosPage({
     total = (subtotal - itemDiscount - disc) * (1 + Number(tax) / 100);
   const changeAmount = method === 'CASH' ? (cashChange(total, Number(received || 0)) ?? 0) : 0;
   const itemCount = cart.reduce((n, x) => n + x.quantity, 0);
+  const barcodeStatusText: Record<string, string> = {
+    SCANNING: 'Memindai barcode…', LOOKING_UP: 'Mencari produk…', FOUND: 'Produk ditambahkan',
+    UNKNOWN: 'Barcode tidak ditemukan', INACTIVE: 'Produk tidak aktif', OUT_OF_STOCK: 'Stok produk habis',
+    INSUFFICIENT_STOCK: 'Stok tidak mencukupi', OFFLINE: 'Pemindaian membutuhkan koneksi', ERROR: 'Pemindaian gagal',
+  };
 
   const checkout = async () => {
     if (!online) return setMsg('Koneksi diperlukan untuk menyelesaikan transaksi.');
@@ -243,6 +257,21 @@ export function PosPage({
 
   return (
     <div className="pos-grid">
+      <header className="pos-workspace-header">
+        <div>
+          <span className="pos-workspace-eyebrow">POINT OF SALE</span>
+          <h1>Transaksi Penjualan</h1>
+          <p>{store?.name ?? 'Toko'} <span>•</span> {branch?.name ?? 'Cabang'}</p>
+        </div>
+        <div className="pos-workspace-status">
+          <span className={`pos-online-pill${online ? '' : ' offline'}`}>
+            <i /> {online ? 'Online' : 'Offline'}
+          </span>
+          <span className={`pos-shift-pill${shift ? '' : ' inactive'}`}>
+            {shift ? 'Shift aktif' : 'Shift belum dibuka'}
+          </span>
+        </div>
+      </header>
       <section className="panel pos-products-panel">
         <form className="search" onSubmit={search}>
           <input
@@ -255,7 +284,9 @@ export function PosPage({
           <button type="submit">Cari</button>
           <button type="button" onClick={scan}>Scan</button>
         </form>
-        <p className="barcode-feedback" aria-live="polite">{barcodeMessage || barcodeState}</p>
+        <p className={`barcode-feedback barcode-feedback--${barcodeState.toLowerCase()}`} aria-live="polite">
+          {barcodeMessage || barcodeStatusText[barcodeState] || 'Siap mencari produk atau memindai barcode'}
+        </p>
 
         <div className="pos-category-filter">
           <button
@@ -304,9 +335,18 @@ export function PosPage({
         </div>
       </section>
 
-      <section className="panel cart pos-cart-panel">
+      <div
+        className={`panel cart pos-cart-panel${showMobileCart ? ' mobile-open' : ''}`}
+        ref={mobileCartDialog.dialogRef}
+        onKeyDown={mobileCartDialog.onKeyDown}
+        role={showMobileCart ? 'dialog' : undefined}
+        aria-modal={showMobileCart ? 'true' : undefined}
+        aria-labelledby="pos-cart-title"
+        tabIndex={showMobileCart ? -1 : undefined}
+      >
         <div className="pos-cart-header">
-          <h2>Keranjang ({itemCount})</h2>
+          <h2 id="pos-cart-title">Keranjang ({itemCount})</h2>
+          <button className="pos-cart-mobile-close" type="button" aria-label="Tutup keranjang" onClick={() => setShowMobileCart(false)}>×</button>
           {shift && (
             <span className="pos-shift-badge">
               Shift Aktif — {shift.branch?.name ?? ''} <button type="button" onClick={() => setShowCloseShift(true)}>Tutup Shift</button>
@@ -346,6 +386,7 @@ export function PosPage({
                   <small>{x.sku} · Rp {x.selling_price.toLocaleString('id-ID')} × {x.quantity}</small>
                 </div>
                 <div className="cart-line-controls">
+                  <button className="cart-qty-btn" type="button" aria-label={`Kurangi ${x.name}`} onClick={() => setCart(cart.flatMap((y) => y.id !== x.id ? [y] : y.quantity <= 1 ? [] : [{ ...y, quantity: y.quantity - 1 }]))}>−</button>
                   <input
                     type="number"
                     min="1"
@@ -356,6 +397,7 @@ export function PosPage({
                       setCart(cart.map((y) => y.id === x.id ? { ...y, quantity: Number(e.target.value) } : y))
                     }
                   />
+                  <button className="cart-qty-btn" type="button" aria-label={`Tambah ${x.name}`} disabled={x.quantity >= x.available} onClick={() => setCart(cart.map((y) => y.id === x.id ? { ...y, quantity: Math.min(y.available, y.quantity + 1) } : y))}>+</button>
                   {ctx.permissions.includes('pos.discount') && (
                     <>
                       <select
@@ -516,15 +558,15 @@ export function PosPage({
         </button>
 
         {msg && <p className="pos-msg" role="status">{msg}</p>}
-      </section>
+      </div>
 
       <div className="pos-mobile-cta" aria-hidden={false}>
         <span>
           <b>{itemCount}</b> item · Rp {Math.round(total).toLocaleString('id-ID')}
           {!shift && <small> · Buka shift</small>}
         </span>
-        <button disabled={!cart.length || !shift} onClick={checkout}>
-          Bayar
+        <button type="button" onClick={() => setShowMobileCart(true)}>
+          Lihat Keranjang
         </button>
       </div>
 

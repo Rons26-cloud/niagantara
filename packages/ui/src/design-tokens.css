@@ -1,27 +1,27 @@
 :root {
   /* Brand Colors */
-  --brand-blue: #2563EB;
-  --brand-blue-strong: #1D4ED8;
-  --brand-cyan: #06B6D4;
-  --brand-purple: #8B5CF6;
-  --brand-navy: #0F172A;
+  --brand-blue: #1677D2;
+  --brand-blue-strong: #0E5FAE;
+  --brand-cyan: #0EA5C6;
+  --brand-purple: #1677D2;
+  --brand-navy: #0B172A;
   --brand-light: #F8FAFC;
   --brand-white: #FFFFFF;
 
   /* Light Theme Tokens */
-  --bg-primary: #F6F7F9;
+  --bg-primary: #F3F6F9;
   --bg-secondary: #FFFFFF;
   --surface: #FFFFFF;
-  --surface-elevated: #FAFBFC;
-  --surface-hover: #F1F5F9;
+  --surface-elevated: #F8FAFC;
+  --surface-hover: #EEF3F8;
   --text-primary: #0F172A;
   --text-secondary: #475569;
   --text-muted: #64748B;
-  --border-color: #E2E8F0;
-  --border-subtle: #EDF1F5;
-  --accent-primary: #2563EB;
-  --accent-primary-strong: #1D4ED8;
-  --accent-primary-soft: rgba(37, 99, 235, 0.1);
+  --border-color: #DCE4ED;
+  --border-subtle: #EAF0F5;
+  --accent-primary: #1677D2;
+  --accent-primary-strong: #0E5FAE;
+  --accent-primary-soft: rgba(22, 119, 210, 0.1);
   --accent-secondary: #06B6D4;
   --success: #059669;
   --success-soft: rgba(5, 150, 105, 0.12);
@@ -32,8 +32,8 @@
   --info-soft: rgba(6, 182, 212, 0.14);
 
   /* App shell */
-  --sidebar-bg: #0E1726;
-  --sidebar-bg-2: #13203A;
+  --sidebar-bg: #0B172A;
+  --sidebar-bg-2: #11233D;
   --sidebar-text: #94A3B8;
   --sidebar-text-active: #FFFFFF;
   --sidebar-border: rgba(255, 255, 255, 0.06);
@@ -41,10 +41,18 @@
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 10px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.05);
-  --shadow-lg: 0 12px 22px -6px rgba(15, 23, 42, 0.14), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 10px -2px rgba(15, 23, 42, 0.07), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 22px -6px rgba(15, 23, 42, 0.11), 0 4px 8px -4px rgba(15, 23, 42, 0.05);
   --shadow-xl: 0 24px 48px -12px rgba(15, 23, 42, 0.2), 0 8px 16px -6px rgba(15, 23, 42, 0.08);
-  --ring-focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  --ring-focus: 0 0 0 3px rgba(22, 119, 210, 0.2);
+
+  /* Operational dimensions */
+  --control-height: 38px;
+  --control-height-compact: 34px;
+  --sidebar-width: 244px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-height: 72px;
+  --content-max: 1600px;
 
   /* Typography */
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

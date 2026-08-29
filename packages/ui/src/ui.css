@@ -19,7 +19,7 @@
   cursor: pointer;
   transition: background var(--transition-fast), border-color var(--transition-fast),
     color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
-  min-height: 36px;
+  min-height: var(--control-height, 38px);
   white-space: nowrap;
 }
 .ng-btn:disabled {
@@ -149,7 +149,7 @@
   color: var(--text-primary);
   font-size: 13.5px;
   font-family: inherit;
-  min-height: 36px;
+  min-height: var(--control-height, 38px);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .ng-input:hover {
@@ -194,7 +194,7 @@ textarea.ng-input {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--surface);
-  min-height: 36px;
+  min-height: var(--control-height, 38px);
   color: var(--text-muted);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }

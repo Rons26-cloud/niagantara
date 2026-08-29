@@ -9,7 +9,6 @@ import {
   LazySection,
 } from './chrome';
 import { Link } from './router';
-import { DemoPreview } from './demo/demo-app';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
 import {
   LayoutDashboard,
@@ -58,47 +57,32 @@ export function HeroSection() {
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-copy">
-          <div className="eyebrow">
-            <i /> {w.eyebrow}
-          </div>
-          <h1 dangerouslySetInnerHTML={{ __html: w.hero.title }} />
-          <p>{w.hero.subtitle}</p>
+          <div className="eyebrow"><i /> PLATFORM OPERASIONAL BISNIS TERINTEGRASI</div>
+          <h1>Kelola Bisnis Lebih Mudah <span>bersama NIAGANTARA</span></h1>
+          <p>Satukan kasir, stok, pembelian, supplier, cabang, tim, dan pemantauan operasional dalam satu platform yang terhubung.</p>
           <div className="actions">
-            <Button to="/kontak">{w.hero.cta}</Button>
+            <Button to="/kontak">Mulai Sekarang</Button>
             <Button secondary to="/demo">
-              {w.hero.demo} <small>▶</small>
+              Lihat Platform <small>▶</small>
             </Button>
           </div>
-          <div className="trust">
-            {w.hero.trust.map((x) => (
-              <span key={x}>✓ {x}</span>
-            ))}
-          </div>
+          <div className="trust">{['POS','Inventory','Dashboard','Multi Cabang','Purchasing','Realtime'].map((x)=><span key={x}>✓ {x}</span>)}</div>
         </div>
         <div className="hero-visual">
-          <div className="float sales">
-            <i>
-              <TrendingUp size={16} aria-hidden="true" />
-            </i>
-            <span>
-              <small>{w.hero.todaySales}</small>
-              <b>Rp 8.420.000</b>
-            </span>
-            <em>+12,8%</em>
-          </div>
           <div className="float stock">
             <i>
               <Package size={16} aria-hidden="true" />
             </i>
             <span>
-              <small>{w.hero.lowStock}</small>
-              <b>12 {w.hero.productsUnit}</b>
+              <small>Status operasional</small>
+              <b>Perlu perhatian</b>
             </span>
             <em>{w.hero.needsAttention}</em>
           </div>
           <div className="hero-scale">
             <Dashboard w={w} />
           </div>
+          <small className="preview-disclaimer">Ilustrasi antarmuka produk · data contoh</small>
         </div>
       </div>
     </section>
@@ -124,27 +108,36 @@ export function LogoStrip() {
 }
 
 export function FeaturesSection({ heading = true }: { heading?: boolean }) {
-  const w = useW();
+  const features = [
+    ['POS / Kasir','Transaksi cepat dengan pencarian produk, barcode, pembayaran, shift, dan struk.'],
+    ['Dashboard Owner','Pantau metrik, cabang, stok, shift, integrasi, dan aktivitas operasional.'],
+    ['Inventory','Kelola stok, minimum stok, penyesuaian, transfer, dan ledger pergerakan.'],
+    ['Purchasing','Kelola pembelian, penerimaan barang, status, dan pembaruan stok.'],
+    ['Supplier','Simpan data supplier dan hubungkan dengan proses pembelian.'],
+    ['Multi Cabang','Gunakan konteks perusahaan, toko, dan cabang sesuai hak akses.'],
+    ['Tim & Hak Akses','Atur pengguna, peran, permission, dan penempatan cabang.'],
+    ['Integrasi','Hubungkan data operasional dengan Google Sheets secara terkontrol.'],
+  ];
   return (
     <section id="fitur" className="section features">
       <div className="container">
         {heading && (
           <Heading
-            kicker={w.features.kicker}
-            title={w.features.title}
-            text={w.features.subtitle}
+            kicker="KAPABILITAS PLATFORM"
+            title="Satu Platform untuk <span>Operasional Bisnis</span>"
+            text="Modul yang saling terhubung untuk pekerjaan harian owner, supervisor, tim gudang, purchasing, dan kasir."
           />
         )}
         <div className="feature-grid">
-          {w.features.items.map((f, i) => (
-            <article className="feature-card" key={f.title}>
+          {features.map(([title,text], i) => (
+            <article className="feature-card" key={title}>
               <Icon>
                 <SidebarIcon icon={FEATURE_ICONS[i]} size={24} />
               </Icon>
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
+              <h3>{title}</h3>
+              <p>{text}</p>
               <Link to="/fitur">
-                {w.features.learnMore} <span aria-hidden="true">↗</span>
+                Pelajari fitur <span aria-hidden="true">↗</span>
               </Link>
             </article>
           ))}
@@ -165,7 +158,11 @@ export function ShowcaseSection() {
           title={w.showcase.title}
           text={w.showcase.subtitle}
         />
-        <DemoPreview />
+        <div className="product-showcase">
+          <Dashboard w={w} />
+          <div className="product-showcase-pos"><PosPreview w={w} /></div>
+          <small>Preview produk menggunakan komponen demonstrasi NIAGANTARA · seluruh angka merupakan data contoh.</small>
+        </div>
       </div>
     </section>
   );
@@ -455,12 +452,12 @@ export function MobileSection() {
         'Your data stays synced and secure',
       ]
     : [
-        'Tampilan lengkap untuk analisis bisnis',
-        'Akses cepat di perangkat Android',
-        'Data tetap sinkron dan aman',
+        'Pantau operasional bisnis dari satu dashboard.',
+        'Akses informasi operasional melalui perangkat yang didukung.',
+        'POS, stok, pembelian, cabang, dan aktivitas bisnis terhubung.',
       ];
   return (
-    <section className="section mobile" aria-labelledby="mobile-showcase-title">
+    <section id="mobile" className="section mobile" aria-labelledby="mobile-showcase-title">
       <div className="container mobile-grid">
         <div>
           <Kicker>{w.mobileSection.kicker}</Kicker>
@@ -683,21 +680,19 @@ export function FaqSection() {
 }
 
 export function CtaSection() {
-  const w = useW();
-  const { t } = useTranslation();
   return (
     <section id="kontak" className="cta">
       <div className="container">
-        <Kicker>{w.contact.kicker}</Kicker>
-        <h2>{t('website.cta.title')}</h2>
-        <p>{t('website.cta.subtitle')}</p>
+        <Kicker>NIAGANTARA UNTUK BISNIS ANDA</Kicker>
+        <h2>Siap Menyatukan Operasional Bisnis Anda?</h2>
+        <p>Kelola transaksi, stok, pembelian, cabang dan tim dalam satu ekosistem NIAGANTARA.</p>
         <div className="actions">
           <a className="button" href="mailto:support@niagantara.com">
-            {t('website.cta.tryFree')}
+            Mulai Sekarang
             <span aria-hidden="true">→</span>
           </a>
-          <Button secondary to="/kontak">
-            {t('website.cta.signIn')}
+          <Button secondary to="/fitur">
+            Pelajari Fitur
           </Button>
         </div>
       </div>
@@ -764,9 +759,6 @@ export function HomePage() {
         </LazySection>
         <LazySection>
           <BranchesSection />
-        </LazySection>
-        <LazySection>
-          <FinanceSection />
         </LazySection>
         <LazySection>
           <SheetsSection />

@@ -410,7 +410,7 @@ export const id = {
       kicker: 'FLEKSIBEL DI MANA SAJA',
       title: 'Kelola Bisnis<br /><span>di Mana Saja</span>',
       text: 'Dashboard yang mengikuti ritme kerja Anda—di meja kerja, di toko, atau saat bepergian.',
-      bullets: ['Desktop dashboard', 'Mobile-ready', 'Satu identitas produk'],
+      bullets: ['Owner Dashboard', 'Siap di Perangkat Mobile', 'Operasional Terintegrasi'],
       welcome: 'Selamat datang kembali, Andi',
       welcomeBack: 'Selamat datang kembali, Andi',
       recentActivity: 'Aktivitas terbaru',

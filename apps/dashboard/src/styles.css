@@ -2828,3 +2828,44 @@ details summary {
     flex-wrap: wrap;
   }
 }
+
+/* Unified NIAGANTARA owner workspace */
+.shell { grid-template-columns:var(--sidebar-width,244px) minmax(0,1fr); background:var(--bg-primary); }
+.shell.sidebar-collapsed { grid-template-columns:var(--sidebar-width-collapsed,72px) minmax(0,1fr); }
+.sidebar { width:auto; padding:12px 10px; background:var(--sidebar-bg); border-right:0; box-shadow:8px 0 28px rgba(8,18,35,.08); }
+.sidebar-brand-row { min-height:50px; border-bottom:1px solid var(--sidebar-border); }
+.sidebar-workspace-card { border-color:var(--sidebar-border); background:rgba(255,255,255,.055); }
+.nav-search input { min-height:34px; border-color:var(--sidebar-border); background:rgba(255,255,255,.055); color:#fff; }
+.nav-group { margin-bottom:9px; }
+.nav-group-label { padding:7px 9px 4px; color:#71839c; font-size:9px; letter-spacing:.12em; }
+.sidebar nav button { min-height:36px; padding:7px 9px; border-radius:7px; }
+.sidebar nav button.active { background:var(--accent-primary); box-shadow:0 6px 16px rgba(22,119,210,.22); }
+.sidebar nav button.active::before { display:none; }
+.sidebar-account { border-color:var(--sidebar-border); background:rgba(255,255,255,.045); }
+.workspace { min-width:0; max-width:var(--content-max,1600px); width:100%; margin:0 auto; padding:0 clamp(16px,2.2vw,32px) 38px; }
+.workspace > header { position:sticky; top:0; z-index:20; min-height:var(--topbar-height,72px); align-items:center; margin:0 calc(clamp(16px,2.2vw,32px) * -1) 20px; padding:10px clamp(16px,2.2vw,32px); border-bottom:1px solid var(--border-color); background:color-mix(in srgb,var(--bg-primary) 93%,transparent); backdrop-filter:blur(10px); }
+.workspace > header h1 { margin:2px 0 0; font-size:21px; }
+.workspace > header .eyebrow { margin:0; font-size:9px; }
+.context--switchable { flex-wrap:nowrap; }
+.ctx-company { min-width:130px; }
+.ctx-select select { min-height:34px; border-radius:7px; }
+.header-action { width:34px; height:34px; }
+.panel,.ng-card,.metrics article,.ng-stat { border-color:var(--border-color); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); }
+.panel { padding:16px; }
+.metrics,.overview-metrics { gap:10px; }
+.metrics strong,.ng-stat strong { font-size:20px; }
+.table,.data-table-wrap,.inventory-table-wrap { border-color:var(--border-color); border-radius:var(--radius-lg); background:var(--surface); }
+.tr.head,table thead tr { background:var(--surface-elevated); }
+.tr span,table td { padding-top:10px; padding-bottom:10px; }
+.tr:not(.head):hover,table tbody tr:hover { background:var(--surface-hover); }
+.toolbar,.filter-bar,.inventory-toolbar,.page-toolbar { gap:8px; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-lg); background:var(--surface); }
+.inline-form input,.inline-form select,.inline-form textarea,.search input { min-height:var(--control-height,38px); }
+.inline-form button,.search button { min-height:var(--control-height,38px); }
+.ng-pagehead { margin-bottom:16px; }
+.ng-pagehead h1 { font-size:21px; }
+.ng-pagehead__desc { max-width:72ch; }
+.ng-badge { border-radius:6px; padding:4px 7px; font-size:10px; }
+.mobile-topbar,.mobile-contextbar,.mobile-tabbar { background:var(--surface); }
+@media(max-width:1100px){.shell:not(.nav-open){grid-template-columns:var(--sidebar-width-collapsed,72px) minmax(0,1fr)}.shell:not(.nav-open) .sidebar-brand-full,.shell:not(.nav-open) .sidebar-workspace-copy,.shell:not(.nav-open) .nav-search,.shell:not(.nav-open) .nav-group-label,.shell:not(.nav-open) .sidebar nav button span,.shell:not(.nav-open) .sidebar-account-copy,.shell:not(.nav-open) .sidebar-controls,.shell:not(.nav-open) .logout span{display:none}.shell:not(.nav-open) .sidebar nav button{justify-content:center}}
+@media(max-width:760px){.shell,.shell.sidebar-collapsed{display:block}.workspace{padding:132px 12px calc(82px + env(safe-area-inset-bottom))}.workspace>header{display:none}.mobile-topbar{display:flex}.mobile-contextbar{display:grid}.sidebar{position:fixed;z-index:60;left:0;top:0;bottom:0;width:min(300px,86vw);height:100dvh;transform:translateX(-105%);transition:transform var(--transition-base)}.shell.nav-open .sidebar{transform:translateX(0)}.mobile-tabbar{display:flex}.metrics,.overview-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ng-pagehead{align-items:flex-start}.table{overflow-x:auto}.tr{min-width:720px}}
+@media(max-width:430px){.metrics,.overview-metrics{grid-template-columns:1fr}.workspace{padding-left:10px;padding-right:10px}.panel,.ng-card{padding:13px}.ng-pagehead h1{font-size:19px}.ng-pagehead__actions{width:100%}.ng-pagehead__actions>.ng-btn{flex:1}}

@@ -40,22 +40,31 @@ export function Navbar() {
   const [menu, setMenu] = useState(false);
   const close = () => setMenu(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
   const { t } = useTranslation();
   const path = usePath();
   const items: [string, string][] = [
-    ['/', t('nav.home')],
-    ['/fitur', t('nav.features')],
-    ['/solusi', t('nav.solutions')],
-    ['/harga', t('nav.pricing')],
-    ['/tentang', t('nav.about')],
-    ['/faq', t('nav.faq')],
-    ['/kontak', t('nav.contact')],
+    ['/', 'Beranda'],
+    ['/fitur', 'Fitur'],
+    ['/demo/pos', 'POS'],
+    ['/demo/dashboard', 'Dashboard'],
+    ['/solusi', 'Solusi'],
+    ['/tentang', 'Keamanan'],
+    ['/kontak', 'Kontak'],
   ];
 
   useEffect(() => {
     if (!menu) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
+      if (e.key === 'Tab' && drawerRef.current) {
+        const focusable = Array.from(drawerRef.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),select:not([disabled])'));
+        const first = focusable[0];
+        const last = focusable.at(-1);
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
     };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
@@ -63,6 +72,7 @@ export function Navbar() {
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      menuButtonRef.current?.focus();
     };
   }, [menu]);
 
@@ -112,11 +122,12 @@ export function Navbar() {
           <a className="login" href="https://niagantara-app.pages.dev">
             {t('auth.login')}
           </a>
-          <Link className="nav-cta" to="/harga">
-            {t('nav.trial')} <span>→</span>
+          <Link className="nav-cta" to="/kontak">
+            Mulai Sekarang <span>→</span>
           </Link>
         </div>
         <button
+          ref={menuButtonRef}
           className="menu"
           onClick={() => setMenu(!menu)}
           aria-expanded={menu}
@@ -132,6 +143,7 @@ export function Navbar() {
       <div className={`drawer-root${menu ? ' open' : ''}`}>
         <div className="drawer-backdrop" onClick={close} aria-hidden="true" />
         <aside
+          ref={drawerRef}
           id="site-drawer"
           className="drawer"
           role="dialog"
@@ -176,8 +188,8 @@ export function Navbar() {
             <a className="drawer-login" href="https://niagantara-app.pages.dev">
               {t('auth.login')}
             </a>
-            <Link className="button drawer-cta" to="/harga" onClick={close}>
-              {t('nav.trial')}
+            <Link className="button drawer-cta" to="/kontak" onClick={close}>
+              Mulai Sekarang
               <span aria-hidden="true">→</span>
             </Link>
             <div className="drawer-controls">
@@ -192,12 +204,11 @@ export function Navbar() {
 }
 
 export function Footer() {
-  const { t } = useTranslation();
   return (
     <footer className="footer">
       <div className="container footer-grid">
         <div className="fbrand">
-          <Link to="/" className="fbrand-logo" ariaLabel={t('brand.name')}>
+          <Link to="/" className="fbrand-logo" ariaLabel="NIAGANTARA">
             <ThemeImage
               lightSrc="/logo-280.webp"
               alt="NIAGANTARA"
@@ -207,77 +218,31 @@ export function Footer() {
               loading="lazy"
             />
           </Link>
-          <strong className="fbrand-tag">{t('website.footer.tagline')}</strong>
-          <p>{t('website.footer.description')}</p>
+          <strong className="fbrand-tag">Platform Operasional Bisnis</strong>
+          <p>Satukan transaksi, stok, pembelian, cabang, dan tim dalam satu ekosistem operasional yang terhubung.</p>
         </div>
 
-        <nav className="fcol" aria-label={t('website.footer.productsHeading')}>
-          <h4>{t('website.footer.productsHeading')}</h4>
-          <Link to="/fitur">{t('website.footer.features')}</Link>
-          <Link to="/solusi">{t('website.footer.solutions')}</Link>
-          <Link to="/harga">{t('website.footer.pricing')}</Link>
-          <Link to="/solusi">{t('website.footer.pos')}</Link>
-          <a href="https://niagantara-app.pages.dev" rel="noopener">
-            {t('website.footer.dashboard')}
-          </a>
+        <nav className="fcol" aria-label="Produk">
+          <h4>Produk</h4>
+          <Link to="/demo/pos">POS</Link><Link to="/demo/dashboard">Dashboard</Link>
+          <Link to="/demo/inventory">Inventory</Link><Link to="/demo/purchases">Purchasing</Link>
         </nav>
 
-        <nav className="fcol" aria-label={t('website.footer.companyHeading')}>
-          <h4>{t('website.footer.companyHeading')}</h4>
-          <Link to="/tentang">{t('website.footer.about')}</Link>
-          <Link to="/faq">{t('website.footer.faq')}</Link>
-          <Link to="/kontak">{t('website.footer.contact')}</Link>
-          <a href="mailto:support@niagantara.com">{t('website.footer.helpCenter')}</a>
+        <nav className="fcol" aria-label="Platform">
+          <h4>Platform</h4><Link to="/fitur">Fitur</Link><Link to="/tentang">Keamanan</Link>
+          <Link to="/solusi">Integrasi</Link>
         </nav>
 
-        <div className="fcol fcontact">
-          <h4>{t('website.footer.contactHeading')}</h4>
-          <a className="fmail" href="mailto:hello@niagantara.com">
-            <b>hello@niagantara.com</b>
-            <small>{t('website.footer.contactGeneral')}</small>
-          </a>
-          <a className="fmail" href="mailto:support@niagantara.com">
-            <b>support@niagantara.com</b>
-            <small>{t('website.footer.contactSupport')}</small>
-          </a>
-          <a className="fmail" href="mailto:security@niagantara.com">
-            <b>security@niagantara.com</b>
-            <small>{t('website.footer.contactSecurity')}</small>
-          </a>
-          <a className="fmail" href="mailto:billing@niagantara.com">
-            <b>billing@niagantara.com</b>
-            <small>{t('website.footer.contactBilling')}</small>
-          </a>
-        </div>
+        <nav className="fcol" aria-label="Perusahaan"><h4>Perusahaan</h4><Link to="/tentang">Tentang</Link><Link to="/kontak">Kontak</Link><a href="mailto:support@niagantara.com">Dukungan</a></nav>
 
-        <nav className="fcol flegal" aria-label={t('website.footer.legalHeading')}>
-          <h4>{t('website.footer.legalHeading')}</h4>
-          <Link to="/privacy">{t('website.footer.privacy')}</Link>
-          <Link to="/terms">{t('website.footer.terms')}</Link>
-          <a href="mailto:security@niagantara.com">{t('website.footer.security')}</a>
+        <nav className="fcol flegal" aria-label="Legal">
+          <h4>Legal</h4><Link to="/privacy">Kebijakan Privasi</Link><Link to="/terms">Syarat &amp; Ketentuan</Link>
+          <a href="mailto:security@niagantara.com">Laporan Keamanan</a>
         </nav>
-      </div>
-
-      <div className="container fsystemic">
-        <small className="fsystemic-head">{t('website.footer.systemicHeading')}</small>
-        <div className="fsystemic-row">
-          <a className="fchip" href="mailto:admin@niagantara.com">
-            admin@niagantara.com
-            <small>{t('website.footer.contactAdmin')}</small>
-          </a>
-          <span className="fchip static">
-            no-reply@niagantara.com
-            <small>{t('website.footer.contactNoreply')}</small>
-          </span>
-          <a className="fchip" href="mailto:niagantara.official@gmail.com">
-            niagantara.official@gmail.com
-            <small>{t('website.footer.contactGmail')}</small>
-          </a>
-        </div>
       </div>
 
       <div className="container fbottom">
-        <small>{t('website.footer.rights')}</small>
+        <small>© 2026 NIAGANTARA. Seluruh hak dilindungi.</small>
       </div>
     </footer>
   );
