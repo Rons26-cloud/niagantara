@@ -1,4 +1,5 @@
 import { id } from './locales/id';
+import { en } from './locales/en';
 
 export type Language = 'id' | 'en';
 export type TranslationKey = keyof typeof id;
@@ -14,30 +15,15 @@ interface LocaleStore {
 
 const loadedLocales: LocaleStore = {
   id,
-  en: id as unknown as LocaleData,
+  en: en as unknown as LocaleData,
 };
-let enPromise: Promise<LocaleData> | null = null;
-
-function loadEn(): Promise<LocaleData> {
-  if (!enPromise) {
-    enPromise = import('./locales/en').then((m) => {
-      loadedLocales.en = m.en as unknown as LocaleData;
-      return m.en as unknown as LocaleData;
-    });
-  }
-  return enPromise;
-}
-
-if (typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('en')) {
-  loadEn();
-}
 
 export function getDefaultLanguage(): Language {
-  const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
+  const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(STORAGE_KEY) as Language | null;
   if (stored && (stored === 'id' || stored === 'en')) {
     return stored;
   }
-  const browserLang = navigator.language.toLowerCase();
+  const browserLang = typeof navigator === 'undefined' ? '' : navigator.language.toLowerCase();
   if (browserLang.startsWith('en')) {
     return 'en';
   }
@@ -45,14 +31,16 @@ export function getDefaultLanguage(): Language {
 }
 
 export function setLanguage(lang: Language): void {
-  localStorage.setItem(STORAGE_KEY, lang);
-  document.documentElement.lang = lang;
-  if (lang === 'en') loadEn();
-  window.dispatchEvent(new CustomEvent('language-change', { detail: { language: lang } }));
+  if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY, lang);
+  if (typeof document !== 'undefined') document.documentElement.lang = lang;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('language-change', { detail: { language: lang } }));
+  }
 }
 
 export function getLanguage(): Language {
-  return localStorage.getItem(STORAGE_KEY) as Language || getDefaultLanguage();
+  const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(STORAGE_KEY);
+  return stored === 'en' || stored === 'id' ? stored : getDefaultLanguage();
 }
 
 export function getTranslations(lang: Language = getLanguage()): LocaleData {
@@ -72,22 +60,14 @@ export function t(key: string, lang: Language = getLanguage()): string {
 import { useState, useEffect, useCallback } from 'react';
 
 export function useTranslation(lang?: Language) {
-  const [language, setLanguageState] = useState<Language>(getDefaultLanguage());
-  const [, setTick] = useState(0);
+  const [language, setLanguageState] = useState<Language>(lang ?? getLanguage());
 
   useEffect(() => {
-    const currentLang = lang ?? getLanguage();
-    setLanguageState(currentLang);
-    if (currentLang === 'en') {
-      loadEn().then(() => setTick((t) => t + 1));
-    }
+    if (lang) setLanguageState(lang);
 
     const handleLanguageChange = (e: CustomEvent) => {
       const newLang = e.detail.language as Language;
-      setLanguageState(newLang);
-      if (newLang === 'en') {
-        loadEn().then(() => setTick((t) => t + 1));
-      }
+      if (newLang === 'id' || newLang === 'en') setLanguageState(newLang);
     };
 
     window.addEventListener('language-change', handleLanguageChange as EventListener);
