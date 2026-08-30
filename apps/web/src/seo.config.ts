@@ -273,6 +273,15 @@ const terms: SeoMeta = {
   robots: 'index, follow',
 };
 
+const security: SeoMeta = {
+  title: 'Laporan Keamanan — NIAGANTARA',
+  description:
+    'Laporkan kerentanan keamanan pada NIAGANTARA secara bertanggung jawab dan pelajari komitmen serta proses penanganan keamanan kami.',
+  ogTitle: 'Laporan Keamanan — NIAGANTARA',
+  ogDescription: 'Kebijakan dan kanal pelaporan keamanan NIAGANTARA.',
+  robots: 'index, follow',
+};
+
 const demo: SeoMeta = {
   title: 'Demonstrasi Interaktif NIAGANTARA',
   description:
@@ -309,6 +318,7 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/kontak': contact,
   '/privacy': privacy,
   '/terms': terms,
+  '/security': security,
   '/demo': demo,
   '/demo/dashboard': demoPage,
   '/demo/pos': demoPage,

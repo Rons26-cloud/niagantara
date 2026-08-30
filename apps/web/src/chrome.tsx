@@ -237,7 +237,7 @@ export function Footer() {
 
         <nav className="fcol flegal" aria-label="Legal">
           <h4>Legal</h4><Link to="/privacy">Kebijakan Privasi</Link><Link to="/terms">Syarat &amp; Ketentuan</Link>
-          <a href="mailto:security@niagantara.com">Laporan Keamanan</a>
+          <Link to="/security">Laporan Keamanan</Link>
         </nav>
       </div>
 

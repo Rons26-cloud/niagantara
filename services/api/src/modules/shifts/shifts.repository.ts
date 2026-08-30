@@ -3,13 +3,14 @@ import { SupabaseService } from '../../integrations/supabase/supabase.service.js
 @Injectable()
 export class ShiftsRepository {
   constructor(private readonly db: SupabaseService) {}
-  list(c: string, b?: string, cashier?: string) {
+  list(c: string, b?: string, cashier?: string, allowedBranches?: string[]) {
     let q = this.db.client
       .from('cashier_shifts')
       .select('*')
       .eq('company_id', c)
       .order('opened_at', { ascending: false });
     if (b) q = q.eq('branch_id', b);
+    else if (allowedBranches) q = q.in('branch_id', allowedBranches);
     if (cashier) q = q.eq('cashier_id', cashier);
     return q;
   }

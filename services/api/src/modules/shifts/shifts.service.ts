@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,8 +9,11 @@ import type { OpenShiftInput } from './dto/shift.dto.js';
 @Injectable()
 export class ShiftsService {
   constructor(private readonly repo: ShiftsRepository) {}
-  async list(c: string, b?: string, u?: string) {
-    const { data, error } = await this.repo.list(c, b, u);
+  async list(c: string, b?: string, u?: string, allowedBranches?: string[]) {
+    if (b && allowedBranches && !allowedBranches.includes(b))
+      throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'Shift branch is outside your scope.' });
+    if (allowedBranches?.length === 0) return [];
+    const { data, error } = await this.repo.list(c, b, u, allowedBranches);
     if (error) throw error;
     return data ?? [];
   }

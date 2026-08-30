@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation, FEATURE_ICONS, SidebarIcon } from '@niagantara/ui';
 import {
   Shell,
@@ -11,11 +11,20 @@ import {
 import { Link } from './router';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
 import {
+  PLANS,
+  PRICING_TRUST,
+  PRICING_DESCRIPTION,
+  PAYMENT_METHODS,
+  PAYMENT_TITLE,
+  PAYMENT_SOON,
+  PAYMENT_DISCLAIMER,
+  type PlanPresentation,
+} from './pricing.config';
+import {
   LayoutDashboard,
   Package,
   TrendingUp,
   WalletCards,
-  UserCircle,
   Building2,
   BarChart3,
   Table2,
@@ -32,14 +41,22 @@ import {
   Store,
   GitBranch,
   Minus,
+  Activity,
+  Blocks,
   Home,
-  Bell,
+  UserCircle,
 } from 'lucide-react';
 
 type W = ReturnType<typeof useTranslation>['translations']['website'];
 
 function useW(): W {
   return useTranslation().translations.website;
+}
+
+function useLang(w: W): 'id' | 'en' {
+  return String((w as any).mobileSection?.kicker ?? '').startsWith('FLEX')
+    ? 'en'
+    : 'id';
 }
 
 function MoreLink({ to }: { to: string }) {
@@ -80,9 +97,23 @@ export function HeroSection() {
             <em>{w.hero.needsAttention}</em>
           </div>
           <div className="hero-scale">
-            <Dashboard w={w} />
+            <Link
+              to="/demo"
+              className="hero-hero-shot"
+              ariaLabel="Buka demo NIAGANTARA"
+            >
+              <img
+                src="/phone/niagantara-hero.png"
+                alt="Pratinjau dashboard NIAGANTARA — klik untuk membuka demo"
+                loading="eager"
+                decoding="async"
+              />
+              <span className="hero-shot-badge">
+                <PlayCircle size={14} aria-hidden="true" /> Lihat Demo
+              </span>
+            </Link>
           </div>
-          <small className="preview-disclaimer">Ilustrasi antarmuka produk · data contoh</small>
+          <small className="preview-disclaimer">Ilustrasi antarmuka produk · klik untuk membuka demo</small>
         </div>
       </div>
     </section>
@@ -159,7 +190,14 @@ export function ShowcaseSection() {
           text={w.showcase.subtitle}
         />
         <div className="product-showcase">
-          <Dashboard w={w} />
+          <div className="showcase-shot">
+            <img
+              src="/assets/brend/niagantara-dasbord01.jpg"
+              alt={w.showcase.kicker}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
           <div className="product-showcase-pos"><PosPreview w={w} /></div>
           <small>Preview produk menggunakan komponen demonstrasi NIAGANTARA · seluruh angka merupakan data contoh.</small>
         </div>
@@ -444,8 +482,9 @@ export function SecuritySection() {
 
 export function MobileSection() {
   const w = useW();
+  const en = useLang(w);
   const featureIcons = [LayoutDashboard, Smartphone, ShieldCheck];
-  const featureDetails = w.mobileSection.kicker.startsWith('FLEX')
+  const featureDetails = en
     ? [
         'A complete view for business analysis',
         'Fast access from your Android device',
@@ -456,6 +495,24 @@ export function MobileSection() {
         'Akses informasi operasional melalui perangkat yang didukung.',
         'POS, stok, pembelian, cabang, dan aktivitas bisnis terhubung.',
       ];
+  const capability = en
+    ? [
+        { icon: Activity, b: 'Real-time', s: 'Data & Reports' },
+        { icon: ShieldCheck, b: 'Secure', s: 'Protected' },
+        { icon: Blocks, b: 'Integrated', s: 'All Modules' },
+        { icon: GitBranch, b: 'Multi-branch', s: 'Business Scale' },
+      ]
+    : [
+        { icon: Activity, b: 'Real-time', s: 'Data & Laporan' },
+        { icon: ShieldCheck, b: 'Aman', s: 'Terlindungi' },
+        { icon: Blocks, b: 'Terintegrasi', s: 'Semua Modul' },
+        { icon: GitBranch, b: 'Multi Cabang', s: 'Skala Bisnis' },
+      ];
+  const nav = en
+    ? ['Home', 'Products', 'Transactions', 'Reports', 'Account']
+    : ['Beranda', 'Produk', 'Transaksi', 'Laporan', 'Akun'];
+  const navIcons = [Home, Package, TrendingUp, BarChart3, UserCircle];
+  const bulletLinks = ['/demo', '/demo', '/fitur'];
   return (
     <section id="mobile" className="section mobile" aria-labelledby="mobile-showcase-title">
       <div className="container mobile-grid">
@@ -471,13 +528,34 @@ export function MobileSection() {
               const Icon = featureIcons[i] ?? CheckCircle2;
               return (
                 <li key={b}>
-                  <span className="mobile-feature-icon">
-                    <Icon size={18} aria-hidden="true" />
-                  </span>
-                  <span>
-                    <b>{b}</b>
-                    <small>{featureDetails[i]}</small>
-                  </span>
+                  <Link className="mobile-feature-item" to={bulletLinks[i] ?? '/demo'}>
+                    <span className="mobile-feature-icon">
+                      <Icon size={18} aria-hidden="true" />
+                    </span>
+                    <span>
+                      <b>{b}</b>
+                      <small>{featureDetails[i]}</small>
+                    </span>
+                    <span className="mobile-feature-go" aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <ul className="capability-strip">
+            {capability.map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <li key={i}>
+                  <Link className="capability-item" to="/demo">
+                    <span className="capability-icon">
+                      <Icon size={16} aria-hidden="true" />
+                    </span>
+                    <span>
+                      <b>{c.b}</b>
+                      <small>{c.s}</small>
+                    </span>
+                  </Link>
                 </li>
               );
             })}
@@ -485,82 +563,61 @@ export function MobileSection() {
         </div>
         <div
           className="devices"
-          aria-label="NIAGANTARA desktop and mobile dashboard previews"
+          aria-label="NIAGANTARA mobile dashboard preview"
         >
           <div className="device-glow" aria-hidden="true" />
-          <div className="device-desktop">
-            <Dashboard small w={w} />
-          </div>
-          <div className="phone">
-            <div className="phone-camera" aria-hidden="true" />
-            <div className="phone-speaker" aria-hidden="true" />
-            <div className="phone-screen">
-              <header className="phone-header">
-                <strong>NIAGANTARA</strong>
-                <span>
-                  <Bell size={13} aria-hidden="true" />
-                </span>
-              </header>
-              <small className="phone-greeting">
-                {w.mobileSection.welcome}
-              </small>
-              <h4>{w.mobileSection.summary}</h4>
-              <div className="phone-kpis">
-                <div>
-                  <small>{w.hero.todaySales}</small>
-                  <b>Rp 4,86 jt</b>
-                  <em>↗ 12,8%</em>
-                </div>
-                <div>
-                  <small>{w.demoLabels.totalSales}</small>
-                  <b>Rp 48,6 jt</b>
-                </div>
-                <div>
-                  <small>{w.demoLabels.totalTransactions}</small>
-                  <b>1.248</b>
-                </div>
-                <div>
-                  <small>{w.demoLabels.totalProducts}</small>
-                  <b>684</b>
-                </div>
-              </div>
-              <div className="phone-chart">
-                <div className="phone-chart-title">
-                  <b>{w.demoLabels.salesChart}</b>
-                  <small>7 hari</small>
-                </div>
-                <div className="phone-bars">
-                  {[28, 45, 38, 67, 58, 82, 72].map((height, i) => (
-                    <i key={i} style={{ height: `${height}%` }} />
-                  ))}
-                </div>
-              </div>
-              <nav
-                className="phone-nav"
-                aria-label="Mobile dashboard navigation"
-              >
-                <span className="active">
-                  <Home size={14} />
-                  {w.demoLabels.overview}
-                </span>
-                <span>
-                  <Package size={14} />
-                  Produk
-                </span>
-                <span>
-                  <TrendingUp size={14} />
-                  Transaksi
-                </span>
-                <span>
-                  <BarChart3 size={14} />
-                  Laporan
-                </span>
-                <span>
-                  <UserCircle size={14} />
-                  Akun
-                </span>
-              </nav>
+          <div className="flexible-device">
+            <Link className="flexible-device-top" to="/demo">
+              <strong>NIAGANTARA</strong>
+              <span aria-label="Toko Pusat" title="Toko Pusat">A</span>
+            </Link>
+            <small className="flexible-greeting">{w.mobileSection.welcome}</small>
+            <div className="flexible-context" aria-hidden="true">
+              <span>Toko Pusat</span>
+              <em>Paket FREE</em>
             </div>
+            <Link className="flexible-h4" to="/demo">{w.mobileSection.summary}</Link>
+            <div className="flexible-kpis">
+              <div>
+                <small>{w.hero.todaySales}</small>
+                <b>Rp 4,86 jt</b>
+                <em>↗ 12,8%</em>
+              </div>
+              <div>
+                <small>{w.demoLabels.totalSales}</small>
+                <b>Rp 48,6 jt</b>
+              </div>
+              <div>
+                <small>{w.demoLabels.totalTransactions}</small>
+                <b>1.248</b>
+              </div>
+              <div>
+                <small>{w.demoLabels.totalProducts}</small>
+                <b>684</b>
+              </div>
+            </div>
+            <div className="flexible-chart">
+              <div className="flexible-chart-title">
+                <b>{w.demoLabels.salesChart}</b>
+                <small>7 hari</small>
+              </div>
+              <div className="flexible-bars">
+                {[28, 45, 38, 67, 58, 82, 72].map((height, i) => (
+                  <i key={i} style={{ height: `${height}%` }} />
+                ))}
+              </div>
+            </div>
+            <nav className="flexible-nav" aria-label="Mobile dashboard navigation">
+              {nav.map((n, i) => {
+                const Icon = navIcons[i];
+                return (
+                  <Link key={n} to="/demo" className={i === 0 ? 'active' : ''}>
+                    <Icon size={14} aria-hidden="true" />
+                    {n}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
       </div>
@@ -570,33 +627,201 @@ export function MobileSection() {
 
 export function PricingSection({ heading = true }: { heading?: boolean }) {
   const w = useW();
+  const lang = useLang(w);
+  const [selected, setSelected] = useState<PlanPresentation | null>(null);
   return (
     <section id="harga" className="section pricing">
-      <div className="container">
-        {heading && (
-          <Heading
-            kicker={w.pricing.kicker}
-            title={w.pricing.title}
-            text={w.pricing.subtitle}
-          />
-        )}
-        <div className="price-grid">
-          {w.pricing.plans.map((p, i) => (
-            <Price
+      <div className="container pricing-wrap">
+        <div className="pricing-meta">
+          {heading && (
+            <div className="pricing-heading">
+              <Kicker>{w.pricing.kicker}</Kicker>
+              <h2
+                dangerouslySetInnerHTML={{ __html: w.pricing.title }}
+              />
+              <p>{PRICING_DESCRIPTION[lang]}</p>
+            </div>
+          )}
+          <ul className="pricing-trust">
+            {PRICING_TRUST.map((t) => (
+              <li key={t.en}>
+                <CheckCircle2 size={14} aria-hidden="true" />
+                {t[lang]}
+              </li>
+            ))}
+          </ul>
+          <PaymentMethods />
+          <MoreLink to="/harga" />
+        </div>
+        <div className="plan-grid">
+          {PLANS.map((p) => (
+            <PriceCard
               key={p.name}
-              name={p.name}
-              title={p.title}
-              text={p.text}
-              featured={i === 1}
-              comingSoon={w.pricing.comingSoon}
-              notifyMe={w.pricing.notifyMe}
+              plan={p}
+              lang={lang}
               recommended={w.pricing.recommended}
+              onSelect={() => setSelected(p)}
             />
           ))}
         </div>
-        {heading && <MoreLink to="/harga" />}
       </div>
+      {selected && (
+        <PaymentModal
+          plan={selected}
+          lang={lang}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </section>
+  );
+}
+
+function PaymentBrandIcon({ id }: { id: string }) {
+  const brandFont =
+    'Inter, Arial, Helvetica, sans-serif';
+  switch (id) {
+    case 'visa':
+      return (
+        <svg viewBox="0 0 36 12" height="15" aria-hidden="true" focusable="false">
+          <text
+            x="0"
+            y="10.5"
+            fontFamily={brandFont}
+            fontSize="11"
+            fontWeight="800"
+            fontStyle="italic"
+            letterSpacing="0.5"
+            fill="#1A1F71"
+          >
+            VISA
+          </text>
+        </svg>
+      );
+    case 'mastercard':
+      return (
+        <svg viewBox="0 0 24 16" height="16" aria-hidden="true" focusable="false">
+          <circle cx="9.2" cy="8" r="6.6" fill="#EB001B" opacity="0.92" />
+          <circle cx="14.8" cy="8" r="6.6" fill="#F79E1B" opacity="0.92" />
+        </svg>
+      );
+    case 'jcb':
+      return (
+        <svg viewBox="0 0 30 12" height="15" aria-hidden="true" focusable="false">
+          <g
+            fontFamily={brandFont}
+            fontSize="11"
+            fontWeight="800"
+            fontStyle="italic"
+            letterSpacing="0.5"
+          >
+            <text x="0" y="10.5" fill="#0E4C96">J</text>
+            <text x="10" y="10.5" fill="#E2001A">C</text>
+            <text x="20" y="10.5" fill="#1E3383">B</text>
+          </g>
+        </svg>
+      );
+    case 'qris':
+      return (
+        <svg viewBox="0 0 24 24" height="18" aria-hidden="true" focusable="false">
+          <rect
+            x="1.5"
+            y="1.5"
+            width="21"
+            height="21"
+            rx="4.5"
+            fill="none"
+            stroke="#0D6DF2"
+            strokeWidth="2"
+          />
+          <g fill="#0D6DF2">
+            <path d="M5.5 5.5h4.5v4.5H5.5z" />
+            <path d="M14 5.5h4.5v4.5H14z" />
+            <path d="M5.5 14h4v4h-4z" />
+            <path d="M15.5 16.5h3v3h-3z" />
+          </g>
+        </svg>
+      );
+    case 'ovo':
+      return (
+        <img
+          src="/assets/brend/ovo.png"
+          alt=""
+          height="20"
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      );
+    case 'gopay':
+      return (
+        <img
+          src="/assets/brend/gopay.png"
+          alt=""
+          height="16"
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      );
+    case 'dana':
+      return (
+        <img
+          src="/assets/brend/dana.png"
+          alt=""
+          height="18"
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      );
+    case 'shopeepay':
+      return (
+        <img
+          src="/assets/brend/shopeepay.png"
+          alt=""
+          height="18"
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      );
+    case 'bank-transfer':
+      return (
+        <svg viewBox="0 0 24 20" height="16" aria-hidden="true" focusable="false">
+          <path d="M12 1.5 2 7h20L12 1.5Z" fill="#64748B" />
+          <path d="M5 9.5h3v5H5zM10.5 9.5h3v5h-3zM16 9.5h3v5h-3z" fill="#94A3B8" />
+          <rect x="2" y="16.5" width="20" height="2" rx="1" fill="#64748B" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+function PaymentMethods() {
+  const lang = useLang(useW());
+  return (
+    <div className="payment-methods">
+      <h3>{PAYMENT_TITLE[lang]}</h3>
+      <ul className="payment-grid">
+        {PAYMENT_METHODS.map((pm) => (
+          <li key={pm.id}>
+            <span className="payment-icon">
+              <PaymentBrandIcon id={pm.id} />
+            </span>
+            <span>
+              <b>{pm.label}</b>
+              <em>{PAYMENT_SOON[lang]}</em>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="payment-note">{PAYMENT_DISCLAIMER[lang]}</p>
+    </div>
   );
 }
 
@@ -708,33 +933,188 @@ function Icon({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Price({
-  name,
-  title,
-  text,
-  featured = false,
-  comingSoon,
-  notifyMe,
+function PriceCard({
+  plan,
+  lang,
   recommended,
+  onSelect,
 }: {
-  name: string;
-  title: string;
-  text: string;
-  featured?: boolean;
-  comingSoon: string;
-  notifyMe: string;
-  recommended?: string;
+  plan: PlanPresentation;
+  lang: 'id' | 'en';
+  recommended: string;
+  onSelect: () => void;
 }) {
   return (
-    <div className={`price${featured ? ' featured' : ''}`}>
-      {featured && <strong>{recommended ?? ''}</strong>}
-      <small>{name}</small>
-      <h3>{title}</h3>
-      <b>{comingSoon}</b>
-      <p>{text}</p>
-      <a href="mailto:support@niagantara.com">
-        {notifyMe} <span aria-hidden="true">→</span>
-      </a>
+    <article
+      className={`plan-card plan-clickable${plan.highlight ? ' plan-highlight' : ''}`}
+      aria-labelledby={`plan-title-${plan.id}`}
+      onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      {plan.highlight && (
+        <span className="plan-badge">{recommended}</span>
+      )}
+      <small className="plan-name">{plan.name}</small>
+      <h3 id={`plan-title-${plan.id}`}>{plan.title[lang]}</h3>
+      <p className="plan-summary">{plan.summary[lang]}</p>
+      <div className="plan-price">
+        <b>{plan.priceLabel}</b>
+        <small>{plan.cadence[lang]}</small>
+      </div>
+      <ul className="plan-features">
+        {plan.features.map((f) => (
+          <li key={f.en}>
+            <CheckCircle2 size={14} aria-hidden="true" />
+            {f[lang]}
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        className={`plan-cta ${plan.ctaKind}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+        }}
+      >
+        {plan.cta[lang]} <span aria-hidden="true">→</span>
+      </button>
+    </article>
+  );
+}
+
+function PaymentModal({
+  plan,
+  lang,
+  onClose,
+}: {
+  plan: PlanPresentation;
+  lang: 'id' | 'en';
+  onClose: () => void;
+}) {
+  const [method, setMethod] = useState<string | null>(null);
+  const [paid, setPaid] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  const closePay = () => {
+    setMethod(null);
+    setPaid(false);
+    onClose();
+  };
+
+  const doPay = () => {
+    setPaid(true);
+  };
+
+  const copy = {
+    title: lang === 'id' ? 'Selesaikan Pembayaran' : 'Complete Payment',
+    package: lang === 'id' ? 'Paket' : 'Plan',
+    choose: lang === 'id' ? 'Pilih metode pembayaran' : 'Choose a payment method',
+    pay: plan.priceIdr === 0 ? (lang === 'id' ? 'Aktifkan Gratis' : 'Activate Free') : (lang === 'id' ? 'Bayar Sekarang' : 'Pay Now'),
+    totalDue: lang === 'id' ? 'Total tagihan' : 'Total due',
+    close: lang === 'id' ? 'Tutup' : 'Close',
+    successTitle: lang === 'id' ? 'Permintaan diterima' : 'Request received',
+    successText:
+      lang === 'id'
+        ? 'Pembayaran sedang diproses. Tim NIAGANTARA akan mengirimkan instruksi penyelesaian lanjutan.'
+        : 'Payment is being processed. The NIAGANTARA team will send further instructions.',
+    done: lang === 'id' ? 'Selesai' : 'Done',
+  };
+
+  return (
+    <div className="pay-backdrop" role="dialog" aria-modal="true" aria-label={copy.title} onClick={closePay}>
+      <div className="pay-modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="pay-close" onClick={closePay} aria-label={copy.close}>
+          <Minus size={16} />
+          <Plus size={16} />
+        </button>
+
+        {paid ? (
+          <div className="pay-success">
+            <span className="pay-success-icon" aria-hidden="true">
+              <CheckCircle2 size={30} />
+            </span>
+            <h3>{copy.successTitle}</h3>
+            <p>{copy.successText}</p>
+            <p className="pay-success-plan">
+              <b>{plan.name}</b> · {plan.priceLabel}
+              {plan.priceIdr !== 0 ? ` / ${plan.cadence[lang]}` : ''}
+            </p>
+            <button type="button" className="plan-cta primary" onClick={closePay}>
+              {copy.done}
+            </button>
+          </div>
+        ) : (
+          <>
+            <small className="plan-name">{plan.name}</small>
+            <h3>{copy.title}</h3>
+            <div className="pay-summary">
+              <span>{copy.package}</span>
+              <b>{plan.title[lang]}</b>
+              <div className="pay-price">
+                <strong>{plan.priceLabel}</strong>
+                {plan.priceIdr !== 0 && <em>{plan.cadence[lang]}</em>}
+              </div>
+            </div>
+            <h4>{copy.choose}</h4>
+            <ul className="pay-methods">
+              {PAYMENT_METHODS.map((pm) => {
+                const active = method === pm.id;
+                return (
+                  <li key={pm.id}>
+                    <button
+                      type="button"
+                      className={active ? 'active' : ''}
+                      onClick={() => setMethod(active ? null : pm.id)}
+                    >
+                      <span className="pay-method-icon">
+                        <PaymentBrandIcon id={pm.id} />
+                      </span>
+                      <span>
+                        <b>{pm.label}</b>
+                        <em>{pm.status === 'planned' ? PAYMENT_SOON[lang] : ''}</em>
+                      </span>
+                      <i className={`pay-radio${active ? ' on' : ''}`} aria-hidden="true" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="pay-total">
+              <span>{copy.totalDue}</span>
+              <b>{plan.priceLabel}{plan.priceIdr !== 0 ? ` / ${plan.cadence[lang]}` : ''}</b>
+            </div>
+            <button
+              type="button"
+              className={`plan-cta primary ${method ? '' : 'disabled'}`}
+              disabled={!method}
+              onClick={doPay}
+            >
+              {copy.pay} <span aria-hidden="true">→</span>
+            </button>
+            <p className="pay-note">{PAYMENT_DISCLAIMER[lang]}</p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

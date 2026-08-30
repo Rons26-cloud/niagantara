@@ -25,6 +25,9 @@ const PrivacyPage = lazy(() =>
 const TermsPage = lazy(() =>
   import('./legal').then((m) => ({ default: m.TermsPage })),
 );
+const SecurityReportPage = lazy(() =>
+  import('./legal').then((m) => ({ default: m.SecurityReportPage })),
+);
 const DemoApp = lazy(() =>
   import('./demo/demo-app').then((m) => ({ default: m.DemoApp })),
 );
@@ -38,6 +41,7 @@ const lazyRoutes: Record<string, ComponentType> = {
   '/kontak': ContactPage,
   '/privacy': PrivacyPage,
   '/terms': TermsPage,
+  '/security': SecurityReportPage,
 };
 
 const legacyAliases: Record<string, string> = {
@@ -46,6 +50,7 @@ const legacyAliases: Record<string, string> = {
   '/pricing': '/harga',
   '/about': '/tentang',
   '/contact': '/kontak',
+  '/security-report': '/security',
 };
 
 function App() {

@@ -5,6 +5,7 @@ import { UpdateBranchDto } from '../src/modules/branches/dto/branch.dto.js';
 import { UpdateStoreDto } from '../src/modules/stores/dto/store.dto.js';
 import { PurchasesService } from '../src/modules/purchases/purchases.service.js';
 import { ShiftsService } from '../src/modules/shifts/shifts.service.js';
+import { WarehousesService } from '../src/modules/warehouses/warehouses.service.js';
 
 const pipe = new ValidationPipe({
   whitelist: true,
@@ -77,6 +78,19 @@ test('shift close checks the authorized branch before calling its privileged RPC
   await assert.rejects(
     service.close('company', 'user', 'authorized-branch', 'foreign-shift', 100),
     /Shift not found/,
+  );
+  assert.equal(mutated, false);
+});
+
+test('warehouse update cannot target a warehouse outside the authorized branch', async () => {
+  let mutated = false;
+  const service = new WarehousesService({
+    get: async () => ({ data: { id: 'warehouse', branch_id: 'branch-b' }, error: null }),
+    update: async () => { mutated = true; return { data: {}, error: null }; },
+  } as never, {} as never);
+  await assert.rejects(
+    service.update('user', 'company', 'warehouse', { name: 'tampered' }, ['branch-a']),
+    /outside your scope/,
   );
   assert.equal(mutated, false);
 });

@@ -22,10 +22,11 @@ import type { WarehouseInput } from './dto/warehouse.dto.js';
 export class WarehousesController {
   constructor(private readonly s: WarehousesService) {}
   @Get() @RequirePermission('warehouse.read') list(
+    @Req() r: any,
     @Headers('x-company-id') c: string,
     @Query('branchId') b?: string,
   ) {
-    return this.s.list(c, b);
+    return this.s.list(c, b, r.authz.companyPermissions.includes('warehouse.read') ? undefined : r.headers['x-branch-id'] ? [r.headers['x-branch-id']] : []);
   }
   @Post() @UseGuards(BranchGuard) @RequirePermission('warehouse.manage') create(
     @Req() r: any,
@@ -40,6 +41,6 @@ export class WarehousesController {
     @Param('id') id: string,
     @Body() d: Partial<WarehouseInput>,
   ) {
-    return this.s.update(r.user.id, c, id, d);
+    return this.s.update(r.user.id, c, id, d, r.authz.companyPermissions.includes('warehouse.manage') ? undefined : r.headers['x-branch-id'] ? [r.headers['x-branch-id']] : []);
   }
 }

@@ -21,11 +21,12 @@ import type { CloseShiftInput, OpenShiftInput } from './dto/shift.dto.js';
 export class ShiftsController {
   constructor(private readonly s: ShiftsService) {}
   @Get() @RequirePermission('shift.read') list(
+    @Req() r: any,
     @Headers('x-company-id') c: string,
     @Query('branchId') b?: string,
     @Query('cashierId') u?: string,
   ) {
-    return this.s.list(c, b, u);
+    return this.s.list(c, b, u, r.authz.companyPermissions.includes('shift.read') ? undefined : r.headers['x-branch-id'] ? [r.headers['x-branch-id']] : []);
   }
   @Post('open') @UseGuards(BranchGuard) @RequirePermission('shift.open') open(
     @Req() r: any,

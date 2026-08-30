@@ -6,12 +6,17 @@ type W = ReturnType<typeof useTranslation>['translations']['website'];
 
 export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
   const d = w.demoLabels;
+  const en = String((w as any).mobileSection?.kicker ?? '').startsWith('FLEX');
+  const account = en ? 'Central Store · Business Plan' : 'Toko Pusat · Paket Business';
+  const lowStockTitle = en ? 'Low Stock' : 'Stok Menipis';
+  const almostOut = en ? 'Almost out' : 'Hampir habis';
   return (
     <div className={`dashboard${small ? ' dashboard-small' : ''}`} aria-label={d.preview}>
       <div className="dash-top">
         <span aria-hidden="true">● ● ●</span>
         <b>{d.overview}⌄</b>
         <small>NIAGANTARA</small>
+        <span className="dash-account" aria-hidden="true">{account}</span>
         <i aria-hidden="true">A</i>
       </div>
       <div className="dash-body">
@@ -70,10 +75,10 @@ export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
               ))}
             </div>
             <div>
-              <div className="card-title"><b>{d.bestSellers}</b><small>•••</small></div>
-              <p><i className="product orange-bg">P</i><span><b>Kopi Arabika</b><small>{d.sales}</small></span><strong>Rp 18,2M</strong></p>
-              <p><i className="product cyan-bg">R</i><span><b>Roti Sourdough</b><small>{d.sales}</small></span><strong>Rp 9,4M</strong></p>
-              <p><i className="product purple-bg">S</i><span><b>Susu Oat Barista</b><small>{d.sales}</small></span><strong>Rp 7,1M</strong></p>
+              <div className="card-title"><b>{lowStockTitle}</b><small>•••</small></div>
+              <p><i className="product purple-bg">S</i><span><b>Susu Oat Barista</b><small>{almostOut}, min 30</small></span><strong className="stock-warn">12 unit</strong></p>
+              <p><i className="product orange-bg">R</i><span><b>Roti Sourdough</b><small>{almostOut}, min 20</small></span><strong className="stock-warn">8 unit</strong></p>
+              <p><i className="product cyan-bg">M</i><span><b>Sirup Gula Aren</b><small>{almostOut}, min 25</small></span><strong className="stock-warn">15 unit</strong></p>
             </div>
           </div>
         </div>

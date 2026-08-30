@@ -100,3 +100,10 @@ test('shift open rejects negative opening cash', async () => {
     (e: any) => e.response.code === 'INVALID_OPENING_CASH',
   );
 });
+
+test('shift listing rejects a branch outside the authorized scope', async () => {
+  let called = false;
+  const service = new ShiftsService({ list: async () => { called = true; return { data: [], error: null }; } } as never);
+  await assert.rejects(() => service.list('company', 'branch-b', undefined, ['branch-a']), /outside your scope/);
+  assert.equal(called, false);
+});

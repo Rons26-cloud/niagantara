@@ -492,9 +492,10 @@ export const en = {
     },
     legal: {
       backHome: '← Back to home',
-      updated: 'Last updated: 22 August 2026',
+      updated: 'Last updated: 30 August 2026',
       privacyTitle: 'Privacy Policy',
       termsTitle: 'Terms & Conditions',
+      securityTitle: 'Security Report',
     },
   },
 

@@ -306,6 +306,13 @@ export const id = {
       contactNoreply: 'Alamat otomatis — jangan dibalas',
       contactGmail: 'Operasional / cadangan resmi',
     },
+    legal: {
+      backHome: '← Kembali ke beranda',
+      updated: 'Terakhir diperbarui: 30 Agustus 2026',
+      privacyTitle: 'Kebijakan Privasi',
+      termsTitle: 'Syarat & Ketentuan',
+      securityTitle: 'Laporan Keamanan',
+    },
     hero: {
       title: 'Semua Bisnis Anda<br /><span>Dalam Satu Kendali</span>',
       subtitle: 'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan—kelola POS, penjualan, stok, keuangan, cabang, dan laporan dalam satu sistem terintegrasi.',
