@@ -1645,6 +1645,7 @@ footer {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 0;
     width: 44px;
     height: 44px;
     border: 1px solid var(--border-color);
@@ -1743,8 +1744,24 @@ footer {
     border-radius: 10px;
     background: var(--surface);
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: 0;
     line-height: 1;
+    position: relative;
+  }
+  .drawer-close::before,
+  .drawer-close::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .drawer-close::before {
+    transform: rotate(45deg);
+  }
+  .drawer-close::after {
+    transform: rotate(-45deg);
   }
   .drawer-nav {
     display: flex;
@@ -3752,6 +3769,16 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+.drawer::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 h1,
