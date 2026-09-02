@@ -1026,7 +1026,12 @@ footer {
 @media (max-width: 520px) {
   .mobile .devices {
     height: auto;
-    min-height: 515px;
+    min-height: 555px;
+    padding-bottom: 26px;
+  }
+  .mobile .flexible-device {
+    width: min(286px, 78vw);
+    height: 520px;
   }
   .mobile .mobile-feature-item > span:nth-child(2),
   .mobile .capability-item > span:nth-child(2) {
