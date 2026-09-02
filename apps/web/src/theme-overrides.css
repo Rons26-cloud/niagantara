@@ -749,7 +749,9 @@ footer {
   color: #059669;
   background: color-mix(in srgb, #10b981 12%, var(--surface));
 }
-.mobile-features li > span:last-child {
+.mobile-features li > span:nth-child(2),
+.mobile-features li > span:last-child,
+.capability-item > span:nth-child(2) {
   display: grid;
   gap: 0.2rem;
 }
@@ -1003,7 +1005,8 @@ footer {
   .home-page .mobile-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
-    min-height: 0;
+    min-height: 520px;
+    height: auto;
   }
   .home-page .devices {
     width: min(100%, 560px);
@@ -1017,6 +1020,39 @@ footer {
   }
   .home-page .phone {
     left: 16%;
+  }
+}
+
+@media (max-width: 520px) {
+  .mobile .devices {
+    height: auto;
+    min-height: 515px;
+  }
+  .mobile .mobile-feature-item > span:nth-child(2),
+  .mobile .capability-item > span:nth-child(2) {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    gap: 0.2rem;
+  }
+  .mobile .mobile-features b,
+  .mobile .mobile-features small,
+  .mobile .capability-item b,
+  .mobile .capability-item small {
+    overflow-wrap: anywhere;
+  }
+  .home-page .devices {
+    min-height: 515px;
+  }
+  .home-page .mobile-features li,
+  .home-page .capability-item {
+    align-items: flex-start;
+  }
+  .home-page .mobile-features b,
+  .home-page .mobile-features small,
+  .home-page .capability-item b,
+  .home-page .capability-item small {
+    overflow-wrap: anywhere;
   }
 }
 @media (max-width: 767px) {
@@ -3427,6 +3463,13 @@ button.plan-cta.disabled {
   flex-shrink: 0;
   opacity: 0.6;
 }
+.mobile .mobile-feature-item > span:nth-child(2),
+.mobile .capability-item > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.2rem;
+}
 .home-page .mobile-feature-item:hover .mobile-feature-go {
   opacity: 1;
   transform: translateX(2px);
@@ -3447,6 +3490,31 @@ button.plan-cta.disabled {
     0 34px 70px rgba(15, 23, 42, 0.32),
     0 10px 22px rgba(37, 99, 235, 0.16);
   overflow: hidden;
+}
+.flexible-device::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  z-index: 4;
+  width: 54px;
+  height: 16px;
+  border-radius: 999px;
+  background: #050b18;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.flexible-device::after {
+  content: '';
+  position: absolute;
+  top: 106px;
+  right: -9px;
+  width: 3px;
+  height: 58px;
+  border-radius: 0 3px 3px 0;
+  background: #263349;
+  box-shadow: 0 68px 0 #263349;
 }
 .flexible-device-top {
   display: flex;
