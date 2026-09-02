@@ -1,15 +1,9 @@
-/**
- * Bahasa Indonesia Translations
- */
-
 export const id = {
-  // Brand
   brand: {
     name: 'NIAGANTARA',
     tagline: 'Business Control Platform',
   },
 
-  // Navigation
   nav: {
     home: 'Beranda',
     features: 'Fitur',
@@ -26,7 +20,6 @@ export const id = {
     trial: 'Uji Coba Gratis',
   },
 
-  // Auth
   auth: {
     login: 'Masuk',
     logout: 'Keluar',
@@ -48,7 +41,6 @@ export const id = {
     success: 'Berhasil',
   },
 
-  // Dashboard
   dashboard: {
     title: 'Owner Dashboard',
     overview: 'Ringkasan',
@@ -86,7 +78,6 @@ export const id = {
     },
   },
 
-  // Pages
   pages: {
     dashboard: 'Beranda',
     pos: 'POS / Kasir',
@@ -118,7 +109,6 @@ export const id = {
     help: 'Bantuan',
   },
 
-  // Common
   common: {
     save: 'Simpan',
     saving: 'Menyimpan...',
@@ -190,7 +180,6 @@ export const id = {
     difference: 'Selisih',
   },
 
-  // Context
   context: {
     company: 'Company',
     store: 'Store',
@@ -199,7 +188,6 @@ export const id = {
     notSelected: 'Belum dipilih',
   },
 
-  // Inventory
   inventory: {
     currentStock: 'Stok Saat Ini',
     minimumStock: 'Minimum Stok',
@@ -213,7 +201,6 @@ export const id = {
     out: 'Keluar',
   },
 
-  // POS
   pos: {
     tagline: 'Scanner akan menjadi akselerator, bukan dependency transaksi.',
     title: 'Siap untuk transaksi',
@@ -232,7 +219,6 @@ export const id = {
     printReceipt: 'Cetak Struk',
   },
 
-  // Status
   status: {
     paid: 'Dibayar',
     pending: 'Pending',
@@ -245,7 +231,6 @@ export const id = {
     published: 'Terbit',
   },
 
-  // Forms
   forms: {
     required: 'Wajib diisi',
     invalidEmail: 'Email tidak valid',
@@ -254,7 +239,6 @@ export const id = {
     invalidFormat: 'Format tidak valid',
   },
 
-  // Messages
   messages: {
     saveSuccess: 'Data berhasil disimpan',
     saveError: 'Gagal menyimpan data',
@@ -266,7 +250,6 @@ export const id = {
     unsavedChanges: 'Ada perubahan yang belum disimpan',
   },
 
-  // Public Website
   website: {
     eyebrow: 'PLATFORM OPERASIONAL BISNIS MODERN',
     stripLabel: 'DIRANCANG UNTUK OPERASIONAL YANG LEBIH TERKENDALI',
@@ -315,7 +298,8 @@ export const id = {
     },
     hero: {
       title: 'Semua Bisnis Anda<br /><span>Dalam Satu Kendali</span>',
-      subtitle: 'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan—kelola POS, penjualan, stok, keuangan, cabang, dan laporan dalam satu sistem terintegrasi.',
+      subtitle:
+        'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan—kelola POS, penjualan, stok, keuangan, cabang, dan laporan dalam satu sistem terintegrasi.',
       cta: 'Mulai Sekarang',
       demo: 'Lihat Demonstrasi',
       trust: ['Multi-Cabang', 'Waktu Nyata', 'Aman', 'Terintegrasi'],
@@ -327,46 +311,95 @@ export const id = {
     features: {
       kicker: 'SATU EKOSISTEM, LEBIH SEDERHANA',
       title: 'Satu Platform untuk<br /><span>Operasional Bisnis Anda</span>',
-      subtitle: 'Semua alat yang Anda butuhkan untuk menjalankan bisnis sehari-hari, terhubung dalam satu sumber data yang konsisten.',
+      subtitle:
+        'Semua alat yang Anda butuhkan untuk menjalankan bisnis sehari-hari, terhubung dalam satu sumber data yang konsisten.',
       learnMore: 'Pelajari lebih lanjut',
       items: [
-        { title: 'POS / Kasir', text: 'Transaksi cepat yang langsung terhubung dengan stok.' },
-        { title: 'Produk & Stok', text: 'Pantau persediaan dan transfer antar cabang.' },
-        { title: 'Penjualan', text: 'Analisis tren omzet dan transaksi secara lebih jelas.' },
-        { title: 'Keuangan', text: 'Catat pemasukan, pengeluaran, kas, dan laba.' },
-        { title: 'Pelanggan', text: 'Bangun hubungan pelanggan dengan data yang tertata.' },
-        { title: 'Supplier', text: 'Kelola pemasok dan pembelian dalam satu alur.' },
-        { title: 'Karyawan', text: 'Atur akses sesuai peran dan tanggung jawab.' },
-        { title: 'Multi-Cabang', text: 'Kelola perusahaan, toko, dan cabang terpisah.' },
-        { title: 'Laporan', text: 'Ubah data operasional menjadi wawasan bisnis.' },
-        { title: 'Google Sheets', text: 'Sinkronkan data bisnis yang didukung.' },
+        {
+          title: 'POS / Kasir',
+          text: 'Transaksi cepat yang langsung terhubung dengan stok.',
+        },
+        {
+          title: 'Produk & Stok',
+          text: 'Pantau persediaan dan transfer antar cabang.',
+        },
+        {
+          title: 'Penjualan',
+          text: 'Analisis tren omzet dan transaksi secara lebih jelas.',
+        },
+        {
+          title: 'Keuangan',
+          text: 'Catat pemasukan, pengeluaran, kas, dan laba.',
+        },
+        {
+          title: 'Pelanggan',
+          text: 'Bangun hubungan pelanggan dengan data yang tertata.',
+        },
+        {
+          title: 'Supplier',
+          text: 'Kelola pemasok dan pembelian dalam satu alur.',
+        },
+        {
+          title: 'Karyawan',
+          text: 'Atur akses sesuai peran dan tanggung jawab.',
+        },
+        {
+          title: 'Multi-Cabang',
+          text: 'Kelola perusahaan, toko, dan cabang terpisah.',
+        },
+        {
+          title: 'Laporan',
+          text: 'Ubah data operasional menjadi wawasan bisnis.',
+        },
+        {
+          title: 'Google Sheets',
+          text: 'Sinkronkan data bisnis yang didukung.',
+        },
       ],
     },
     showcase: {
       kicker: 'VISIBILITAS TANPA JEDA',
       title: 'Pantau Bisnis <span>Secara Langsung</span>',
-      subtitle: 'Satu pandangan yang jelas untuk memahami apa yang terjadi di seluruh operasional Anda.',
+      subtitle:
+        'Satu pandangan yang jelas untuk memahami apa yang terjadi di seluruh operasional Anda.',
     },
     solutions: {
       pos: {
         kicker: 'TRANSAKSI LEBIH CEPAT',
         title: 'POS / Kasir<br /><span>Terintegrasi</span>',
         text: 'Berikan pengalaman transaksi yang cepat untuk tim Anda. Setiap penjualan langsung tercatat dan stok otomatis diperbarui.',
-        bullets: ['Pencarian produk & barcode scanner', 'Pembayaran dan catatan pesanan', 'Riwayat transaksi yang mudah dicari', 'Otomatis memperbarui stok per cabang'],
+        bullets: [
+          'Pencarian produk & barcode scanner',
+          'Pembayaran dan catatan pesanan',
+          'Riwayat transaksi yang mudah dicari',
+          'Otomatis memperbarui stok per cabang',
+        ],
         cta: 'Kenali POS NIAGANTARA',
       },
       inventory: {
         kicker: 'DATA STOK YANG AKURAT',
         title: 'Stok Lebih<br /><span>Terkontrol</span>',
         text: 'Ketahui apa yang tersedia, apa yang perlu dipesan, dan bagaimana stok bergerak di setiap lokasi.',
-        pills: ['Produk', 'Kategori', 'Stok masuk', 'Transfer antar cabang', 'Riwayat stok'],
+        pills: [
+          'Produk',
+          'Kategori',
+          'Stok masuk',
+          'Transfer antar cabang',
+          'Riwayat stok',
+        ],
         link: 'Lihat solusi inventaris',
         heading: 'Daftar Produk',
         addProduct: '+ Tambah Produk',
         searchPlaceholder: 'Cari produk...',
         allCategories: 'Semua Kategori',
         filter: 'Filter',
-        tableHeaders: ['Produk', 'Kategori', 'Stok Saat Ini', 'Minimum Stok', 'Status'],
+        tableHeaders: [
+          'Produk',
+          'Kategori',
+          'Stok Saat Ini',
+          'Minimum Stok',
+          'Status',
+        ],
         unit: 'unit',
       },
     },
@@ -379,7 +412,8 @@ export const id = {
     finance: {
       kicker: 'DARI DATA MENJADI ARAH',
       title: 'Data Bisnis Menjadi <span>Keputusan</span>',
-      subtitle: 'Gunakan data yang sama untuk melihat omzet, laba, arus kas, dan performa cabang dengan lebih percaya diri.',
+      subtitle:
+        'Gunakan data yang sama untuk melihat omzet, laba, arus kas, dan performa cabang dengan lebih percaya diri.',
       monthlyRevenue: 'Omzet bulan ini',
       vsLastMonth: 'vs bulan lalu',
       netProfit: 'Laba bersih',
@@ -408,7 +442,10 @@ export const id = {
         { title: 'Authentication', text: 'Akses akun yang terverifikasi' },
         { title: 'Tenant Isolation', text: 'Data antar perusahaan terpisah' },
         { title: 'Role-based Access', text: 'Akses sesuai peran tim' },
-        { title: 'Audit Logging', text: 'Aktivitas tercatat dan dapat ditelusuri' },
+        {
+          title: 'Audit Logging',
+          text: 'Aktivitas tercatat dan dapat ditelusuri',
+        },
         { title: 'Branch Access Control', text: 'Kontrol akses per lokasi' },
         { title: 'Security Events', text: 'Visibilitas kejadian keamanan' },
       ],
@@ -417,7 +454,11 @@ export const id = {
       kicker: 'FLEKSIBEL DI MANA SAJA',
       title: 'Kelola Bisnis<br /><span>di Mana Saja</span>',
       text: 'Dashboard yang mengikuti ritme kerja Anda—di meja kerja, di toko, atau saat bepergian.',
-      bullets: ['Owner Dashboard', 'Siap di Perangkat Mobile', 'Operasional Terintegrasi'],
+      bullets: [
+        'Owner Dashboard',
+        'Siap di Perangkat Mobile',
+        'Operasional Terintegrasi',
+      ],
       welcome: 'Selamat datang kembali, Andi',
       welcomeBack: 'Selamat datang kembali, Andi',
       recentActivity: 'Aktivitas terbaru',
@@ -427,24 +468,49 @@ export const id = {
     pricing: {
       kicker: 'PILIH CARA ANDA BERTUMBUH',
       title: 'Harga yang <span>Transparan</span>',
-      subtitle: 'Paket berlangganan sedang kami siapkan untuk kebutuhan bisnis yang berbeda.',
+      subtitle:
+        'Paket berlangganan sedang kami siapkan untuk kebutuhan bisnis yang berbeda.',
       recommended: 'REKOMENDASI',
       comingSoon: 'Segera hadir',
       notifyMe: 'Beri tahu saya',
       plans: [
-        { name: 'FREE', title: 'Mulai mengenal NIAGANTARA', text: 'Untuk mencoba fondasi pengelolaan bisnis.' },
-        { name: 'BUSINESS', title: 'Operasional yang lebih terhubung', text: 'Untuk tim yang ingin bekerja dari satu sumber data.' },
-        { name: 'ENTERPRISE', title: 'Kontrol untuk skala yang lebih besar', text: 'Untuk organisasi dengan kebutuhan operasional khusus.' },
+        {
+          name: 'FREE',
+          title: 'Mulai mengenal NIAGANTARA',
+          text: 'Untuk mencoba fondasi pengelolaan bisnis.',
+        },
+        {
+          name: 'BUSINESS',
+          title: 'Operasional yang lebih terhubung',
+          text: 'Untuk tim yang ingin bekerja dari satu sumber data.',
+        },
+        {
+          name: 'ENTERPRISE',
+          title: 'Kontrol untuk skala yang lebih besar',
+          text: 'Untuk organisasi dengan kebutuhan operasional khusus.',
+        },
       ],
     },
     steps: {
       kicker: 'MULAI DALAM EMPAT LANGKAH',
       title: 'Dari setup hingga <span>siap beroperasi</span>',
       items: [
-        { title: 'Buat Akun', text: 'Daftarkan bisnis dan akun administrator Anda.' },
-        { title: 'Buat Toko', text: 'Tentukan struktur toko pusat operasional.' },
-        { title: 'Tambah Cabang & Produk', text: 'Bangun katalog dan lokasi bisnis Anda.' },
-        { title: 'Mulai Kelola Bisnis', text: 'Jalankan operasional dengan visibilitas lebih baik.' },
+        {
+          title: 'Buat Akun',
+          text: 'Daftarkan bisnis dan akun administrator Anda.',
+        },
+        {
+          title: 'Buat Toko',
+          text: 'Tentukan struktur toko pusat operasional.',
+        },
+        {
+          title: 'Tambah Cabang & Produk',
+          text: 'Bangun katalog dan lokasi bisnis Anda.',
+        },
+        {
+          title: 'Mulai Kelola Bisnis',
+          text: 'Jalankan operasional dengan visibilitas lebih baik.',
+        },
       ],
     },
     faq: {
@@ -453,13 +519,34 @@ export const id = {
       text: 'Jika belum menemukan jawaban yang Anda cari, hubungi tim kami.',
       contactLink: 'Hubungi support',
       items: [
-        { q: 'Apa itu NIAGANTARA?', a: 'NIAGANTARA adalah Business Control Platform untuk mengelola operasional bisnis—mulai dari POS, penjualan, stok, keuangan, hingga laporan—dalam satu sistem terintegrasi.' },
-        { q: 'Apakah NIAGANTARA dapat digunakan untuk mengelola banyak cabang?', a: 'Ya. Struktur perusahaan, toko, dan cabang membantu pemilik mengelola banyak lokasi dengan akses serta data yang terpisah.' },
-        { q: 'Apakah tersedia POS?', a: 'Ya. POS terintegrasi dengan produk, stok, riwayat transaksi, dan konteks cabang.' },
-        { q: 'Apakah mendukung Google Sheets?', a: 'Ya. Admin perusahaan dapat menghubungkan Google Sheets untuk sinkronisasi data bisnis yang didukung.' },
-        { q: 'Apakah tersedia aplikasi mobile?', a: 'Pengalaman mobile sedang disiapkan. Dashboard web tetap responsif untuk perangkat mobile.' },
-        { q: 'Bagaimana keamanan data?', a: 'NIAGANTARA menggunakan autentikasi, role-based access, tenant dan branch isolation, audit logging, security events, serta Row Level Security.' },
-        { q: 'Bagaimana cara memulai?', a: 'Buat akun, buat toko, tambahkan cabang dan produk, lalu mulai kelola transaksi serta operasional Anda.' },
+        {
+          q: 'Apa itu NIAGANTARA?',
+          a: 'NIAGANTARA adalah Business Control Platform untuk mengelola operasional bisnis—mulai dari POS, penjualan, stok, keuangan, hingga laporan—dalam satu sistem terintegrasi.',
+        },
+        {
+          q: 'Apakah NIAGANTARA dapat digunakan untuk mengelola banyak cabang?',
+          a: 'Ya. Struktur perusahaan, toko, dan cabang membantu pemilik mengelola banyak lokasi dengan akses serta data yang terpisah.',
+        },
+        {
+          q: 'Apakah tersedia POS?',
+          a: 'Ya. POS terintegrasi dengan produk, stok, riwayat transaksi, dan konteks cabang.',
+        },
+        {
+          q: 'Apakah mendukung Google Sheets?',
+          a: 'Ya. Admin perusahaan dapat menghubungkan Google Sheets untuk sinkronisasi data bisnis yang didukung.',
+        },
+        {
+          q: 'Apakah tersedia aplikasi mobile?',
+          a: 'Pengalaman mobile sedang disiapkan. Dashboard web tetap responsif untuk perangkat mobile.',
+        },
+        {
+          q: 'Bagaimana keamanan data?',
+          a: 'NIAGANTARA menggunakan autentikasi, role-based access, tenant dan branch isolation, audit logging, security events, serta Row Level Security.',
+        },
+        {
+          q: 'Bagaimana cara memulai?',
+          a: 'Buat akun, buat toko, tambahkan cabang dan produk, lalu mulai kelola transaksi serta operasional Anda.',
+        },
       ],
     },
     contact: {
@@ -467,7 +554,8 @@ export const id = {
     },
     cta: {
       title: 'Siap Mengelola Bisnis dengan Lebih Baik?',
-      subtitle: 'Mulai gunakan NIAGANTARA dan kelola operasional bisnis Anda dalam satu platform.',
+      subtitle:
+        'Mulai gunakan NIAGANTARA dan kelola operasional bisnis Anda dalam satu platform.',
       tryFree: 'Mulai Uji Coba Gratis',
       signIn: 'Masuk',
     },
@@ -502,7 +590,6 @@ export const id = {
     },
   },
 
-  // Master Dashboard
   master: {
     title: 'Master Dashboard',
     companies: 'Perusahaan',
@@ -542,11 +629,12 @@ export const id = {
     securityEvents: 'Kejadian Keamanan Terbaru',
     latestActivity: 'Aktivitas Terbaru',
     signIn: 'Masuk Master',
-    signInHint: 'Wajib peran platform (super_master / master_admin / support / auditor).',
+    signInHint:
+      'Wajib peran platform (super_master / master_admin / support / auditor).',
     accessDenied: 'Akun ini tidak memiliki peran platform.',
     notConfigured: 'Belum tersedia',
     backendGap:
-      'BACKEND_GAP — belum ada API platform untuk modul ini. Data sengaja tidak di-mock.',
+      'BACKEND_GAP — belum ada API platform untuk modul ini. Data belum tersedia.',
     operational: 'Operasional',
     degraded: 'Terganggu',
     down: 'Mati',
@@ -555,7 +643,6 @@ export const id = {
     autoRefresh: 'Auto-refresh tiap 30 detik',
   },
 
-  // Settings page (user dashboard)
   settings: {
     title: 'Pengaturan',
     profile: 'Profil',
@@ -574,38 +661,42 @@ export const id = {
     roles: 'Peran & izin',
     permissionsGranted: 'Izin yang diberikan',
     subscription: 'Langganan',
-    planNotConfigured:
-      'Paket langganan belum diaktifkan untuk lingkungan ini.',
+    planNotConfigured: 'Paket langganan belum diaktifkan untuk lingkungan ini.',
     session: 'Sesi',
-    sessionNote: 'Sesi Anda disimpan secara lokal dan berakhir bersama token saat masuk.',
+    sessionNote:
+      'Sesi Anda disimpan secara lokal dan berakhir bersama token saat masuk.',
     dangerZone: 'Zona sensitif',
     signOutAll: 'Keluar dari perangkat ini',
   },
 
-  // Help
   help: {
     title: 'Bantuan & Tutorial',
     intro: 'Panduan singkat untuk setiap area platform.',
     contact: 'Hubungi dukungan',
     items: {
-      dashboard: 'Pantau penjualan harian, stok, posisi kas, dan aktivitas cabang.',
+      dashboard:
+        'Pantau penjualan harian, stok, posisi kas, dan aktivitas cabang.',
       pos: 'Buka shift kasir, lalu cari atau scan produk untuk melayani pelanggan.',
-      sales: 'Tinjau transaksi, cetak struk, batalkan atau refund bila diizinkan.',
+      sales:
+        'Tinjau transaksi, cetak struk, batalkan atau refund bila diizinkan.',
       shifts: 'Pantau kas buka/tutup untuk setiap shift kasir per cabang.',
       products: 'Kelola katalog: nama, SKU, harga beli dan jual.',
       categories: 'Kelompokkan produk agar POS dan laporan tetap rapi.',
       barcode: 'Temukan produk secara instan lewat kode hasil scan.',
       inventory: 'Pantau stok per gudang dan catatan penyesuaian.',
-      purchases: 'Catat pesanan supplier; penerimaan otomatis memperbarui stok.',
+      purchases:
+        'Catat pesanan supplier; penerimaan otomatis memperbarui stok.',
       suppliers: 'Kelola mitra pemasok dan kontaknya.',
-      customers: 'Simpan data pelanggan untuk checkout lebih cepat dan pelaporan.',
+      customers:
+        'Simpan data pelanggan untuk checkout lebih cepat dan pelaporan.',
       employees: 'Kelola data staf dan penempatan cabang.',
       attendance: 'Riwayat absen masuk/keluar seluruh karyawan cabang.',
       expenses: 'Catat biaya operasional; masuk ke laporan keuangan.',
       payables: 'Pantau hutang usaha kepada supplier.',
       receivables: 'Pantau piutang yang masih harus dibayar pelanggan.',
       reports: 'Ringkasan keuangan basis-kas pada periode terpilih.',
-      sheets: 'Hubungkan Google Sheets agar data penjualan/stok otomatis tersalin.',
+      sheets:
+        'Hubungkan Google Sheets agar data penjualan/stok otomatis tersalin.',
       warehouses: 'Tentukan lokasi penyimpanan per cabang.',
       branches: 'Buat cabang di bawah setiap toko.',
       stores: 'Kelompokkan cabang ke dalam toko di perusahaan Anda.',
@@ -614,7 +705,6 @@ export const id = {
     },
   },
 
-  // Onboarding
   onboarding: {
     title: 'Selamat datang di NIAGANTARA',
     subtitle: 'Siapkan pusat kendali bisnis Anda dalam beberapa langkah.',
@@ -629,11 +719,10 @@ export const id = {
     done: 'Ke Dashboard',
   },
 
-  // Demo-specific translations
   demo: {
-    mode: 'Mode Demo',
-    sampleData: 'Data contoh • perubahan tidak disimpan',
-    reset: 'Reset Demo',
+    mode: 'Pratinjau',
+    sampleData: 'Pratinjau interaktif',
+    reset: 'Mulai ulang',
     interactiveDemo: 'Demo interaktif — perubahan tidak disimpan',
     changesNotSaved: 'Perubahan demo berhasil disimpan',
     transactionSuccess: 'Transaksi berhasil!',
@@ -687,12 +776,17 @@ export const id = {
     transferTo: 'Transfer ke',
     transferFrom: 'Transfer dari',
     gettingStarted: 'Memulai',
-    gettingStartedText: 'Selamat datang di demo NIAGANTARA. Ini adalah lingkungan simulasi interaktif untuk mencoba fitur-fitur platform.',
+    gettingStartedText:
+      'Selamat datang di demo NIAGANTARA. Ini adalah lingkungan simulasi interaktif untuk mencoba fitur-fitur platform.',
     modules: 'Modul',
-    posDescription: 'Sistem kasir terintegrasi dengan manajemen stok dan pelacakan penjualan.',
-    inventoryDescription: 'Pantau stok per produk, kategori, dan lokasi dengan peringatan stok rendah.',
-    reportsDescription: 'Lihat laporan penjualan, keuangan, dan performa cabang dalam satu dashboard.',
-    googleSheetsDescription: 'Integrasi dengan Google Sheets untuk analisis data yang lebih fleksibel.',
+    posDescription:
+      'Sistem kasir terintegrasi dengan manajemen stok dan pelacakan penjualan.',
+    inventoryDescription:
+      'Pantau stok per produk, kategori, dan lokasi dengan peringatan stok rendah.',
+    reportsDescription:
+      'Lihat laporan penjualan, keuangan, dan performa cabang dalam satu dashboard.',
+    googleSheetsDescription:
+      'Integrasi dengan Google Sheets untuk analisis data yang lebih fleksibel.',
     appearance: 'Tampilan',
     notifications: 'Notifikasi',
     lowStockNotifications: 'Peringatan Stok Rendah',
@@ -702,7 +796,8 @@ export const id = {
     saleDetail: 'Detail Penjualan',
     activeShift: 'Shift Aktif',
     shiftHistory: 'Riwayat Shift',
-    noOpenShift: 'Tidak ada shift terbuka. Buka shift untuk mulai bertransaksi.',
+    noOpenShift:
+      'Tidak ada shift terbuka. Buka shift untuk mulai bertransaksi.',
     receive: 'Terima',
     receiveSuccess: 'Pembelian diterima — stok demo diperbarui',
     selectProduct: 'Pilih Produk',

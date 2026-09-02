@@ -13,17 +13,33 @@ export class SupabaseService {
     const environment = validateServerEnvironment();
     this.supabaseUrl = environment.supabaseUrl;
     this.supabaseAnonKey = environment.supabaseAnonKey;
-    this.client = createClient(environment.supabaseUrl, environment.supabaseServiceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
-    this.authClient = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
-      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
-    });
+    this.client = createClient(
+      environment.supabaseUrl,
+      environment.supabaseServiceRoleKey,
+      {
+        auth: { autoRefreshToken: false, persistSession: false },
+      },
+    );
+    this.authClient = createClient(
+      environment.supabaseUrl,
+      environment.supabaseAnonKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+          detectSessionInUrl: false,
+        },
+      },
+    );
   }
 
   createUserAuthClient(): SupabaseClient {
     return createClient(this.supabaseUrl, this.supabaseAnonKey, {
-      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
     });
   }
 

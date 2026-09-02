@@ -32,18 +32,12 @@ function GoogleSheetsLogo({ size = 32 }: { size?: number }) {
         d="M6.6 66.85H23.8V78H6.6a6.6 6.6 0 0 1-6.6-6.6V73.4a6.6 6.6 0 0 1 6.6-6.55z"
         fill="#0066DA"
       />
-      <path
-        d="M23.8 66.85h24.9v11.15H23.8V66.85z"
-        fill="#00AC47"
-      />
+      <path d="M23.8 66.85h24.9v11.15H23.8V66.85z" fill="#00AC47" />
       <path
         d="M48.7 66.85H66a6.6 6.6 0 0 0 6.6-6.6v-2.95a6.6 6.6 0 0 0-6.6-6.55H48.7v16.1z"
         fill="#EA4335"
       />
-      <path
-        d="M48.7 50.75H23.8V39.6h24.9v11.15z"
-        fill="#00832D"
-      />
+      <path d="M48.7 50.75H23.8V39.6h24.9v11.15z" fill="#00832D" />
       <path
         d="M23.8 50.75H6.6a6.6 6.6 0 0 1-6.6-6.6v-2.95a6.6 6.6 0 0 1 6.6-6.55h17.2v16.1z"
         fill="#2684FC"
@@ -52,10 +46,7 @@ function GoogleSheetsLogo({ size = 32 }: { size?: number }) {
         d="M48.7 34.6H66a6.6 6.6 0 0 0 6.6-6.6v-2.95A6.6 6.6 0 0 0 66 18.5H48.7v16.1z"
         fill="#FFBA00"
       />
-      <path
-        d="M48.7 18.5H23.8V7.35h24.9V18.5z"
-        fill="#00AC47"
-      />
+      <path d="M48.7 18.5H23.8V7.35h24.9V18.5z" fill="#00AC47" />
       <path
         d="M23.8 18.5H6.6A6.6 6.6 0 0 1 0 11.9V8.95A6.6 6.6 0 0 1 6.6 2.4h17.2v16.1z"
         fill="#EA4335"
@@ -128,19 +119,30 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
 
   const isConnected = state.connection?.status === 'connected';
   const sampleData = [
-    { date: '22 Agu', sales: 'Rp 8.420.000', profit: 'Rp 2.840.000', branch: 'Toko Pusat' },
-    { date: '21 Agu', sales: 'Rp 7.980.000', profit: 'Rp 2.510.000', branch: 'Selatan' },
+    {
+      date: '22 Agu',
+      sales: 'Rp 8.420.000',
+      profit: 'Rp 2.840.000',
+      branch: 'Toko Pusat',
+    },
+    {
+      date: '21 Agu',
+      sales: 'Rp 7.980.000',
+      profit: 'Rp 2.510.000',
+      branch: 'Selatan',
+    },
   ];
 
   return (
     <div className="sheets-page">
-      {/* Header */}
       <section className="sheets-header">
         <div className="sheets-header-brand">
           <GoogleSheetsLogo size={40} />
           <div className="sheets-header-text">
             <h1>NIAGANTARA Reporting</h1>
-            <span className={`sheets-status ${isConnected ? 'connected' : 'offline'}`}>
+            <span
+              className={`sheets-status ${isConnected ? 'connected' : 'offline'}`}
+            >
               <span className="sheets-status-dot" />
               {isConnected ? 'Connected' : 'Not connected'}
             </span>
@@ -154,7 +156,9 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
             {canManage && (
               <Button
                 variant="secondary"
-                onClick={() => action('/google-sheets/oauth/start', { replace: true })}
+                onClick={() =>
+                  action('/google-sheets/oauth/start', { replace: true })
+                }
               >
                 Ganti Akun
               </Button>
@@ -163,25 +167,28 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         )}
       </section>
 
-      {/* Connection */}
       {!state.connection && (
         <section className="sheets-connect">
           <GoogleSheetsLogo size={48} />
           <h2>Hubungkan Google Sheets</h2>
-          <p>Sinkronkan data bisnis Anda ke Google Sheets untuk laporan yang lebih detail.</p>
+          <p>
+            Sinkronkan data bisnis Anda ke Google Sheets untuk laporan yang
+            lebih detail.
+          </p>
           {canManage ? (
             <Button onClick={() => action('/google-sheets/oauth/start')}>
               Hubungkan Akun Google
             </Button>
           ) : (
-            <p className="muted">Hubungi admin untuk menghubungkan akun Google.</p>
+            <p className="muted">
+              Hubungi admin untuk menghubungkan akun Google.
+            </p>
           )}
         </section>
       )}
 
       {message && <Alert tone="info">{message}</Alert>}
 
-      {/* Workbook */}
       {state.workbook && (
         <section className="sheets-workbook">
           <div className="sheets-workbook-header">
@@ -190,7 +197,10 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
               <p className="muted">{state.workbook.title}</p>
             </div>
             {canManage && (
-              <Button variant="secondary" onClick={() => action('/google-sheets/sync')}>
+              <Button
+                variant="secondary"
+                onClick={() => action('/google-sheets/sync')}
+              >
                 Sync Sekarang
               </Button>
             )}
@@ -204,7 +214,9 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
               <small>Terakhir Sync</small>
               <span>
                 {state.workbook.last_sync_at
-                  ? new Date(state.workbook.last_sync_at).toLocaleString('id-ID')
+                  ? new Date(state.workbook.last_sync_at).toLocaleString(
+                      'id-ID',
+                    )
                   : '—'}
               </span>
             </div>
@@ -212,12 +224,10 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
-      {/* Create workbook */}
       {!state.workbook && canManage && (
         <WorkbookForm submit={(v) => action('/google-sheets/workbooks', v)} />
       )}
 
-      {/* Preview data */}
       <section className="sheets-preview">
         <div className="sheets-preview-header">
           <h2>Preview Data</h2>
@@ -249,7 +259,6 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </table>
       </section>
 
-      {/* Sheet definitions */}
       {state.definitions?.length > 0 && (
         <section className="sheets-definitions">
           <h2>Sheet Definitions</h2>
@@ -266,7 +275,6 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
-      {/* Sync history */}
       {history.length > 0 && (
         <section className="sheets-history">
           <h2>Riwayat Sync</h2>
@@ -274,7 +282,9 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
             {history.slice(0, 10).map((h: any) => (
               <div className="sheets-history-item" key={h.id}>
                 <div className="sheets-history-info">
-                  <span className="sheets-history-type">{h.job_type ?? '—'}</span>
+                  <span className="sheets-history-type">
+                    {h.job_type ?? '—'}
+                  </span>
                   <span className="sheets-history-date">
                     {h.created_at
                       ? new Date(h.created_at).toLocaleString('id-ID')
@@ -288,7 +298,6 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
-      {/* Recovery */}
       {failures.length > 0 && canManage && (
         <section className="sheets-recovery">
           <div className="sheets-recovery-header">
@@ -299,10 +308,17 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
           </div>
           <div className="sheets-history-list">
             {failures.map((f: any) => (
-              <div className="sheets-history-item sheets-history-error" key={f.id}>
+              <div
+                className="sheets-history-item sheets-history-error"
+                key={f.id}
+              >
                 <div className="sheets-history-info">
-                  <span className="sheets-history-type">{f.job_type ?? '—'}</span>
-                  <span className="sheets-history-error-msg">{f.error_message ?? '—'}</span>
+                  <span className="sheets-history-type">
+                    {f.job_type ?? '—'}
+                  </span>
+                  <span className="sheets-history-error-msg">
+                    {f.error_message ?? '—'}
+                  </span>
                 </div>
                 <span className="sheets-history-date">
                   {f.created_at
@@ -315,7 +331,6 @@ export function GoogleSheetsPage({ company, token, canManage }: Props) {
         </section>
       )}
 
-      {/* Tutorial link */}
       <section className="sheets-tutorial">
         <Button variant="ghost" onClick={() => (location.hash = 'tutorial')}>
           Buka Tutorial →
@@ -377,12 +392,18 @@ function Definition({
       <div className="sheets-def-header">
         <div>
           <b>{value.dataset}</b>
-          <small>{value.monthly ? 'Monthly sheets' : 'Single sheet'} · {value.status}</small>
+          <small>
+            {value.monthly ? 'Monthly sheets' : 'Single sheet'} · {value.status}
+          </small>
         </div>
         {canManage && (
           <div className="sheets-def-actions">
             <input value={title} onChange={(e) => setTitle(e.target.value)} />
-            <button onClick={() => patch(`/google-sheets/definitions/${value.id}`, { title })}>
+            <button
+              onClick={() =>
+                patch(`/google-sheets/definitions/${value.id}`, { title })
+              }
+            >
               Rename
             </button>
             <button

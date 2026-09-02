@@ -1,1 +1,13 @@
-import { ReactNode } from 'react'; import { useAuth } from './auth-context'; export function ProtectedRoute({children}:{children:ReactNode}){const {user}=useAuth(); return user?children:<section><h1>Login diperlukan</h1><p>Session Supabase belum aktif.</p></section>}
+import { ReactNode } from 'react';
+import { useAuth } from './auth-context';
+export function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  return user ? (
+    children
+  ) : (
+    <section>
+      <h1>Login diperlukan</h1>
+      <p>Session Supabase belum aktif.</p>
+    </section>
+  );
+}

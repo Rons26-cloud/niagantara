@@ -1,4 +1,11 @@
-import { IsBoolean, IsIn, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class OAuthReplaceDto {
   @IsOptional()
@@ -61,8 +68,23 @@ export class ColumnDto {
   label!: string;
 
   @IsString()
-  @IsIn(['text', 'number', 'currency', 'date', 'datetime', 'boolean', 'formula'])
-  dataType!: 'text' | 'number' | 'currency' | 'date' | 'datetime' | 'boolean' | 'formula';
+  @IsIn([
+    'text',
+    'number',
+    'currency',
+    'date',
+    'datetime',
+    'boolean',
+    'formula',
+  ])
+  dataType!:
+    | 'text'
+    | 'number'
+    | 'currency'
+    | 'date'
+    | 'datetime'
+    | 'boolean'
+    | 'formula';
 
   @IsOptional()
   @IsString()
@@ -89,8 +111,23 @@ export class UpdateColumnDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['text', 'number', 'currency', 'date', 'datetime', 'boolean', 'formula'])
-  dataType?: 'text' | 'number' | 'currency' | 'date' | 'datetime' | 'boolean' | 'formula';
+  @IsIn([
+    'text',
+    'number',
+    'currency',
+    'date',
+    'datetime',
+    'boolean',
+    'formula',
+  ])
+  dataType?:
+    | 'text'
+    | 'number'
+    | 'currency'
+    | 'date'
+    | 'datetime'
+    | 'boolean'
+    | 'formula';
 
   @IsOptional()
   @IsString()

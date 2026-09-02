@@ -93,7 +93,9 @@ export function ShiftPage({
 
   useEffect(() => {
     const onRealtime = (event: Event) => {
-      const resources = (event as CustomEvent<{ resources?: string[] }>).detail?.resources ?? [];
+      const resources =
+        (event as CustomEvent<{ resources?: string[] }>).detail?.resources ??
+        [];
       if (resources.includes('shifts')) load();
     };
     window.addEventListener('niagantara:realtime', onRealtime);
@@ -105,8 +107,11 @@ export function ShiftPage({
     if (!form.branchId) return;
     setMsg('Membuka shift...');
     try {
-      const targetBranch = ctx.accessible_branches.find((b: any) => b.id === form.branchId) ?? branch;
-      const targetStore = ctx.stores.find((s: any) => s.id === targetBranch?.store_id) ?? store;
+      const targetBranch =
+        ctx.accessible_branches.find((b: any) => b.id === form.branchId) ??
+        branch;
+      const targetStore =
+        ctx.stores.find((s: any) => s.id === targetBranch?.store_id) ?? store;
       await api('/shifts/open', token, company, {
         method: 'POST',
         headers: { 'x-branch-id': form.branchId },
@@ -119,7 +124,11 @@ export function ShiftPage({
       });
       setMsg('✓ Shift berhasil dibuka.');
       setShowOpen(false);
-      setForm({ cashierId: '', openingCash: '500000', branchId: branch?.id ?? '' });
+      setForm({
+        cashierId: '',
+        openingCash: '500000',
+        branchId: branch?.id ?? '',
+      });
       load();
     } catch {
       setMsg('Gagal membuka shift.');
@@ -144,9 +153,18 @@ export function ShiftPage({
 
   const openShifts = rows.filter((x) => x.status === 'OPEN');
   const closedShifts = rows.filter((x) => x.status === 'CLOSED');
-  const totalOpening = rows.reduce((n, r) => n + Number(r.opening_cash ?? 0), 0);
-  const totalClosing = closedShifts.reduce((n, r) => n + Number(r.closing_cash ?? 0), 0);
-  const totalDiff = closedShifts.reduce((n, r) => n + Number(r.cash_difference ?? 0), 0);
+  const totalOpening = rows.reduce(
+    (n, r) => n + Number(r.opening_cash ?? 0),
+    0,
+  );
+  const totalClosing = closedShifts.reduce(
+    (n, r) => n + Number(r.closing_cash ?? 0),
+    0,
+  );
+  const totalDiff = closedShifts.reduce(
+    (n, r) => n + Number(r.cash_difference ?? 0),
+    0,
+  );
 
   const { page, pageCount, setPage, slice } = usePaged(rows);
   const fmtRp = (n: number) => `Rp ${Number(n ?? 0).toLocaleString('id-ID')}`;
@@ -170,7 +188,9 @@ export function ShiftPage({
         <StatCard
           label="Selisih Kas"
           value={fmtRp(totalDiff)}
-          tone={totalDiff === 0 ? 'default' : totalDiff > 0 ? 'success' : 'danger'}
+          tone={
+            totalDiff === 0 ? 'default' : totalDiff > 0 ? 'success' : 'danger'
+          }
         />
       </div>
 
@@ -182,7 +202,11 @@ export function ShiftPage({
               <Plus size={14} /> Buka Shift
             </Button>
           </div>
-          {msg && <p className="muted" role="status">{msg}</p>}
+          {msg && (
+            <p className="muted" role="status">
+              {msg}
+            </p>
+          )}
         </section>
       )}
 
@@ -193,16 +217,24 @@ export function ShiftPage({
           </div>
           <div className="table">
             <div className="tr head">
-              {['Kasir', 'Cabang', 'Status', 'Kas Awal', 'Waktu Buka', 'Durasi', 'Aksi'].map(
-                (k) => (
-                  <span key={k}>{k}</span>
-                ),
-              )}
+              {[
+                'Kasir',
+                'Cabang',
+                'Status',
+                'Kas Awal',
+                'Waktu Buka',
+                'Durasi',
+                'Aksi',
+              ].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
             </div>
             {openShifts.map((x) => {
               const opened = new Date(x.opened_at);
               const now = new Date();
-              const durationMin = Math.floor((now.getTime() - opened.getTime()) / 60000);
+              const durationMin = Math.floor(
+                (now.getTime() - opened.getTime()) / 60000,
+              );
               const hours = Math.floor(durationMin / 60);
               const mins = durationMin % 60;
               return (
@@ -219,13 +251,28 @@ export function ShiftPage({
                     </span>
                   </span>
                   <span>{x.branch?.name ?? '—'}</span>
-                  <span><StatusBadge status={x.status} /></span>
+                  <span>
+                    <StatusBadge status={x.status} />
+                  </span>
                   <span>{fmtRp(Number(x.opening_cash ?? 0))}</span>
-                  <span>{opened.toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}</span>
+                  <span>
+                    {opened.toLocaleString('id-ID', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: 'short',
+                    })}
+                  </span>
                   <span>{hours > 0 ? `${hours}j ${mins}m` : `${mins}m`}</span>
                   <span>
                     {canCloseShift && (
-                      <Button variant="danger" onClick={() => { setShowClose(x); setCloseCash(String(x.opening_cash ?? 0)); }}>
+                      <Button
+                        variant="danger"
+                        onClick={() => {
+                          setShowClose(x);
+                          setCloseCash(String(x.opening_cash ?? 0));
+                        }}
+                      >
                         Tutup
                       </Button>
                     )}
@@ -251,17 +298,26 @@ export function ShiftPage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Status', 'Kasir', 'Cabang', 'Kas Awal', 'Kas Tutup', 'Selisih', 'Waktu Buka', 'Waktu Tutup'].map(
-                (k) => (
-                  <span key={k}>{k}</span>
-                ),
-              )}
+              {[
+                'Status',
+                'Kasir',
+                'Cabang',
+                'Kas Awal',
+                'Kas Tutup',
+                'Selisih',
+                'Waktu Buka',
+                'Waktu Tutup',
+              ].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
             </div>
             {slice.map((x) => {
               const diff = Number(x.cash_difference ?? 0);
               return (
                 <div className="tr" key={x.id}>
-                  <span><StatusBadge status={x.status} /></span>
+                  <span>
+                    <StatusBadge status={x.status} />
+                  </span>
                   <span>
                     <span className="shift-cashier">
                       <span className="shift-cashier-avatar">
@@ -275,18 +331,40 @@ export function ShiftPage({
                   </span>
                   <span>{x.branch?.name ?? '—'}</span>
                   <span>{fmtRp(Number(x.opening_cash ?? 0))}</span>
-                  <span>{x.closing_cash != null ? fmtRp(Number(x.closing_cash)) : '—'}</span>
-                  <span className={diff === 0 ? '' : diff > 0 ? 'shift-diff-positive' : 'shift-diff-negative'}>
+                  <span>
+                    {x.closing_cash != null
+                      ? fmtRp(Number(x.closing_cash))
+                      : '—'}
+                  </span>
+                  <span
+                    className={
+                      diff === 0
+                        ? ''
+                        : diff > 0
+                          ? 'shift-diff-positive'
+                          : 'shift-diff-negative'
+                    }
+                  >
                     {x.cash_difference != null ? fmtRp(diff) : '—'}
                   </span>
                   <span>
                     {x.opened_at
-                      ? new Date(x.opened_at).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
+                      ? new Date(x.opened_at).toLocaleString('id-ID', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          day: '2-digit',
+                          month: 'short',
+                        })
                       : '—'}
                   </span>
                   <span>
                     {x.closed_at
-                      ? new Date(x.closed_at).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
+                      ? new Date(x.closed_at).toLocaleString('id-ID', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          day: '2-digit',
+                          month: 'short',
+                        })
                       : '—'}
                   </span>
                 </div>
@@ -316,7 +394,8 @@ export function ShiftPage({
               <option value="">— Pilih Kasir —</option>
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
-                  {emp.name}{emp.employee_code ? ` (${emp.employee_code})` : ''}
+                  {emp.name}
+                  {emp.employee_code ? ` (${emp.employee_code})` : ''}
                 </option>
               ))}
             </Select>
@@ -328,7 +407,9 @@ export function ShiftPage({
               onChange={(e) => setForm({ ...form, branchId: e.target.value })}
             >
               {ctx.accessible_branches.map((b: any) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
               ))}
             </Select>
           </Field>
@@ -338,10 +419,14 @@ export function ShiftPage({
               min="0"
               required
               value={form.openingCash}
-              onChange={(e) => setForm({ ...form, openingCash: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, openingCash: e.target.value })
+              }
             />
           </Field>
-          <p className="muted">Kasir yang dipilih akan menjadi penanggung jawab shift ini.</p>
+          <p className="muted">
+            Kasir yang dipilih akan menjadi penanggung jawab shift ini.
+          </p>
         </form>
       </Modal>
 
@@ -365,7 +450,11 @@ export function ShiftPage({
               <dt>Kas Awal</dt>
               <dd>{fmtRp(Number(showClose.opening_cash ?? 0))}</dd>
               <dt>Waktu Buka</dt>
-              <dd>{showClose.opened_at ? new Date(showClose.opened_at).toLocaleString('id-ID') : '—'}</dd>
+              <dd>
+                {showClose.opened_at
+                  ? new Date(showClose.opened_at).toLocaleString('id-ID')
+                  : '—'}
+              </dd>
             </dl>
             <Field label="Masukkan Jumlah Kas Tutup">
               <Input
@@ -377,7 +466,10 @@ export function ShiftPage({
               />
             </Field>
             <p className="muted" style={{ marginTop: '0.5rem' }}>
-              Selisih: <b>{fmtRp(Number(closeCash) - Number(showClose.opening_cash ?? 0))}</b>
+              Selisih:{' '}
+              <b>
+                {fmtRp(Number(closeCash) - Number(showClose.opening_cash ?? 0))}
+              </b>
             </p>
           </div>
         )}

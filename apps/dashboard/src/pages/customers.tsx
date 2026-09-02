@@ -53,7 +53,11 @@ export function CustomersPage({
     setError(null);
     api<Customer[]>('/customers', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -221,7 +225,11 @@ export function CustomersPage({
           </Button>
         }
       >
-        <form id="customer-create-form" className="inline-form" onSubmit={create}>
+        <form
+          id="customer-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
           <Field label={t('common.name')}>
             <Input
               required

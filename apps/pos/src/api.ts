@@ -1,1 +1,6 @@
-export { api, ApiError } from '@niagantara/pos-core';
+export {
+  api,
+  ApiError,
+  isTokenExpired,
+  onUnauthorized,
+} from '@niagantara/pos-core';

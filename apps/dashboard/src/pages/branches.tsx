@@ -14,7 +14,15 @@ import {
   usePaged,
   useTranslation,
 } from '@niagantara/ui';
-import { GitBranch, Plus, MapPin, Phone, Mail, Clock, Building2 } from 'lucide-react';
+import {
+  GitBranch,
+  Plus,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Building2,
+} from 'lucide-react';
 
 type Branch = {
   id: string;
@@ -43,10 +51,23 @@ type Ctx = {
   accessible_branches: any[];
 };
 
-const WEEKDAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+const WEEKDAYS = [
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu',
+  'Minggu',
+];
 
 const defaultHours = () =>
-  WEEKDAYS.map((d) => ({ day: d, open: '08:00', close: '17:00', closed: d === 'Minggu' }));
+  WEEKDAYS.map((d) => ({
+    day: d,
+    open: '08:00',
+    close: '17:00',
+    closed: d === 'Minggu',
+  }));
 
 export function BranchesPage({
   company,
@@ -83,7 +104,11 @@ export function BranchesPage({
     setError(null);
     api<Branch[]>('/branches', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -102,7 +127,10 @@ export function BranchesPage({
   const { page, pageCount, setPage, slice } = usePaged(filtered);
 
   const totalEmployees = rows.reduce((n, r) => n + (r.employeeCount ?? 0), 0);
-  const totalSales = rows.reduce((n, r) => n + (r.salesSummary?.todaySales ?? 0), 0);
+  const totalSales = rows.reduce(
+    (n, r) => n + (r.salesSummary?.todaySales ?? 0),
+    0,
+  );
   const activeBranches = rows.filter((r) => r.status !== 'INACTIVE').length;
 
   async function create(e: FormEvent) {
@@ -236,7 +264,12 @@ export function BranchesPage({
           />
         </Field>
         {ctx.permissions.includes('branch.manage') && (
-          <Button onClick={() => { resetForm(); setShowCreate(true); }}>
+          <Button
+            onClick={() => {
+              resetForm();
+              setShowCreate(true);
+            }}
+          >
             <Plus size={14} /> {t('common.add')} {t('common.branch')}
           </Button>
         )}
@@ -254,7 +287,12 @@ export function BranchesPage({
             description="Belum ada cabang terdaftar. Klik tombol tambah untuk membuat cabang baru."
             action={
               ctx.permissions.includes('branch.manage') ? (
-                <Button onClick={() => { resetForm(); setShowCreate(true); }}>
+                <Button
+                  onClick={() => {
+                    resetForm();
+                    setShowCreate(true);
+                  }}
+                >
                   <Plus size={14} /> {t('common.add')} {t('common.branch')}
                 </Button>
               ) : undefined
@@ -288,7 +326,11 @@ export function BranchesPage({
                 {r.address && (
                   <div className="branch-card-row">
                     <MapPin size={13} />
-                    <span>{[r.address, r.city, r.province].filter(Boolean).join(', ')}</span>
+                    <span>
+                      {[r.address, r.city, r.province]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
                   </div>
                 )}
                 {r.phone && (
@@ -325,7 +367,10 @@ export function BranchesPage({
                   </div>
                 </div>
 
-                <div className="branch-card-footer" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="branch-card-footer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {ctx.permissions.includes('branch.manage') && (
                     <>
                       <Button variant="ghost" onClick={() => openEdit(r)}>
@@ -333,7 +378,11 @@ export function BranchesPage({
                       </Button>
                       <Button
                         variant="ghost"
-                        className={r.status === 'INACTIVE' ? 'text-success' : 'text-warning'}
+                        className={
+                          r.status === 'INACTIVE'
+                            ? 'text-success'
+                            : 'text-warning'
+                        }
                         onClick={() => toggleStatus(r)}
                       >
                         {r.status === 'INACTIVE' ? 'Aktifkan' : 'Nonaktifkan'}
@@ -348,7 +397,6 @@ export function BranchesPage({
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
 
-      {/* Create Modal */}
       <Modal
         open={showCreate}
         onClose={() => setShowCreate(false)}
@@ -429,7 +477,9 @@ export function BranchesPage({
             <textarea
               className="settings-textarea"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               placeholder="Deskripsi singkat tentang cabang ini..."
               rows={3}
             />
@@ -438,7 +488,6 @@ export function BranchesPage({
         </form>
       </Modal>
 
-      {/* Edit Modal */}
       <Modal
         open={!!editRow}
         onClose={() => setEditRow(null)}
@@ -514,7 +563,9 @@ export function BranchesPage({
             <textarea
               className="settings-textarea"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               rows={3}
             />
           </Field>
@@ -522,16 +573,27 @@ export function BranchesPage({
         </form>
       </Modal>
 
-      {/* Detail Panel */}
       {detailRow && (
         <Modal
           open
           onClose={() => setDetailRow(null)}
           title={detailRow.name}
           footer={
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.5rem',
+                justifyContent: 'flex-end',
+              }}
+            >
               {ctx.permissions.includes('branch.manage') && (
-                <Button variant="ghost" onClick={() => { openEdit(detailRow); setDetailRow(null); }}>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    openEdit(detailRow);
+                    setDetailRow(null);
+                  }}
+                >
                   {t('common.edit')}
                 </Button>
               )}
@@ -545,7 +607,9 @@ export function BranchesPage({
               <div className="branch-detail-grid">
                 <div className="branch-detail-item">
                   <span className="branch-detail-label">Kode</span>
-                  <span className="branch-detail-value">{detailRow.code ?? '—'}</span>
+                  <span className="branch-detail-value">
+                    {detailRow.code ?? '—'}
+                  </span>
                 </div>
                 <div className="branch-detail-item">
                   <span className="branch-detail-label">Status</span>
@@ -556,13 +620,19 @@ export function BranchesPage({
                 <div className="branch-detail-item">
                   <span className="branch-detail-label">Toko</span>
                   <span className="branch-detail-value">
-                    {ctx.stores.find((s) => s.id === (detailRow.storeId ?? detailRow.store_id))?.name ?? '—'}
+                    {ctx.stores.find(
+                      (s) => s.id === (detailRow.storeId ?? detailRow.store_id),
+                    )?.name ?? '—'}
                   </span>
                 </div>
                 <div className="branch-detail-item">
                   <span className="branch-detail-label">Dibuat</span>
                   <span className="branch-detail-value">
-                    {detailRow.created_at ? new Date(detailRow.created_at).toLocaleDateString('id-ID') : '—'}
+                    {detailRow.created_at
+                      ? new Date(detailRow.created_at).toLocaleDateString(
+                          'id-ID',
+                        )
+                      : '—'}
                   </span>
                 </div>
               </div>
@@ -574,7 +644,11 @@ export function BranchesPage({
                 {detailRow.address && (
                   <div className="branch-detail-row">
                     <MapPin size={14} />
-                    <span>{[detailRow.address, detailRow.city, detailRow.province].filter(Boolean).join(', ')}</span>
+                    <span>
+                      {[detailRow.address, detailRow.city, detailRow.province]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
                   </div>
                 )}
                 {detailRow.phone && (

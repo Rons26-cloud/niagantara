@@ -1,6 +1,70 @@
-import{Injectable}from'@nestjs/common';import{SupabaseService}from'../../integrations/supabase/supabase.service.js';import type{SupplierInput,SupplierQuery}from'./dto/supplier.dto.js';
-@Injectable()export class SuppliersRepository{constructor(private readonly db:SupabaseService){}
-async list(c:string,q:SupplierQuery){const limit=Math.min(Math.max(Number(q.limit)||50,1),100);const offset=Math.max(Number(q.offset)||0,0);let x=this.db.client.from('suppliers').select('*').eq('company_id',c).order('name').range(offset,offset+limit-1);if(q.status)x=x.eq('status',q.status);if(q.search){const search=q.search.replace(/[%_,]/g,'');x=x.or(`name.ilike.%${search}%,supplier_code.ilike.%${search}%,contact_person.ilike.%${search}%`)}return x}
-get(c:string,id:string){return this.db.client.from('suppliers').select('*').eq('company_id',c).eq('id',id).maybeSingle()}
-create(c:string,u:string,d:SupplierInput){return this.db.client.from('suppliers').insert({company_id:c,created_by:u,supplier_code:d.supplierCode,name:d.name,contact_person:d.contactPerson??null,phone:d.phone??null,email:d.email??null,address:d.address??null,notes:d.notes??null,status:d.status??'active'}).select().single()}
-update(c:string,id:string,d:Partial<SupplierInput>){return this.db.client.from('suppliers').update({supplier_code:d.supplierCode,name:d.name,contact_person:d.contactPerson,phone:d.phone,email:d.email,address:d.address,notes:d.notes,status:d.status,updated_at:new Date().toISOString()}).eq('company_id',c).eq('id',id).select().single()}}
+import { Injectable } from '@nestjs/common';
+import { SupabaseService } from '../../integrations/supabase/supabase.service.js';
+import type { SupplierInput, SupplierQuery } from './dto/supplier.dto.js';
+@Injectable()
+export class SuppliersRepository {
+  constructor(private readonly db: SupabaseService) {}
+  async list(c: string, q: SupplierQuery) {
+    const limit = Math.min(Math.max(Number(q.limit) || 50, 1), 100);
+    const offset = Math.max(Number(q.offset) || 0, 0);
+    let x = this.db.client
+      .from('suppliers')
+      .select('*')
+      .eq('company_id', c)
+      .order('name')
+      .range(offset, offset + limit - 1);
+    if (q.status) x = x.eq('status', q.status);
+    if (q.search) {
+      const search = q.search.replace(/[%_,]/g, '');
+      x = x.or(
+        `name.ilike.%${search}%,supplier_code.ilike.%${search}%,contact_person.ilike.%${search}%`,
+      );
+    }
+    return x;
+  }
+  get(c: string, id: string) {
+    return this.db.client
+      .from('suppliers')
+      .select('*')
+      .eq('company_id', c)
+      .eq('id', id)
+      .maybeSingle();
+  }
+  create(c: string, u: string, d: SupplierInput) {
+    return this.db.client
+      .from('suppliers')
+      .insert({
+        company_id: c,
+        created_by: u,
+        supplier_code: d.supplierCode,
+        name: d.name,
+        contact_person: d.contactPerson ?? null,
+        phone: d.phone ?? null,
+        email: d.email ?? null,
+        address: d.address ?? null,
+        notes: d.notes ?? null,
+        status: d.status ?? 'active',
+      })
+      .select()
+      .single();
+  }
+  update(c: string, id: string, d: Partial<SupplierInput>) {
+    return this.db.client
+      .from('suppliers')
+      .update({
+        supplier_code: d.supplierCode,
+        name: d.name,
+        contact_person: d.contactPerson,
+        phone: d.phone,
+        email: d.email,
+        address: d.address,
+        notes: d.notes,
+        status: d.status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('company_id', c)
+      .eq('id', id)
+      .select()
+      .single();
+  }
+}

@@ -64,7 +64,6 @@
   justify-content: center;
 }
 
-/* Status indicator */
 .msidebar-status {
   display: flex;
   align-items: center;
@@ -77,13 +76,12 @@
   color: var(--text-muted);
 }
 .msidebar-status .status-ok {
-  color: var(--success, #10B981);
+  color: var(--success, #10b981);
 }
 .msidebar-status .status-err {
-  color: var(--danger, #EF4444);
+  color: var(--danger, #ef4444);
 }
 
-/* Nav */
 .msidebar nav {
   display: flex;
   flex-direction: column;
@@ -112,7 +110,9 @@
   font-size: 13.5px;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 .msidebar nav a svg {
   flex-shrink: 0;
@@ -129,7 +129,7 @@
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 999px;
-  background: var(--accent-primary, #2563EB);
+  background: var(--accent-primary, #2563eb);
   color: #fff;
   min-width: 18px;
   text-align: center;
@@ -151,7 +151,6 @@
   display: none;
 }
 
-/* Footer */
 .msidebar__foot {
   margin-top: auto;
   display: grid;
@@ -224,11 +223,13 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   width: 100%;
 }
 .msidebar-logout:hover {
-  background: var(--danger, #EF4444);
+  background: var(--danger, #ef4444);
   color: #fff;
 }
 .msidebar-collapsed .msidebar-logout {
@@ -247,7 +248,6 @@
   font-weight: 700;
 }
 
-/* Workspace */
 .mworkspace {
   padding: 26px clamp(14px, 3vw, 40px);
   max-width: 1200px;
@@ -293,7 +293,6 @@
   margin-top: 14px;
 }
 
-/* Login */
 .mlogin {
   min-height: 100vh;
   display: grid;
@@ -315,7 +314,6 @@
   margin-top: 10px;
 }
 
-/* Responsive */
 @media (max-width: 860px) {
   .mshell {
     grid-template-columns: 1fr;

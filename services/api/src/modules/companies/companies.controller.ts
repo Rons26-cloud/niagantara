@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { RequirePermission } from '../../common/decorators/permission.decorator.js';
 import { AuthGuard } from '../../common/guards/auth.guard.js';
 import { PermissionGuard } from '../../common/guards/permission.guard.js';
@@ -12,21 +21,31 @@ export class CompaniesController {
 
   @Get()
   @UseGuards(AuthGuard)
-  list(@Req() request: any) { return this.service.list(request.user.id); }
+  list(@Req() request: any) {
+    return this.service.list(request.user.id);
+  }
 
   @Get(':companyId')
   @UseGuards(AuthGuard, TenantGuard, PermissionGuard)
   @RequirePermission('company.read')
-  get(@Req() request: any, @Param('companyId') companyId: string) { return this.service.get(request.user.id, companyId); }
+  get(@Req() request: any, @Param('companyId') companyId: string) {
+    return this.service.get(request.user.id, companyId);
+  }
 
   @Post()
   @UseGuards(AuthGuard)
-  create(@Req() request: any, @Body() dto: CreateCompanyDto) { return this.service.create(request.user.id, dto); }
+  create(@Req() request: any, @Body() dto: CreateCompanyDto) {
+    return this.service.create(request.user.id, dto);
+  }
 
   @Patch(':companyId')
   @UseGuards(AuthGuard, TenantGuard, PermissionGuard)
   @RequirePermission('company.update')
-  update(@Req() request: any, @Param('companyId') companyId: string, @Body() dto: UpdateCompanyDto) {
+  update(
+    @Req() request: any,
+    @Param('companyId') companyId: string,
+    @Body() dto: UpdateCompanyDto,
+  ) {
     return this.service.update(request.user.id, companyId, dto);
   }
 

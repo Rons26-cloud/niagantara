@@ -1,7 +1,24 @@
 import { FormEvent, useState, useCallback } from 'react';
 import { ApiError, api } from '../api';
-import { Button, EmptyState, ErrorState, Field, Input, LoadingState, StatusBadge, useTranslation } from '@niagantara/ui';
-import { ScanLine, CheckSquare, Square, Printer, Search, Clock, Package } from 'lucide-react';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  LoadingState,
+  StatusBadge,
+  useTranslation,
+} from '@niagantara/ui';
+import {
+  ScanLine,
+  CheckSquare,
+  Square,
+  Printer,
+  Search,
+  Clock,
+  Package,
+} from 'lucide-react';
 
 type Product = {
   id: string;
@@ -25,7 +42,13 @@ type ScanEntry = {
   error?: boolean;
 };
 
-function CssBarcode({ value, height = 50 }: { value: string; height?: number }) {
+function CssBarcode({
+  value,
+  height = 50,
+}: {
+  value: string;
+  height?: number;
+}) {
   const seed = value.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const rng = (i: number) => {
     const x = Math.sin(seed * 9301 + i * 49297) * 49297;
@@ -36,14 +59,23 @@ function CssBarcode({ value, height = 50 }: { value: string; height?: number }) 
     bars.push(rng(i) > 0.4 ? 2 : rng(i) > 0.2 ? 1 : 3);
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'end', gap: 0, height: height + 8, padding: '4px 0' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'end',
+        gap: 0,
+        height: height + 8,
+        padding: '4px 0',
+      }}
+    >
       {bars.map((w, i) => (
         <div
           key={i}
           style={{
             width: w,
             height: i % 2 === 0 ? height : height - 6,
-            backgroundColor: i % 2 === 0 ? 'var(--text-primary)' : 'transparent',
+            backgroundColor:
+              i % 2 === 0 ? 'var(--text-primary)' : 'transparent',
             flexShrink: 0,
           }}
         />
@@ -52,7 +84,13 @@ function CssBarcode({ value, height = 50 }: { value: string; height?: number }) 
   );
 }
 
-function BarcodeLabel({ product, compact = false }: { product: Product; compact?: boolean }) {
+function BarcodeLabel({
+  product,
+  compact = false,
+}: {
+  product: Product;
+  compact?: boolean;
+}) {
   return (
     <div
       className="barcode-label"
@@ -68,16 +106,40 @@ function BarcodeLabel({ product, compact = false }: { product: Product; compact?
         breakInside: 'avoid',
       }}
     >
-      <CssBarcode value={product.barcode ?? product.sku ?? product.id} height={compact ? 36 : 50} />
-      <span style={{ fontSize: compact ? '0.6rem' : '0.75rem', color: 'var(--text-primary)', fontWeight: 600, textAlign: 'center' }}>
+      <CssBarcode
+        value={product.barcode ?? product.sku ?? product.id}
+        height={compact ? 36 : 50}
+      />
+      <span
+        style={{
+          fontSize: compact ? '0.6rem' : '0.75rem',
+          color: 'var(--text-primary)',
+          fontWeight: 600,
+          textAlign: 'center',
+        }}
+      >
         {product.name}
       </span>
-      <code style={{ fontSize: compact ? '0.55rem' : '0.7rem', color: 'var(--text-muted)' }}>
+      <code
+        style={{
+          fontSize: compact ? '0.55rem' : '0.7rem',
+          color: 'var(--text-muted)',
+        }}
+      >
         {product.barcode ?? product.sku ?? '—'}
       </code>
       {!compact && (
-        <span style={{ fontSize: '0.75rem', color: 'var(--color-primary, #3b82f6)', fontWeight: 700 }}>
-          Rp {Number(product.sellingPrice ?? product.selling_price ?? 0).toLocaleString('id-ID')}
+        <span
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--color-primary, #3b82f6)',
+            fontWeight: 700,
+          }}
+        >
+          Rp{' '}
+          {Number(
+            product.sellingPrice ?? product.selling_price ?? 0,
+          ).toLocaleString('id-ID')}
         </span>
       )}
     </div>
@@ -100,11 +162,12 @@ export function BarcodePage({
   const [loading, setLoading] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanEntry[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(
+    new Set(),
+  );
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [showBatch, setShowBatch] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-
 
   async function lookup(e: FormEvent) {
     e.preventDefault();
@@ -119,10 +182,21 @@ export function BarcodePage({
         company,
       );
       setResult(res);
-      setScanHistory((prev) => [{ code, timestamp: Date.now(), result: (res as any)?.product }, ...prev].slice(0, 50));
+      setScanHistory((prev) =>
+        [
+          { code, timestamp: Date.now(), result: (res as any)?.product },
+          ...prev,
+        ].slice(0, 50),
+      );
     } catch (e) {
-      setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'Barcode tidak ditemukan.');
-      setScanHistory((prev) => [{ code, timestamp: Date.now(), error: true }, ...prev].slice(0, 50));
+      setError(
+        e instanceof ApiError
+          ? `${e.status} · ${e.code}`
+          : 'Barcode tidak ditemukan.',
+      );
+      setScanHistory((prev) =>
+        [{ code, timestamp: Date.now(), error: true }, ...prev].slice(0, 50),
+      );
     } finally {
       setLoading(false);
     }
@@ -175,7 +249,10 @@ export function BarcodePage({
                 <Package size={14} /> Batch Generate
               </Button>
             )}
-            <Button variant="ghost" onClick={() => setShowHistory(!showHistory)}>
+            <Button
+              variant="ghost"
+              onClick={() => setShowHistory(!showHistory)}
+            >
               <Clock size={14} /> Riwayat
             </Button>
           </div>
@@ -188,7 +265,13 @@ export function BarcodePage({
             onChange={(e) => setCode(e.target.value)}
           />
           <Button type="submit" disabled={loading}>
-            {loading ? '...' : <><Search size={14} /> {t('common.search')}</>}
+            {loading ? (
+              '...'
+            ) : (
+              <>
+                <Search size={14} /> {t('common.search')}
+              </>
+            )}
           </Button>
         </form>
       </section>
@@ -197,7 +280,9 @@ export function BarcodePage({
         <section className="panel">
           <div className="panel-head">
             <h2 style={{ color: 'var(--text-primary)' }}>Riwayat Scan</h2>
-            <span style={{ color: 'var(--text-muted)' }}>{scanHistory.length} scan</span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {scanHistory.length} scan
+            </span>
           </div>
           <div className="table">
             <div className="tr head">
@@ -207,15 +292,23 @@ export function BarcodePage({
             </div>
             {scanHistory.map((entry, i) => (
               <div className="tr" key={i}>
-                <span><code>{entry.code}</code></span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                <span>
+                  <code>{entry.code}</code>
+                </span>
+                <span
+                  style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}
+                >
                   {new Date(entry.timestamp).toLocaleTimeString('id-ID')}
                 </span>
                 <span>
                   {entry.error ? (
-                    <span style={{ color: 'var(--color-danger, #ef4444)' }}>Tidak ditemukan</span>
+                    <span style={{ color: 'var(--color-danger, #ef4444)' }}>
+                      Tidak ditemukan
+                    </span>
                   ) : (
-                    <span style={{ color: 'var(--color-success, #22c55e)' }}>Ditemukan</span>
+                    <span style={{ color: 'var(--color-success, #22c55e)' }}>
+                      Ditemukan
+                    </span>
                   )}
                 </span>
               </div>
@@ -227,7 +320,10 @@ export function BarcodePage({
       {loading && <LoadingState label={t('common.loading')} />}
 
       {error && !loading && (
-        <ErrorState message={error} onRetry={() => lookup({ preventDefault: () => {} } as FormEvent)} />
+        <ErrorState
+          message={error}
+          onRetry={() => lookup({ preventDefault: () => {} } as FormEvent)}
+        />
       )}
 
       {result?.product && (
@@ -238,33 +334,76 @@ export function BarcodePage({
           </div>
           <dl className="def-grid">
             <dt style={{ color: 'var(--text-secondary)' }}>Nama Produk</dt>
-            <dd style={{ color: 'var(--text-primary)' }}>{result.product.name ?? '—'}</dd>
+            <dd style={{ color: 'var(--text-primary)' }}>
+              {result.product.name ?? '—'}
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>SKU</dt>
-            <dd><code>{result.product.sku ?? '—'}</code></dd>
+            <dd>
+              <code>{result.product.sku ?? '—'}</code>
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Barcode</dt>
-            <dd><code>{result.product.barcode ?? '—'}</code></dd>
+            <dd>
+              <code>{result.product.barcode ?? '—'}</code>
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Harga Jual</dt>
-            <dd style={{ color: 'var(--color-primary, #3b82f6)', fontWeight: 700 }}>{fmtRp(Number(result.product.sellingPrice ?? result.product.selling_price ?? 0))}</dd>
+            <dd
+              style={{
+                color: 'var(--color-primary, #3b82f6)',
+                fontWeight: 700,
+              }}
+            >
+              {fmtRp(
+                Number(
+                  result.product.sellingPrice ??
+                    result.product.selling_price ??
+                    0,
+                ),
+              )}
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Harga Modal</dt>
-            <dd style={{ color: 'var(--text-secondary)' }}>{fmtRp(Number(result.product.costPrice ?? result.product.cost_price ?? 0))}</dd>
+            <dd style={{ color: 'var(--text-secondary)' }}>
+              {fmtRp(
+                Number(
+                  result.product.costPrice ?? result.product.cost_price ?? 0,
+                ),
+              )}
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Stok</dt>
             <dd>
-              <span style={{
-                display: 'inline-block',
-                padding: '2px 8px',
-                borderRadius: 4,
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                background: (result.product.stock ?? 0) <= 0 ? 'rgba(239,68,68,0.1)' : (result.product.stock ?? 0) <= (result.product.minimumStock ?? 0) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)',
-                color: (result.product.stock ?? 0) <= 0 ? 'var(--color-danger, #ef4444)' : (result.product.stock ?? 0) <= (result.product.minimumStock ?? 0) ? 'var(--color-warning, #f59e0b)' : 'var(--color-success, #22c55e)',
-              }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  background:
+                    (result.product.stock ?? 0) <= 0
+                      ? 'rgba(239,68,68,0.1)'
+                      : (result.product.stock ?? 0) <=
+                          (result.product.minimumStock ?? 0)
+                        ? 'rgba(245,158,11,0.1)'
+                        : 'rgba(34,197,94,0.1)',
+                  color:
+                    (result.product.stock ?? 0) <= 0
+                      ? 'var(--color-danger, #ef4444)'
+                      : (result.product.stock ?? 0) <=
+                          (result.product.minimumStock ?? 0)
+                        ? 'var(--color-warning, #f59e0b)'
+                        : 'var(--color-success, #22c55e)',
+                }}
+              >
                 {result.product.stock ?? '—'}
               </span>
             </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Minimum Stok</dt>
-            <dd style={{ color: 'var(--text-secondary)' }}>{result.product.minimumStock ?? 0}</dd>
+            <dd style={{ color: 'var(--text-secondary)' }}>
+              {result.product.minimumStock ?? 0}
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Kategori</dt>
-            <dd style={{ color: 'var(--text-secondary)' }}>{result.product.category?.name ?? '—'}</dd>
+            <dd style={{ color: 'var(--text-secondary)' }}>
+              {result.product.category?.name ?? '—'}
+            </dd>
             <dt style={{ color: 'var(--text-secondary)' }}>Status</dt>
             <dd>
               <StatusBadge status={result.product.status ?? 'ACTIVE'} />
@@ -284,13 +423,19 @@ export function BarcodePage({
       {showBatch && (
         <section className="panel">
           <div className="panel-head">
-            <h2 style={{ color: 'var(--text-primary)' }}>Batch Barcode Generation</h2>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <h2 style={{ color: 'var(--text-primary)' }}>
+              Batch Barcode Generation
+            </h2>
+            <div
+              style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+            >
               <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                 {selectedProducts.size} / {allProducts.length} dipilih
               </span>
               <Button variant="ghost" onClick={selectAll}>
-                {selectedProducts.size === allProducts.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {selectedProducts.size === allProducts.length
+                  ? 'Batal Pilih'
+                  : 'Pilih Semua'}
               </Button>
               {selectedProducts.size > 0 && (
                 <Button variant="ghost" onClick={handlePrint}>
@@ -310,18 +455,35 @@ export function BarcodePage({
                 <span>
                   <button
                     onClick={() => toggleProduct(p.id)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 2,
+                    }}
                   >
                     {selectedProducts.has(p.id) ? (
-                      <CheckSquare size={16} style={{ color: 'var(--color-primary, #3b82f6)' }} />
+                      <CheckSquare
+                        size={16}
+                        style={{ color: 'var(--color-primary, #3b82f6)' }}
+                      />
                     ) : (
-                      <Square size={16} style={{ color: 'var(--text-muted)' }} />
+                      <Square
+                        size={16}
+                        style={{ color: 'var(--text-muted)' }}
+                      />
                     )}
                   </button>
                 </span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{p.name}</span>
-                <span><code>{p.sku ?? '—'}</code></span>
-                <span><code>{p.barcode ?? '—'}</code></span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                  {p.name}
+                </span>
+                <span>
+                  <code>{p.sku ?? '—'}</code>
+                </span>
+                <span>
+                  <code>{p.barcode ?? '—'}</code>
+                </span>
                 <span>
                   <Button variant="ghost" onClick={() => toggleProduct(p.id)}>
                     {selectedProducts.has(p.id) ? 'Hapus' : 'Pilih'}
@@ -335,8 +497,16 @@ export function BarcodePage({
 
       {selectedList.length > 0 && (
         <section className="panel print-area">
-          <div className="panel-head" style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}>
-            <h2 style={{ color: 'var(--text-primary)' }}>Label Barcode ({selectedList.length})</h2>
+          <div
+            className="panel-head"
+            style={{
+              printColorAdjust: 'exact',
+              WebkitPrintColorAdjust: 'exact',
+            }}
+          >
+            <h2 style={{ color: 'var(--text-primary)' }}>
+              Label Barcode ({selectedList.length})
+            </h2>
             <Button variant="ghost" onClick={handlePrint}>
               <Printer size={14} /> Cetak Semua
             </Button>
@@ -362,7 +532,8 @@ export function BarcodePage({
             <h2 style={{ color: 'var(--text-primary)' }}>Generate Barcode</h2>
           </div>
           <p style={{ color: 'var(--text-muted)' }}>
-            Klik "Batch Generate" untuk memilih produk dan mencetak barcode label secara massal.
+            Klik "Batch Generate" untuk memilih produk dan mencetak barcode
+            label secara massal.
           </p>
         </section>
       )}

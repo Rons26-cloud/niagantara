@@ -1,22 +1,41 @@
 import { useState } from 'react';
-import { Card, Button, Input, Select, Modal, ConfirmDialog, SearchInput, StatusBadge, useTranslation, toast } from '@niagantara/ui';
+import {
+  Card,
+  Button,
+  Input,
+  Select,
+  Modal,
+  ConfirmDialog,
+  SearchInput,
+  StatusBadge,
+  useTranslation,
+  toast,
+} from '@niagantara/ui';
 import { useDemoStore } from './demo-store';
 import type { DemoProduct } from './demo-types';
 
 export function DemoProducts() {
   const { t } = useTranslation();
-  const { products, categories, addProduct, updateProduct, deleteProduct } = useDemoStore();
-  
+  const { products, categories, addProduct, updateProduct, deleteProduct } =
+    useDemoStore();
+
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [editingProduct, setEditingProduct] = useState<DemoProduct | null>(null);
+  const [editingProduct, setEditingProduct] = useState<DemoProduct | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; product: DemoProduct | null }>({ open: false, product: null });
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    open: boolean;
+    product: DemoProduct | null;
+  }>({ open: false, product: null });
 
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
-                         p.sku.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.sku.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory =
+      categoryFilter === 'all' || p.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -71,11 +90,7 @@ export function DemoProducts() {
     <div className="demo-products">
       <Card
         title={t('pages.products')}
-        actions={
-          <Button onClick={openAddModal}>
-            + {t('common.add')}
-          </Button>
-        }
+        actions={<Button onClick={openAddModal}>+ {t('common.add')}</Button>}
       >
         <div className="demo-products-filters">
           <SearchInput
@@ -88,8 +103,10 @@ export function DemoProducts() {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="all">{t('demo.allCategories')}</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.name}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.name}>
+                {cat.name}
+              </option>
             ))}
           </Select>
         </div>
@@ -105,14 +122,18 @@ export function DemoProducts() {
             <span>{t('common.status')}</span>
             <span>{t('common.actions')}</span>
           </div>
-          {filteredProducts.map(product => (
+          {filteredProducts.map((product) => (
             <div key={product.id} className="demo-table-row">
               <span className="demo-product-name">{product.name}</span>
               <span className="demo-product-sku">{product.sku}</span>
               <span>{product.category}</span>
               <span>{formatCurrency(product.costPrice)}</span>
               <span>{formatCurrency(product.sellingPrice)}</span>
-              <span className={product.stock <= product.minimumStock ? 'demo-low-stock' : ''}>
+              <span
+                className={
+                  product.stock <= product.minimumStock ? 'demo-low-stock' : ''
+                }
+              >
                 {product.stock} {product.unit}
               </span>
               <StatusBadge status={product.status} />
@@ -120,7 +141,10 @@ export function DemoProducts() {
                 <Button variant="ghost" onClick={() => openEditModal(product)}>
                   {t('common.edit')}
                 </Button>
-                <Button variant="danger" onClick={() => setDeleteConfirm({ open: true, product })}>
+                <Button
+                  variant="danger"
+                  onClick={() => setDeleteConfirm({ open: true, product })}
+                >
                   {t('common.delete')}
                 </Button>
               </div>
@@ -150,7 +174,9 @@ export function DemoProducts() {
         message={`${t('messages.confirmDelete')} "${deleteConfirm.product?.name}"?`}
         confirmLabel={t('common.delete')}
         danger
-        onConfirm={() => deleteConfirm.product && handleDelete(deleteConfirm.product)}
+        onConfirm={() =>
+          deleteConfirm.product && handleDelete(deleteConfirm.product)
+        }
         onCancel={() => setDeleteConfirm({ open: false, product: null })}
       />
     </div>
@@ -203,9 +229,7 @@ function ProductModal({
           <Button variant="ghost" onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit}>
-            {t('common.save')}
-          </Button>
+          <Button onClick={handleSubmit}>{t('common.save')}</Button>
         </>
       }
     >
@@ -231,10 +255,14 @@ function ProductModal({
           <Select
             required
             value={formData.category || ''}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
           >
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.name}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.name}>
+                {cat.name}
+              </option>
             ))}
           </Select>
         </label>
@@ -243,7 +271,9 @@ function ProductModal({
           <Input
             type="number"
             value={formData.costPrice || ''}
-            onChange={(e) => setFormData({ ...formData, costPrice: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({ ...formData, costPrice: Number(e.target.value) })
+            }
           />
         </label>
         <label>
@@ -251,7 +281,9 @@ function ProductModal({
           <Input
             type="number"
             value={formData.sellingPrice || ''}
-            onChange={(e) => setFormData({ ...formData, sellingPrice: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({ ...formData, sellingPrice: Number(e.target.value) })
+            }
           />
         </label>
         <label>
@@ -259,7 +291,9 @@ function ProductModal({
           <Input
             type="number"
             value={formData.stock || ''}
-            onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({ ...formData, stock: Number(e.target.value) })
+            }
           />
         </label>
         <label>
@@ -267,7 +301,9 @@ function ProductModal({
           <Input
             type="number"
             value={formData.minimumStock || ''}
-            onChange={(e) => setFormData({ ...formData, minimumStock: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({ ...formData, minimumStock: Number(e.target.value) })
+            }
           />
         </label>
         <label>
@@ -281,7 +317,12 @@ function ProductModal({
           {t('common.status')}
           <Select
             value={formData.status || 'ACTIVE'}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value as 'ACTIVE' | 'INACTIVE' })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                status: e.target.value as 'ACTIVE' | 'INACTIVE',
+              })
+            }
           >
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>

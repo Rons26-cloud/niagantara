@@ -133,40 +133,33 @@ export function DashboardApp() {
   const [badges, setBadges] = useState<Record<string, number>>({});
   const badgeTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const loadBadges = useCallback(
-    (companyId: string, token: string) => {
-      if (!companyId) return;
-      const today = new Date().toISOString().slice(0, 10);
-      Promise.all([
-        api<any[]>('/employees', token, companyId).catch(() => []),
-        api<any[]>('/attendance', token, companyId).catch(() => []),
-        api<any[]>('/users', token, companyId).catch(() => []),
-        api<any[]>(
-          `/sales?from=${today}&to=${today}`,
-          token,
-          companyId,
-        ).catch(() => []),
-        api<any[]>('/inventory/low-stock', token, companyId).catch(() => []),
-      ]).then(([employees, attendance, users, todaySales, lowStock]) => {
-        const todayAttendance = Array.isArray(attendance)
-          ? attendance.filter(
-              (r: any) => r.clock_in_at?.slice(0, 10) === today,
-            )
-          : [];
-        const present = todayAttendance.filter(
-          (r: any) => r.status === 'PRESENT' || r.status === 'LATE',
-        ).length;
-        setBadges({
-          employees: Array.isArray(employees) ? employees.length : 0,
-          attendance: present,
-          users: Array.isArray(users) ? users.length : 0,
-          sales: Array.isArray(todaySales) ? todaySales.length : 0,
-          'low-stock': Array.isArray(lowStock) ? lowStock.length : 0,
-        });
+  const loadBadges = useCallback((companyId: string, token: string) => {
+    if (!companyId) return;
+    const today = new Date().toISOString().slice(0, 10);
+    Promise.all([
+      api<any[]>('/employees', token, companyId).catch(() => []),
+      api<any[]>('/attendance', token, companyId).catch(() => []),
+      api<any[]>('/users', token, companyId).catch(() => []),
+      api<any[]>(`/sales?from=${today}&to=${today}`, token, companyId).catch(
+        () => [],
+      ),
+      api<any[]>('/inventory/low-stock', token, companyId).catch(() => []),
+    ]).then(([employees, attendance, users, todaySales, lowStock]) => {
+      const todayAttendance = Array.isArray(attendance)
+        ? attendance.filter((r: any) => r.clock_in_at?.slice(0, 10) === today)
+        : [];
+      const present = todayAttendance.filter(
+        (r: any) => r.status === 'PRESENT' || r.status === 'LATE',
+      ).length;
+      setBadges({
+        employees: Array.isArray(employees) ? employees.length : 0,
+        attendance: present,
+        users: Array.isArray(users) ? users.length : 0,
+        sales: Array.isArray(todaySales) ? todaySales.length : 0,
+        'low-stock': Array.isArray(lowStock) ? lowStock.length : 0,
       });
-    },
-    [],
-  );
+    });
+  }, []);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -452,7 +445,9 @@ export function DashboardApp() {
             </span>
             <span className="sidebar-account-copy">
               <b>{profileName}</b>
-              <small>{authUser?.email ?? profileRole.replaceAll('_', ' ')}</small>
+              <small>
+                {authUser?.email ?? profileRole.replaceAll('_', ' ')}
+              </small>
             </span>
           </div>
           <button
@@ -662,9 +657,17 @@ function Page({
           go={go2}
         />
       </>
-      );
+    );
   if (page === 'command-center')
-    return <CommandCenter company={c} token={token} ctx={ctx} branch={branch} go={go2} />;
+    return (
+      <CommandCenter
+        company={c}
+        token={token}
+        ctx={ctx}
+        branch={branch}
+        go={go2}
+      />
+    );
   if (page === 'pos')
     return <Pos company={c} token={token} userId={userId} ctx={ctx} />;
   if (page === 'sales')

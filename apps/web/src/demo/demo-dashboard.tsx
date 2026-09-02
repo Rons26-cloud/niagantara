@@ -9,6 +9,8 @@ import {
   BarChart3,
   ArrowUpRight,
   ArrowDownLeft,
+  Users,
+  UserRoundCheck,
 } from 'lucide-react';
 
 const BRANCH_FACTORS: Record<
@@ -20,10 +22,8 @@ const BRANCH_FACTORS: Record<
   'branch-3': { sales: 0.27, profit: 0.24, trx: 0.3 },
 };
 
-const WEEK = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as const;
-
 export function DemoDashboard() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const today = new Date().toISOString().slice(0, 10);
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(today);
@@ -33,6 +33,8 @@ export function DemoDashboard() {
     sales,
     stockMovements,
     branches,
+    customers,
+    employees,
     selectedBranch,
   } = useDemoStore();
 
@@ -53,18 +55,21 @@ export function DemoDashboard() {
   const baseWeek = [
     4200000, 5100000, 3800000, 6200000, 7500000, 8900000, 4850000,
   ];
-  const salesChartData = WEEK.map((day, i) => ({
+  const week = language === 'en'
+    ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    : ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+  const salesChartData = week.map((day, i) => ({
     day,
     value: Math.round(baseWeek[i] * factor.sales),
   }));
   const maxSales = Math.max(...salesChartData.map((d) => d.value));
 
   const categoryDistribution = [
-    { category: 'Sembako', value: 45 },
-    { category: 'Minuman', value: 25 },
+    { category: language === 'en' ? 'Groceries' : 'Sembako', value: 45 },
+    { category: language === 'en' ? 'Beverages' : 'Minuman', value: 25 },
     { category: 'Snack', value: 15 },
-    { category: 'Perawatan', value: 10 },
-    { category: 'Elektronik', value: 5 },
+    { category: language === 'en' ? 'Personal Care' : 'Perawatan', value: 10 },
+    { category: language === 'en' ? 'Electronics' : 'Elektronik', value: 5 },
   ];
 
   const topProducts = [...products]
@@ -160,6 +165,27 @@ export function DemoDashboard() {
           )}
           note="PAID"
         />
+      </div>
+
+      <div className="demo-owner-summary-grid">
+        <Card title={t('website.demoLabels.totalProducts')}>
+          <div className="demo-owner-summary-value">
+            <Package size={20} aria-hidden="true" />
+            <span><b>{products.length}</b><small>{language === 'en' ? 'registered products' : 'produk terdaftar'}</small></span>
+          </div>
+        </Card>
+        <Card title={t('pages.customers')}>
+          <div className="demo-owner-summary-value demo-owner-summary-value--green">
+            <Users size={20} aria-hidden="true" />
+            <span><b>{customers.length}</b><small>{language === 'en' ? 'registered customers' : 'pelanggan terdaftar'}</small></span>
+          </div>
+        </Card>
+        <Card title={language === 'en' ? 'Active Staff' : 'Staff Aktif'}>
+          <div className="demo-owner-summary-value demo-owner-summary-value--purple">
+            <UserRoundCheck size={20} aria-hidden="true" />
+            <span><b>{employees.filter((employee) => employee.status === 'ACTIVE').length}</b><small>{language === 'en' ? 'active employees' : 'karyawan aktif'}</small></span>
+          </div>
+        </Card>
       </div>
 
       <div className="demo-metrics-grid demo-finance-metrics">
@@ -335,7 +361,8 @@ export function DemoDashboard() {
             </span>
             <div className="demo-sheets-info">
               <span>
-                {t('demo.lastSync')}: <b>Hari ini, 09:15</b>
+                {t('demo.lastSync')}:{' '}
+                <b>{language === 'en' ? 'Today, 09:15' : 'Hari ini, 09:15'}</b>
               </span>
               <span>
                 {t('demo.activeSheet')}: <b>Q3_Business_Report</b>

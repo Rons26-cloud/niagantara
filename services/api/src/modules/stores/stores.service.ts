@@ -71,7 +71,6 @@ export class StoresService {
     dto: UpdateStoreDto,
   ) {
     await this.get(userId, companyId, id);
-    // Keep the database write allowlisted even if controller validation is ever bypassed.
     const { data, error } = await this.db.client
       .from('stores')
       .update({ name: dto.name })

@@ -90,7 +90,6 @@ export function DemoShell({
     selectedStore,
     setSelectedBranch,
     setSelectedStore,
-    resetDemo,
     sales,
     products,
   } = useDemoStore();
@@ -208,14 +207,6 @@ export function DemoShell({
 
   return (
     <div className={`demo-shell${menuOpen ? ' nav-open' : ''}`}>
-      <div className="demo-banner" role="status">
-        <span className="demo-badge">{t('demo.mode')}</span>
-        <span className="demo-text">{t('demo.sampleData')}</span>
-        <button className="demo-reset" onClick={resetDemo}>
-          ↻ {t('demo.reset')}
-        </button>
-      </div>
-
       <div className="demo-mobile-topbar">
         <button
           ref={closeButtonRef}

@@ -1,4 +1,3 @@
-/* shell layout */
 .demo-shell {
   min-height: 100vh;
   background: var(--bg-primary);
@@ -6,10 +5,8 @@
 }
 
 .demo-shell > .demo-banner + * {
-  /* offset for the fixed demo-mode banner */
 }
 
-/* demo mode banner */
 .demo-banner {
   position: fixed;
   top: 0;
@@ -63,11 +60,10 @@
   outline-offset: 2px;
 }
 
-/* mobile topbar */
 .demo-mobile-topbar {
   display: none;
   position: sticky;
-  top: 2.1rem;
+  top: 0;
   z-index: 55;
   align-items: center;
   gap: 0.75rem;
@@ -132,10 +128,9 @@
   display: none;
 }
 
-/* sidebar */
 .demo-sidebar {
   position: fixed;
-  top: 2.1rem;
+  top: 0;
   bottom: 0;
   left: 0;
   z-index: 50;
@@ -259,7 +254,6 @@
   color: #94a3b8;
 }
 
-/* drawer overlay */
 .demo-drawer-overlay {
   display: none;
   position: fixed;
@@ -269,15 +263,13 @@
   border: 0;
 }
 
-/* mobile tabbar */
 .demo-mobile-tabbar {
   display: none;
 }
 
-/* workspace */
 .demo-workspace {
   margin-left: 248px;
-  padding-top: 2.1rem; /* banner offset */
+  padding-top: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -459,7 +451,6 @@
   max-width: 160px;
 }
 
-/* page container */
 .demo-page {
   padding: clamp(1rem, 2.5vw, 2rem);
   display: grid;
@@ -494,11 +485,54 @@
   align-content: start;
 }
 
-/* dashboard */
 .demo-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1rem;
+}
+
+.demo-owner-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.demo-owner-summary-value {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--accent-primary, #2563eb);
+}
+
+.demo-owner-summary-value > svg {
+  box-sizing: content-box;
+  padding: 0.65rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.demo-owner-summary-value span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.demo-owner-summary-value b {
+  color: var(--text-primary, #111827);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.demo-owner-summary-value small {
+  color: var(--text-muted, #64748b);
+}
+
+.demo-owner-summary-value--green { color: #059669; }
+.demo-owner-summary-value--purple { color: #7c3aed; }
+
+@media (max-width: 820px) {
+  .demo-owner-summary-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .demo-owner-filterbar {
   display: flex;
@@ -709,7 +743,6 @@
   color: var(--text-primary);
 }
 
-/* tables */
 .demo-table {
   overflow-x: auto;
 }
@@ -775,7 +808,6 @@
   font-size: 0.9rem;
 }
 
-/* column templates per table shape (desktop-first) */
 .demo-cols-8 {
   grid-template-columns: 1.8fr 0.9fr 1fr 1fr 1fr 0.9fr 0.9fr 1.3fr;
 }
@@ -798,7 +830,6 @@
   grid-template-columns: 1.6fr 2fr;
 }
 
-/* toolbar / filters */
 .demo-toolbar {
   display: flex;
   align-items: center;
@@ -838,7 +869,6 @@
   color: #fff;
 }
 
-/* forms */
 .demo-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -874,7 +904,6 @@
   color: var(--text-secondary);
 }
 
-/* detail rows */
 .demo-detail-grid {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -891,7 +920,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* pos */
 .demo-pos-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
@@ -1064,7 +1092,6 @@
   font-size: 0.82rem;
 }
 
-/* receipt */
 .demo-receipt {
   max-width: 380px;
   margin: 0 auto;
@@ -1112,7 +1139,6 @@
   font-size: 0.68rem;
 }
 
-/* shifts */
 .demo-shift-panel {
   display: grid;
   gap: 0.8rem;
@@ -1142,7 +1168,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* finance */
 .demo-finance-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1176,14 +1201,12 @@
   color: #fff;
 }
 
-/* reports */
 .demo-report-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.7rem;
 }
 
-/* google sheets */
 .demo-sheets-banner {
   padding: 0.55rem 0.8rem;
   border: 1px solid rgba(245, 158, 11, 0.45);
@@ -1336,7 +1359,6 @@
   outline: none;
 }
 
-/* settings */
 .demo-settings-section {
   display: grid;
   gap: 0.5rem;
@@ -1363,7 +1385,6 @@
   color: var(--text-muted);
 }
 
-/* help */
 .demo-help-modules {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -1401,7 +1422,6 @@
   line-height: 1.6;
 }
 
-/* products page extras */
 .demo-products-table {
   overflow-x: auto;
 }
@@ -1431,7 +1451,7 @@
   }
   .demo-workspace {
     margin-left: 0;
-    padding-top: 2.1rem;
+    padding-top: 0;
   }
 
   .demo-pos-layout {
@@ -1441,7 +1461,6 @@
     position: static;
   }
 
-  /* condensed tables: keep key columns visible, drop the rest gracefully */
   .demo-cols-8 {
     grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
   }
@@ -1468,7 +1487,7 @@
   }
   .demo-mobile-context {
     position: sticky;
-    top: calc(2.1rem + 61px);
+    top: 61px;
     z-index: 40;
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -1553,10 +1572,10 @@
     color: var(--accent-primary);
   }
   .demo-workspace {
-    padding-bottom: 3.4rem; /* room for tabbar */
+    padding-bottom: 3.4rem;
   }
   .demo-topbar {
-    display: none; /* mobile uses its own compact topbar */
+    display: none;
   }
   .demo-context {
     display: none;
@@ -1575,7 +1594,6 @@
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  /* tables become stacked cards: every cell readable, no data hidden */
   .demo-table-header {
     display: none;
   }
@@ -1687,7 +1705,6 @@
   }
 }
 
-/* Embedded owner dashboard preview on the marketing page. */
 .demo-preview-shell {
   width: min(100%, 1320px);
   margin: 2rem auto 0;
@@ -1696,7 +1713,9 @@
   border-radius: 20px;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
 }
-.demo-preview-shell .demo-shell { min-height: 720px; }
+.demo-preview-shell .demo-shell {
+  min-height: 720px;
+}
 .demo-preview-shell .demo-shell {
   position: relative;
   display: grid;
@@ -1726,9 +1745,13 @@
   min-height: 720px;
   margin-left: 0;
 }
-.demo-preview-shell .demo-topbar { top: auto; }
+.demo-preview-shell .demo-topbar {
+  top: auto;
+}
 @media (max-width: 1023px) {
-  .demo-preview-shell .demo-shell { display: block; }
+  .demo-preview-shell .demo-shell {
+    display: block;
+  }
   .demo-preview-shell .demo-sidebar {
     position: absolute;
     top: 0;
@@ -1738,15 +1761,28 @@
     min-height: 100%;
     transform: translateX(-105%);
   }
-  .demo-preview-shell .demo-shell.nav-open .demo-sidebar { transform: translateX(0); }
-  .demo-preview-shell .demo-workspace { margin-left: 0; }
+  .demo-preview-shell .demo-shell.nav-open .demo-sidebar {
+    transform: translateX(0);
+  }
+  .demo-preview-shell .demo-workspace {
+    margin-left: 0;
+  }
 }
 @media (max-width: 767px) {
-  .demo-preview-shell { margin-top: 1.25rem; border-radius: 14px; }
+  .demo-preview-shell {
+    margin-top: 1.25rem;
+    border-radius: 14px;
+  }
   .demo-preview-shell .demo-shell,
-  .demo-preview-shell .demo-workspace { min-height: 640px; }
-  .demo-preview-shell .demo-banner { position: relative; }
-  .demo-preview-shell .demo-sidebar { top: 0; }
+  .demo-preview-shell .demo-workspace {
+    min-height: 640px;
+  }
+  .demo-preview-shell .demo-banner {
+    position: relative;
+  }
+  .demo-preview-shell .demo-sidebar {
+    top: 0;
+  }
 }
 
 @media (max-width: 420px) {
@@ -1784,9 +1820,6 @@
   }
 }
 
-/* owner-dashboard visual refinement
-   Keep the demo on the same visual language as the authenticated owner app:
-   quiet surfaces, clear hierarchy, and readable contrast in both themes. */
 .demo-shell {
   --demo-content-max: 1560px;
   --demo-focus: #2563eb;
@@ -1852,7 +1885,9 @@
   background: var(--brand-navy, #0f172a);
   box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
 }
-.demo-workspace { margin-left: 264px; }
+.demo-workspace {
+  margin-left: 264px;
+}
 .demo-sidebar nav a {
   min-height: 40px;
   padding: 0.6rem 0.8rem;
@@ -1863,12 +1898,16 @@
   background: #2563eb;
   box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
 }
-.demo-nav-group { margin-bottom: 1.15rem; }
+.demo-nav-group {
+  margin-bottom: 1.15rem;
+}
 .demo-nav-group-label {
   font-size: 0.68rem;
   letter-spacing: 0.12em;
 }
-.demo-metrics-grid { gap: 1.15rem; }
+.demo-metrics-grid {
+  gap: 1.15rem;
+}
 .demo-metrics-grid .ng-stat,
 .demo-dashboard .ng-card,
 .demo-page .ng-card {
@@ -1888,17 +1927,33 @@
   font-size: 0.875rem;
   color: var(--text-primary);
 }
-.demo-owner-branch { font-size: 0.84rem; }
-.demo-chart-container { min-height: 210px; padding-top: 0.35rem; }
-.demo-bar-chart { height: 168px; gap: 8px; }
-.demo-bar { border-radius: 8px 8px 3px 3px; }
+.demo-owner-branch {
+  font-size: 0.84rem;
+}
+.demo-chart-container {
+  min-height: 210px;
+  padding-top: 0.35rem;
+}
+.demo-bar-chart {
+  height: 168px;
+  gap: 8px;
+}
+.demo-bar {
+  border-radius: 8px 8px 3px 3px;
+}
 .demo-bar-label,
 .demo-mini-list .demo-mini-main small,
-.demo-mini-list .demo-mini-value { font-size: 0.78rem; }
+.demo-mini-list .demo-mini-value {
+  font-size: 0.78rem;
+}
 .demo-dist-list li,
 .demo-mini-list li,
-.demo-table-row { font-size: 0.9rem; }
-.demo-table-header { font-size: 0.74rem; }
+.demo-table-row {
+  font-size: 0.9rem;
+}
+.demo-table-header {
+  font-size: 0.74rem;
+}
 .demo-quick-action {
   min-height: 108px;
   padding: 1rem 0.7rem;
@@ -1925,12 +1980,15 @@
 [data-theme='blue'] .demo-table-header {
   background: color-mix(in srgb, var(--surface) 88%, var(--bg-primary));
 }
-[data-theme='blue'] .demo-banner { background: linear-gradient(100deg, #78350f, #92400e 52%, #9a3412); }
+[data-theme='blue'] .demo-banner {
+  background: linear-gradient(100deg, #78350f, #92400e 52%, #9a3412);
+}
 @media (max-width: 1023px) {
-  .demo-workspace { margin-left: 0; }
+  .demo-workspace {
+    margin-left: 0;
+  }
 }
 
-/* Containment guard: the marketing preview never owns the viewport. */
 .demo-preview-shell .demo-shell {
   position: relative;
   display: grid;
@@ -1962,7 +2020,9 @@
   margin-left: 0;
 }
 @media (max-width: 1023px) {
-  .demo-preview-shell .demo-shell { display: block; }
+  .demo-preview-shell .demo-shell {
+    display: block;
+  }
   .demo-preview-shell .demo-sidebar {
     position: absolute;
     inset: 0 auto 0 0;
@@ -1970,8 +2030,12 @@
     min-height: 100%;
     transform: translateX(-105%);
   }
-  .demo-preview-shell .demo-shell.nav-open .demo-sidebar { transform: translateX(0); }
-  .demo-preview-shell .demo-workspace { margin-left: 0; }
+  .demo-preview-shell .demo-shell.nav-open .demo-sidebar {
+    transform: translateX(0);
+  }
+  .demo-preview-shell .demo-workspace {
+    margin-left: 0;
+  }
 }
 @media (max-width: 767px) {
   .demo-page,
@@ -1996,6 +2060,10 @@
   .demo-branches,
   .demo-stores,
   .demo-settings,
-  .demo-help { padding: 1rem; }
-  .demo-topbar { min-height: 64px; }
+  .demo-help {
+    padding: 1rem;
+  }
+  .demo-topbar {
+    min-height: 64px;
+  }
 }

@@ -44,9 +44,11 @@ import {
 export type { NavIcon } from './feature-icons';
 export { FEATURE_ICONS, SidebarIcon } from './feature-icons';
 
-type IconType = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
-
-/* ─── User Dashboard ─── */
+type IconType = ComponentType<{
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+}>;
 
 export const USER_NAV_ICONS: Record<string, IconType> = {
   dashboard: Home,
@@ -75,8 +77,6 @@ export const USER_NAV_ICONS: Record<string, IconType> = {
   help: CircleHelp,
 };
 
-/* ─── Master Dashboard ─── */
-
 export const MASTER_NAV_ICONS: Record<string, IconType> = {
   dashboard: LayoutDashboard,
   companies: Building2,
@@ -95,16 +95,12 @@ export const MASTER_NAV_ICONS: Record<string, IconType> = {
   operations: Activity,
 };
 
-/* ─── Mobile Bottom Nav Icons ─── */
-
 export const MOBILE_BOTTOM_NAV = [
   { id: 'dashboard', icon: Home, label: 'Beranda' },
   { id: 'pos', icon: MonitorSmartphone, label: 'POS' },
   { id: 'sales', icon: ReceiptText, label: 'Penjualan' },
   { id: 'reports', icon: BarChart3, label: 'Laporan' },
 ] as const;
-
-/* ─── POS Nav Icons ─── */
 
 export const POS_NAV_ICONS: Record<string, IconType> = {
   pos: ScanLine,

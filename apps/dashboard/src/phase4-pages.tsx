@@ -33,7 +33,12 @@ export function CrudPage({
   ctx: Ctx;
 }) {
   const { t } = useTranslation();
-  const singular = kind === 'suppliers' ? 'supplier' : kind === 'customers' ? 'customer' : 'employee';
+  const singular =
+    kind === 'suppliers'
+      ? 'supplier'
+      : kind === 'customers'
+        ? 'customer'
+        : 'employee';
 
   const [rows, setRows] = useState<any[]>([]);
   const [detail, setDetail] = useState<any>(null);
@@ -45,7 +50,12 @@ export function CrudPage({
 
   const getInitialForm = (): Record<string, string> =>
     kind === 'employees'
-      ? { employeeCode: '', name: '', jobTitle: '', primaryBranchId: ctx.accessible_branches[0]?.id ?? '' }
+      ? {
+          employeeCode: '',
+          name: '',
+          jobTitle: '',
+          primaryBranchId: ctx.accessible_branches[0]?.id ?? '',
+        }
       : { code: '', name: '', phone: '', email: '' };
   const [form, setForm] = useState<Record<string, string>>(getInitialForm);
 
@@ -54,7 +64,11 @@ export function CrudPage({
     setError(null);
     api<any[]>('/' + kind, token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -78,7 +92,12 @@ export function CrudPage({
       const body =
         kind === 'employees'
           ? form
-          : { [singular + 'Code']: form.code, name: form.name, phone: form.phone, email: form.email };
+          : {
+              [singular + 'Code']: form.code,
+              name: form.name,
+              phone: form.phone,
+              email: form.email,
+            };
       await api('/' + kind, token, company, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -169,7 +188,11 @@ export function CrudPage({
               >
                 <span>{r.name ?? '—'}</span>
                 <span>{r.email ?? '—'}</span>
-                <span>{kind === 'employees' ? r.jobTitle ?? '—' : r.phone ?? '—'}</span>
+                <span>
+                  {kind === 'employees'
+                    ? (r.jobTitle ?? '—')
+                    : (r.phone ?? '—')}
+                </span>
                 <span>
                   <StatusBadge status={r.status ?? 'ACTIVE'} />
                 </span>
@@ -213,7 +236,9 @@ export function CrudPage({
                 {detail.sales.map((s: any) => (
                   <div className="tr" key={s.id}>
                     <span>{s.transaction_number ?? s.id}</span>
-                    <span>Rp {Number(s.grand_total ?? 0).toLocaleString('id-ID')}</span>
+                    <span>
+                      Rp {Number(s.grand_total ?? 0).toLocaleString('id-ID')}
+                    </span>
                     <span>
                       <StatusBadge status={s.status ?? '—'} />
                     </span>
@@ -240,11 +265,16 @@ export function CrudPage({
               </div>
             </>
           )}
-          {kind === 'employees' && ctx.permissions.includes('employee.assign') && (
-            <Button variant="secondary" onClick={assignBranch} style={{ marginTop: 12 }}>
-              Assign branch
-            </Button>
-          )}
+          {kind === 'employees' &&
+            ctx.permissions.includes('employee.assign') && (
+              <Button
+                variant="secondary"
+                onClick={assignBranch}
+                style={{ marginTop: 12 }}
+              >
+                Assign branch
+              </Button>
+            )}
         </section>
       )}
 

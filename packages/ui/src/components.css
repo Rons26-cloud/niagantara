@@ -58,7 +58,6 @@
   text-transform: uppercase;
 }
 
-/* Login Brand — shared login page brand block */
 .login-brand {
   display: flex;
   flex-direction: column;
@@ -105,11 +104,15 @@
 }
 
 @media (max-width: 480px) {
-  .login-brand__logo { height: 44px; margin-bottom: 10px; }
-  .login-brand__text strong { font-size: 18px; }
+  .login-brand__logo {
+    height: 44px;
+    margin-bottom: 10px;
+  }
+  .login-brand__text strong {
+    font-size: 18px;
+  }
 }
 
-/* Theme Switcher */
 .theme-switcher {
   display: inline-flex;
   align-items: center;
@@ -145,7 +148,6 @@
   color: var(--text-secondary);
 }
 
-/* Language Switcher */
 .language-switcher {
   display: inline-flex;
   align-items: center;
@@ -173,7 +175,6 @@
   outline-offset: 2px;
 }
 
-/* Compact Language Switcher */
 .language-switcher.compact {
   gap: 4px;
   border: 1px solid var(--border-color);
@@ -209,12 +210,11 @@
   outline-offset: 2px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .theme-label {
     display: none;
   }
-  
+
   .language-switcher.compact button {
     padding: 4px 8px;
     font-size: 11px;

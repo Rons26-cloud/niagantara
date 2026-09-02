@@ -22,7 +22,11 @@ import '@niagantara/ui/components.css';
 import '@niagantara/ui/ui.css';
 import './app.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1');
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD
+    ? 'https://niagantara-production.up.railway.app/api/v1'
+    : '/api/v1');
 
 const GAP_MODULES: Record<string, string> = {
   companies: 'master.companies',
@@ -88,11 +92,14 @@ export function MasterApp() {
     location.hash.replace(/^#\/?/, '') || 'dashboard',
   );
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    return localStorage.getItem('niagantara.master.sidebar.collapsed') === 'true';
+    return (
+      localStorage.getItem('niagantara.master.sidebar.collapsed') === 'true'
+    );
   });
 
   useEffect(() => {
-    const onHash = () => setPage(location.hash.replace(/^#\/?/, '') || 'dashboard');
+    const onHash = () =>
+      setPage(location.hash.replace(/^#\/?/, '') || 'dashboard');
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -161,7 +168,11 @@ export function MasterApp() {
         <div className="msidebar-status">
           <Activity size={14} className={apiOk ? 'status-ok' : 'status-err'} />
           <span className="msidebar-status-text">
-            {apiOk ? t('master.operational') : healthHook.error ? t('master.down') : '...'}
+            {apiOk
+              ? t('master.operational')
+              : healthHook.error
+                ? t('master.down')
+                : '...'}
           </span>
         </div>
 
@@ -229,11 +240,29 @@ export function MasterApp() {
         ) : page === 'system-health' ? (
           <SystemHealthPage />
         ) : page === 'security' ? (
-          <GapPage title={t('master.auditLog')} items={[t('master.auditLog'), t('master.securityEvents'), t('master.systemActivity')]} />
+          <GapPage
+            title={t('master.auditLog')}
+            items={[
+              t('master.auditLog'),
+              t('master.securityEvents'),
+              t('master.systemActivity'),
+            ]}
+          />
         ) : page === 'operations' ? (
-          <GapPage title={t('master.sheets.title')} items={[t('master.sheetsHealth'), t('master.workerHealth'), t('master.emailHealth')]} note={t('master.sheets.note')} />
+          <GapPage
+            title={t('master.sheets.title')}
+            items={[
+              t('master.sheetsHealth'),
+              t('master.workerHealth'),
+              t('master.emailHealth'),
+            ]}
+            note={t('master.sheets.note')}
+          />
         ) : GAP_MODULES[page] ? (
-          <GapPage title={t(GAP_MODULES[page])} items={[t(GAP_MODULES[page])]} />
+          <GapPage
+            title={t(GAP_MODULES[page])}
+            items={[t(GAP_MODULES[page])]}
+          />
         ) : (
           <MasterHome healthHook={healthHook} />
         )}
@@ -255,15 +284,51 @@ function MasterHome({
     <>
       <header className="mpage-head">
         <h1>{t('master.title')}</h1>
-        <p>{health?.service ? `${health.service} · ${health.environment ?? ''}` : t('master.tagline')}</p>
+        <p>
+          {health?.service
+            ? `${health.service} · ${health.environment ?? ''}`
+            : t('master.tagline')}
+        </p>
       </header>
       <section className="mkpis">
-        <StatCard label={t('master.apiHealth')} value={apiOk ? t('master.operational') : error ? t('master.down') : '…'} tone={apiOk ? 'success' : 'danger'} loading={!checkedAt && !error} note={health?.app_version} />
-        <StatCard label={t('master.databaseHealth')} value={dbOk ? t('master.operational') : readiness ? t('master.down') : '…'} tone={dbOk ? 'success' : 'danger'} loading={!checkedAt && !error} note={readiness?.status} />
-        <StatCard label={t('master.companies')} value={t('master.notConfigured')} note={t('master.backendGap')} />
-        <StatCard label={t('master.users')} value={t('master.notConfigured')} note={t('master.backendGap')} />
-        <StatCard label={t('master.subscription')} value={t('master.notConfigured')} note={t('master.backendGap')} />
-        <StatCard label={t('master.branches')} value={t('master.notConfigured')} note={t('master.backendGap')} />
+        <StatCard
+          label={t('master.apiHealth')}
+          value={
+            apiOk ? t('master.operational') : error ? t('master.down') : '…'
+          }
+          tone={apiOk ? 'success' : 'danger'}
+          loading={!checkedAt && !error}
+          note={health?.app_version}
+        />
+        <StatCard
+          label={t('master.databaseHealth')}
+          value={
+            dbOk ? t('master.operational') : readiness ? t('master.down') : '…'
+          }
+          tone={dbOk ? 'success' : 'danger'}
+          loading={!checkedAt && !error}
+          note={readiness?.status}
+        />
+        <StatCard
+          label={t('master.companies')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
+        <StatCard
+          label={t('master.users')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
+        <StatCard
+          label={t('master.subscription')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
+        <StatCard
+          label={t('master.branches')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
       </section>
       <Alert tone="warning">{t('master.backendGap')}</Alert>
       <section className="mgap-grid">
@@ -276,7 +341,8 @@ function MasterHome({
       </section>
       {checkedAt && (
         <p className="muted mchecked">
-          {t('master.lastChecked')}: {checkedAt.toLocaleTimeString()} · {t('master.autoRefresh')}
+          {t('master.lastChecked')}: {checkedAt.toLocaleTimeString()} ·{' '}
+          {t('master.autoRefresh')}
         </p>
       )}
     </>
@@ -293,10 +359,28 @@ function SystemHealthPage() {
         <p>{t('master.autoRefresh')}</p>
       </header>
       <section className="mkpis">
-        <StatCard label="/health" value={error ? t('master.down') : String(health?.status ?? '…')} tone={error ? 'danger' : 'success'} note={health?.build_sha?.slice(0, 7)} />
-        <StatCard label="/health/readiness" value={String(readiness?.status ?? (error ? t('master.down') : '…'))} tone={readiness?.status === 'ready' ? 'success' : 'danger'} note={readiness?.database} />
-        <StatCard label={t('master.workerHealth')} value={t('master.notConfigured')} note={t('master.backendGap')} />
-        <StatCard label={t('master.emailHealth')} value={t('master.notConfigured')} note={t('master.backendGap')} />
+        <StatCard
+          label="/health"
+          value={error ? t('master.down') : String(health?.status ?? '…')}
+          tone={error ? 'danger' : 'success'}
+          note={health?.build_sha?.slice(0, 7)}
+        />
+        <StatCard
+          label="/health/readiness"
+          value={String(readiness?.status ?? (error ? t('master.down') : '…'))}
+          tone={readiness?.status === 'ready' ? 'success' : 'danger'}
+          note={readiness?.database}
+        />
+        <StatCard
+          label={t('master.workerHealth')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
+        <StatCard
+          label={t('master.emailHealth')}
+          value={t('master.notConfigured')}
+          note={t('master.backendGap')}
+        />
       </section>
       {checkedAt && (
         <p className="muted mchecked">
@@ -307,14 +391,22 @@ function SystemHealthPage() {
   );
 }
 
-function GapPage({ title, items, note }: { title: string; items: string[]; note?: string }) {
+function GapPage({
+  title,
+  items,
+  note,
+}: {
+  title: string;
+  items: string[];
+  note?: string;
+}) {
   const { t } = useTranslation();
   return (
     <>
       <header className="mpage-head">
         <h1>{title}</h1>
       </header>
-      <Alert tone="info" >{note ?? t('master.backendGap')}</Alert>
+      <Alert tone="info">{note ?? t('master.backendGap')}</Alert>
       <section className="mgap-grid">
         {items.map((i) => (
           <GapPanel key={i} title={i} />
@@ -362,10 +454,22 @@ function MasterLogin({
       <LoginBrand appLabel="Platform Administration / Master Console" />
       <form onSubmit={submit}>
         <Field label={t('auth.email')}>
-          <Input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </Field>
         <Field label={t('auth.password')}>
-          <Input type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Field>
         {error && (
           <p role="alert" style={{ color: '#ef4444', fontSize: 13 }}>
@@ -379,4 +483,3 @@ function MasterLogin({
     </div>
   );
 }
-

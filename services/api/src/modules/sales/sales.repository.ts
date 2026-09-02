@@ -12,7 +12,12 @@ export class SalesRepository {
       )
       .eq('company_id', c)
       .order('created_at', { ascending: false })
-      .range(Math.max(0, Number(q.offset ?? 0)), Math.max(0, Number(q.offset ?? 0)) + Math.min(100, Math.max(1, Number(q.limit ?? 50))) - 1);
+      .range(
+        Math.max(0, Number(q.offset ?? 0)),
+        Math.max(0, Number(q.offset ?? 0)) +
+          Math.min(100, Math.max(1, Number(q.limit ?? 50))) -
+          1,
+      );
     if (q.search)
       x = x.ilike('transaction_number', `%${q.search.replace(/[%_]/g, '')}%`);
     if (q.branchId) x = x.eq('branch_id', q.branchId);

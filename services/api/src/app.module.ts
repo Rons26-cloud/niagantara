@@ -1,4 +1,9 @@
-import { Controller, Get, Module, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Module,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { CompaniesModule } from './modules/companies/companies.module.js';
 import { StoresModule } from './modules/stores/stores.module.js';
@@ -45,7 +50,11 @@ class HealthController {
         message: 'A critical dependency is unavailable.',
       });
     }
-    return { status: 'ready', database: 'reachable', service: 'niagantara-api' };
+    return {
+      status: 'ready',
+      database: 'reachable',
+      service: 'niagantara-api',
+    };
   }
 }
 

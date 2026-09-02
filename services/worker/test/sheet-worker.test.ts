@@ -1,5 +1,39 @@
-import assert from'node:assert/strict';import test from'node:test';import{retryDelayMs,safeSheetValue,workerEnvironment}from'../src/sheet-worker.js';
-test('formula-like source values are forced to literal text',()=>{for(const v of['=1+1','+SUM(A:A)','-2+3','@evil'])assert.equal(String(safeSheetValue(v))[0],"'");assert.equal(safeSheetValue('safe'),'safe')});
-test('retry backoff is exponential, jittered, and capped',()=>{assert.equal(retryDelayMs(1,0),750);assert.equal(retryDelayMs(2,0),1500);assert.equal(retryDelayMs(20,0),675000)});
-test('worker refuses to start without external configuration',()=>{assert.throws(()=>workerEnvironment({} as any),/SUPABASE_URL is required/)});
-test('worker validates timeout, encryption and bounded rebuild page configuration',()=>{const base={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service',GOOGLE_CLIENT_ID:'id',GOOGLE_CLIENT_SECRET:'secret',GOOGLE_TOKEN_ENCRYPTION_KEY:'x'.repeat(32)};assert.equal(workerEnvironment(base as any).rebuildPageSize,500);assert.throws(()=>workerEnvironment({...base,SHEET_REBUILD_PAGE_SIZE:'10000'} as any),/SHEET_REBUILD_PAGE_SIZE/);assert.throws(()=>workerEnvironment({...base,GOOGLE_API_TIMEOUT_MS:'0'} as any),/GOOGLE_API_TIMEOUT_MS/)});
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  retryDelayMs,
+  safeSheetValue,
+  workerEnvironment,
+} from '../src/sheet-worker.js';
+test('formula-like source values are forced to literal text', () => {
+  for (const v of ['=1+1', '+SUM(A:A)', '-2+3', '@evil'])
+    assert.equal(String(safeSheetValue(v))[0], "'");
+  assert.equal(safeSheetValue('safe'), 'safe');
+});
+test('retry backoff is exponential, jittered, and capped', () => {
+  assert.equal(retryDelayMs(1, 0), 750);
+  assert.equal(retryDelayMs(2, 0), 1500);
+  assert.equal(retryDelayMs(20, 0), 675000);
+});
+test('worker refuses to start without external configuration', () => {
+  assert.throws(() => workerEnvironment({} as any), /SUPABASE_URL is required/);
+});
+test('worker validates timeout, encryption and bounded rebuild page configuration', () => {
+  const base = {
+    SUPABASE_URL: 'https://example.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'service',
+    GOOGLE_CLIENT_ID: 'id',
+    GOOGLE_CLIENT_SECRET: 'secret',
+    GOOGLE_TOKEN_ENCRYPTION_KEY: 'x'.repeat(32),
+  };
+  assert.equal(workerEnvironment(base as any).rebuildPageSize, 500);
+  assert.throws(
+    () =>
+      workerEnvironment({ ...base, SHEET_REBUILD_PAGE_SIZE: '10000' } as any),
+    /SHEET_REBUILD_PAGE_SIZE/,
+  );
+  assert.throws(
+    () => workerEnvironment({ ...base, GOOGLE_API_TIMEOUT_MS: '0' } as any),
+    /GOOGLE_API_TIMEOUT_MS/,
+  );
+});

@@ -7,7 +7,10 @@ export function getDefaultTheme(): Theme {
   if (stored && (stored === 'light' || stored === 'blue')) {
     return stored;
   }
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  if (
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  ) {
     return 'blue';
   }
   return 'light';
@@ -18,7 +21,10 @@ export function setTheme(theme: Theme): void {
   document.documentElement.setAttribute('data-theme', theme);
   const metaThemeColor = document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
-    metaThemeColor.setAttribute('content', theme === 'blue' ? '#0F172A' : '#F8FAFC');
+    metaThemeColor.setAttribute(
+      'content',
+      theme === 'blue' ? '#0F172A' : '#F8FAFC',
+    );
   }
   window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
 }
@@ -32,7 +38,10 @@ export function initTheme(): void {
   document.documentElement.setAttribute('data-theme', theme);
   const metaThemeColor = document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
-    metaThemeColor.setAttribute('content', theme === 'blue' ? '#0F172A' : '#F8FAFC');
+    metaThemeColor.setAttribute(
+      'content',
+      theme === 'blue' ? '#0F172A' : '#F8FAFC',
+    );
   }
 }
 
@@ -51,7 +60,10 @@ export function useTheme() {
 
     window.addEventListener('theme-change', handleThemeChange as EventListener);
     return () => {
-      window.removeEventListener('theme-change', handleThemeChange as EventListener);
+      window.removeEventListener(
+        'theme-change',
+        handleThemeChange as EventListener,
+      );
     };
   }, []);
 

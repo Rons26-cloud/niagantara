@@ -10,7 +10,7 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({
   className = '',
   ariaLabel = 'Switch language',
-  compact = false
+  compact = false,
 }: LanguageSwitcherProps) {
   const { language, setLanguage } = useTranslation();
 

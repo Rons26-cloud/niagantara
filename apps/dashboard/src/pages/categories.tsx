@@ -13,7 +13,14 @@ import {
   usePaged,
   useTranslation,
 } from '@niagantara/ui';
-import { Tags, Plus, Download, Upload, GripVertical, ArrowUpDown } from 'lucide-react';
+import {
+  Tags,
+  Plus,
+  Download,
+  Upload,
+  GripVertical,
+  ArrowUpDown,
+} from 'lucide-react';
 
 type Category = {
   id: string;
@@ -29,12 +36,30 @@ type Ctx = {
 };
 
 const CATEGORY_COLORS = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-  '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
-  '#14b8a6', '#e11d48', '#0ea5e9', '#a855f7', '#64748b',
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#84cc16',
+  '#f97316',
+  '#6366f1',
+  '#14b8a6',
+  '#e11d48',
+  '#0ea5e9',
+  '#a855f7',
+  '#64748b',
 ];
 
-function ColorPicker({ value, onChange }: { value: string; onChange: (c: string) => void }) {
+function ColorPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (c: string) => void;
+}) {
   return (
     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
       {CATEGORY_COLORS.map((c) => (
@@ -46,7 +71,10 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (c: string)
             height: 24,
             borderRadius: '50%',
             background: c,
-            border: value === c ? '3px solid var(--text-primary)' : '3px solid transparent',
+            border:
+              value === c
+                ? '3px solid var(--text-primary)'
+                : '3px solid transparent',
             cursor: 'pointer',
             transition: 'transform 0.15s',
             transform: value === c ? 'scale(1.2)' : 'scale(1)',
@@ -59,13 +87,45 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (c: string)
 
 function ProductCountBar({ count, max }: { count: number; max: number }) {
   const pct = max > 0 ? Math.min((count / max) * 100, 100) : 0;
-  const color = count <= 0 ? 'var(--text-muted)' : pct < 33 ? 'var(--color-warning, #f59e0b)' : pct < 66 ? 'var(--color-primary, #3b82f6)' : 'var(--color-success, #22c55e)';
+  const color =
+    count <= 0
+      ? 'var(--text-muted)'
+      : pct < 33
+        ? 'var(--color-warning, #f59e0b)'
+        : pct < 66
+          ? 'var(--color-primary, #3b82f6)'
+          : 'var(--color-success, #22c55e)';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--bg-secondary, #f3f4f6)', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 0.3s' }} />
+      <div
+        style={{
+          flex: 1,
+          height: 6,
+          borderRadius: 3,
+          background: 'var(--bg-secondary, #f3f4f6)',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            background: color,
+            borderRadius: 3,
+            transition: 'width 0.3s',
+          }}
+        />
       </div>
-      <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', minWidth: 20, textAlign: 'right' }}>{count}</span>
+      <span
+        style={{
+          color: 'var(--text-secondary)',
+          fontSize: '0.8rem',
+          minWidth: 20,
+          textAlign: 'right',
+        }}
+      >
+        {count}
+      </span>
     </div>
   );
 }
@@ -90,14 +150,23 @@ export function CategoriesPage({
   const [sortBy, setSortBy] = useState<'name' | 'count' | 'date'>('name');
   const [showImport, setShowImport] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', color: '#3b82f6', status: 'ACTIVE' });
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    color: '#3b82f6',
+    status: 'ACTIVE',
+  });
 
   const load = () => {
     setLoading(true);
     setError(null);
     api<Category[]>('/categories', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -107,13 +176,16 @@ export function CategoriesPage({
 
   const maxCount = Math.max(...rows.map((r) => r.product_count ?? 0), 1);
 
-  const filtered = rows.filter(
-    (r) => !search || r.name?.toLowerCase().includes(search.toLowerCase()),
-  ).sort((a, b) => {
-    if (sortBy === 'count') return (b.product_count ?? 0) - (a.product_count ?? 0);
-    if (sortBy === 'date') return (b.id ?? '').localeCompare(a.id ?? '');
-    return (a.name ?? '').localeCompare(b.name ?? '');
-  });
+  const filtered = rows
+    .filter(
+      (r) => !search || r.name?.toLowerCase().includes(search.toLowerCase()),
+    )
+    .sort((a, b) => {
+      if (sortBy === 'count')
+        return (b.product_count ?? 0) - (a.product_count ?? 0);
+      if (sortBy === 'date') return (b.id ?? '').localeCompare(a.id ?? '');
+      return (a.name ?? '').localeCompare(b.name ?? '');
+    });
 
   const { page, pageCount, setPage, slice } = usePaged(filtered);
 
@@ -127,7 +199,12 @@ export function CategoriesPage({
       });
       setMsg(t('messages.saveSuccess'));
       setShowCreate(false);
-      setForm({ name: '', description: '', color: '#3b82f6', status: 'ACTIVE' });
+      setForm({
+        name: '',
+        description: '',
+        color: '#3b82f6',
+        status: 'ACTIVE',
+      });
       load();
     } catch (e) {
       setMsg(
@@ -163,7 +240,9 @@ export function CategoriesPage({
     try {
       await api('/categories/' + r.id, token, company, {
         method: 'PATCH',
-        body: JSON.stringify({ status: r.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' }),
+        body: JSON.stringify({
+          status: r.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE',
+        }),
       });
       load();
     } catch {
@@ -172,17 +251,31 @@ export function CategoriesPage({
   }
 
   function openEdit(r: Category) {
-    setForm({ name: r.name, description: r.description ?? '', color: r.color ?? '#3b82f6', status: r.status ?? 'ACTIVE' });
+    setForm({
+      name: r.name,
+      description: r.description ?? '',
+      color: r.color ?? '#3b82f6',
+      status: r.status ?? 'ACTIVE',
+    });
     setEditRow(r);
   }
 
   const handleDragStart = useCallback((id: string) => setDragId(id), []);
-  const handleDragOver = useCallback((e: React.DragEvent) => e.preventDefault(), []);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => e.preventDefault(),
+    [],
+  );
   const handleDrop = useCallback(() => setDragId(null), []);
 
   const handleExport = useCallback(() => {
-    const data = rows.map((r) => ({ name: r.name, description: r.description, product_count: r.product_count }));
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const data = rows.map((r) => ({
+      name: r.name,
+      description: r.description,
+      product_count: r.product_count,
+    }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -208,7 +301,13 @@ export function CategoriesPage({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            style={{ padding: '0.4rem 0.5rem', borderRadius: 6, border: '1px solid var(--border, #d1d5db)', background: 'var(--bg-primary, #fff)', color: 'var(--text-primary)' }}
+            style={{
+              padding: '0.4rem 0.5rem',
+              borderRadius: 6,
+              border: '1px solid var(--border, #d1d5db)',
+              background: 'var(--bg-primary, #fff)',
+              color: 'var(--text-primary)',
+            }}
           >
             <option value="name">Nama</option>
             <option value="count">Jumlah Produk</option>
@@ -250,9 +349,11 @@ export function CategoriesPage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['', 'Nama', 'Deskripsi', 'Status', 'Produk', 'Aksi'].map((k) => (
-                <span key={k}>{k}</span>
-              ))}
+              {['', 'Nama', 'Deskripsi', 'Status', 'Produk', 'Aksi'].map(
+                (k) => (
+                  <span key={k}>{k}</span>
+                ),
+              )}
             </div>
             {slice.map((r) => (
               <div
@@ -264,25 +365,61 @@ export function CategoriesPage({
                 onDrop={handleDrop}
                 style={{ opacity: dragId === r.id ? 0.5 : 1, cursor: 'grab' }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <GripVertical size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: r.color ?? '#3b82f6', flexShrink: 0 }} />
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <GripVertical
+                    size={14}
+                    style={{ color: 'var(--text-muted)' }}
+                  />
+                  <div
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: r.color ?? '#3b82f6',
+                      flexShrink: 0,
+                    }}
+                  />
                 </span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{r.name ?? '—'}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                  {r.name ?? '—'}
+                </span>
+                <span
+                  style={{
+                    color: 'var(--text-muted)',
+                    fontSize: '0.85rem',
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {r.description ?? '—'}
                 </span>
                 <span>
                   <button
-                    onClick={() => ctx.permissions.includes('category.manage') && toggleStatus(r)}
+                    onClick={() =>
+                      ctx.permissions.includes('category.manage') &&
+                      toggleStatus(r)
+                    }
                     style={{
-                      background: (r.status ?? 'ACTIVE') === 'ACTIVE' ? 'var(--color-success, #22c55e)' : 'var(--text-muted)',
+                      background:
+                        (r.status ?? 'ACTIVE') === 'ACTIVE'
+                          ? 'var(--color-success, #22c55e)'
+                          : 'var(--text-muted)',
                       border: 'none',
                       borderRadius: 12,
                       padding: '2px 8px',
                       color: '#fff',
                       fontSize: '0.75rem',
-                      cursor: ctx.permissions.includes('category.manage') ? 'pointer' : 'default',
+                      cursor: ctx.permissions.includes('category.manage')
+                        ? 'pointer'
+                        : 'default',
                       fontWeight: 600,
                     }}
                   >
@@ -290,7 +427,10 @@ export function CategoriesPage({
                   </button>
                 </span>
                 <span style={{ minWidth: 120 }}>
-                  <ProductCountBar count={r.product_count ?? 0} max={maxCount} />
+                  <ProductCountBar
+                    count={r.product_count ?? 0}
+                    max={maxCount}
+                  />
                 </span>
                 <span>
                   {ctx.permissions.includes('category.manage') && (
@@ -327,16 +467,39 @@ export function CategoriesPage({
           <Field label={t('common.description')}>
             <Input
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               placeholder="Deskripsi singkat kategori..."
             />
           </Field>
           <Field label="Warna">
-            <ColorPicker value={form.color} onChange={(c) => setForm({ ...form, color: c })} />
+            <ColorPicker
+              value={form.color}
+              onChange={(c) => setForm({ ...form, color: c })}
+            />
           </Field>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: form.color }} />
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Preview: {form.name || 'Nama kategori'}</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: form.color,
+              }}
+            />
+            <span
+              style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}
+            >
+              Preview: {form.name || 'Nama kategori'}
+            </span>
           </div>
           {msg && <p style={{ color: 'var(--text-muted)' }}>{msg}</p>}
         </form>
@@ -363,15 +526,38 @@ export function CategoriesPage({
           <Field label={t('common.description')}>
             <Input
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </Field>
           <Field label="Warna">
-            <ColorPicker value={form.color} onChange={(c) => setForm({ ...form, color: c })} />
+            <ColorPicker
+              value={form.color}
+              onChange={(c) => setForm({ ...form, color: c })}
+            />
           </Field>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: form.color }} />
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Preview: {form.name || 'Nama kategori'}</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: form.color,
+              }}
+            />
+            <span
+              style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}
+            >
+              Preview: {form.name || 'Nama kategori'}
+            </span>
           </div>
           {msg && <p style={{ color: 'var(--text-muted)' }}>{msg}</p>}
         </form>
@@ -384,12 +570,26 @@ export function CategoriesPage({
         footer={<Button onClick={() => setShowImport(false)}>Tutup</Button>}
       >
         <div style={{ padding: '1rem 0', textAlign: 'center' }}>
-          <Upload size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
-          <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Upload JSON / CSV</p>
+          <Upload
+            size={48}
+            style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}
+          />
+          <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+            Upload JSON / CSV
+          </p>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Format: Nama, Deskripsi, Warna
           </p>
-          <div style={{ marginTop: '1rem', padding: '2rem', border: '2px dashed var(--border, #d1d5db)', borderRadius: 8, cursor: 'pointer', color: 'var(--text-muted)' }}>
+          <div
+            style={{
+              marginTop: '1rem',
+              padding: '2rem',
+              border: '2px dashed var(--border, #d1d5db)',
+              borderRadius: 8,
+              cursor: 'pointer',
+              color: 'var(--text-muted)',
+            }}
+          >
             Klik atau seret file ke sini
           </div>
         </div>

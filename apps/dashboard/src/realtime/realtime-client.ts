@@ -1,7 +1,17 @@
-import { createClient, type RealtimeChannel, type SupabaseClient } from '@supabase/supabase-js';
+import {
+  createClient,
+  type RealtimeChannel,
+  type SupabaseClient,
+} from '@supabase/supabase-js';
 import { REALTIME_EVENTS, type BusinessChange } from './realtime-events';
 
-export type RealtimeConnectionStatus = 'disabled' | 'connecting' | 'connected' | 'reconnecting' | 'error' | 'disconnected';
+export type RealtimeConnectionStatus =
+  | 'disabled'
+  | 'connecting'
+  | 'connected'
+  | 'reconnecting'
+  | 'error'
+  | 'disconnected';
 
 type RealtimeOptions = {
   token: string;
@@ -25,7 +35,11 @@ export function createRealtimeSubscription(options: RealtimeOptions) {
   }
 
   const client: SupabaseClient = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
   });
   const channels: RealtimeChannel[] = [];
   let closed = false;
@@ -43,7 +57,12 @@ export function createRealtimeSubscription(options: RealtimeOptions) {
           channel.on('broadcast', { event }, (message) => {
             const payload = message.payload as Partial<BusinessChange>;
             if (payload.company_id !== options.companyId) return;
-            if (payload.branch_id && options.branchId && payload.branch_id !== options.branchId) return;
+            if (
+              payload.branch_id &&
+              options.branchId &&
+              payload.branch_id !== options.branchId
+            )
+              return;
             if (!payload.company_id || !payload.occurred_at) return;
             options.onEvent(event, payload as BusinessChange);
           });
@@ -51,7 +70,8 @@ export function createRealtimeSubscription(options: RealtimeOptions) {
         channel.subscribe((status) => {
           if (closed) return;
           if (status === 'SUBSCRIBED') options.onStatus('connected');
-          else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') options.onStatus('error');
+          else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT')
+            options.onStatus('error');
           else if (status === 'CLOSED') options.onStatus('disconnected');
           else if (status === 'RECONNECTING') options.onStatus('reconnecting');
         });

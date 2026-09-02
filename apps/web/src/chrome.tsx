@@ -42,16 +42,17 @@ export function Navbar() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const en = language === 'en';
   const path = usePath();
   const items: [string, string][] = [
-    ['/', 'Beranda'],
-    ['/fitur', 'Fitur'],
+    ['/', en ? 'Home' : 'Beranda'],
+    ['/fitur', en ? 'Features' : 'Fitur'],
     ['/demo/pos', 'POS'],
     ['/demo/dashboard', 'Dashboard'],
-    ['/solusi', 'Solusi'],
-    ['/tentang', 'Keamanan'],
-    ['/kontak', 'Kontak'],
+    ['/solusi', en ? 'Solutions' : 'Solusi'],
+    ['/tentang', en ? 'Security' : 'Keamanan'],
+    ['/kontak', en ? 'Contact' : 'Kontak'],
   ];
 
   useEffect(() => {
@@ -59,11 +60,20 @@ export function Navbar() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
       if (e.key === 'Tab' && drawerRef.current) {
-        const focusable = Array.from(drawerRef.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),select:not([disabled])'));
+        const focusable = Array.from(
+          drawerRef.current.querySelectorAll<HTMLElement>(
+            'a[href],button:not([disabled]),select:not([disabled])',
+          ),
+        );
         const first = focusable[0];
         const last = focusable.at(-1);
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
       }
     };
     document.addEventListener('keydown', onKey);
@@ -79,7 +89,11 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="container nav-inner">
-        <Link to="/" className="brand nav-brand-full" ariaLabel={t('brand.name')}>
+        <Link
+          to="/"
+          className="brand nav-brand-full"
+          ariaLabel={t('brand.name')}
+        >
           <ThemeImage
             lightSrc="/logo-280.webp"
             alt="NIAGANTARA"
@@ -123,10 +137,11 @@ export function Navbar() {
             {t('auth.login')}
           </a>
           <Link className="nav-cta" to="/kontak">
-            Mulai Sekarang <span>→</span>
+            {en ? 'Get Started' : 'Mulai Sekarang'} <span>→</span>
           </Link>
         </div>
         <button
+          type="button"
           ref={menuButtonRef}
           className="menu"
           onClick={() => setMenu(!menu)}
@@ -162,6 +177,7 @@ export function Navbar() {
             />
             <strong className="drawer-title">NIAGANTARA</strong>
             <button
+              type="button"
               ref={closeButtonRef}
               className="drawer-close"
               onClick={close}
@@ -170,6 +186,9 @@ export function Navbar() {
               ✕
             </button>
           </div>
+          <span className="drawer-section-label">
+            {en ? 'Navigation' : 'Navigasi'}
+          </span>
           <nav className="drawer-nav" aria-label={t('nav.primary')}>
             {items.map(([to, label]) => (
               <Link
@@ -189,7 +208,7 @@ export function Navbar() {
               {t('auth.login')}
             </a>
             <Link className="button drawer-cta" to="/kontak" onClick={close}>
-              Mulai Sekarang
+              {en ? 'Get Started' : 'Mulai Sekarang'}
               <span aria-hidden="true">→</span>
             </Link>
             <div className="drawer-controls">
@@ -204,6 +223,9 @@ export function Navbar() {
 }
 
 export function Footer() {
+  const { language, translations } = useTranslation();
+  const en = language === 'en';
+  const f = translations.website.footer;
   return (
     <footer className="footer">
       <div className="container footer-grid">
@@ -218,31 +240,42 @@ export function Footer() {
               loading="lazy"
             />
           </Link>
-          <strong className="fbrand-tag">Platform Operasional Bisnis</strong>
-          <p>Satukan transaksi, stok, pembelian, cabang, dan tim dalam satu ekosistem operasional yang terhubung.</p>
+          <strong className="fbrand-tag">{f.tagline}</strong>
+          <p>{f.description}</p>
         </div>
 
-        <nav className="fcol" aria-label="Produk">
-          <h4>Produk</h4>
-          <Link to="/demo/pos">POS</Link><Link to="/demo/dashboard">Dashboard</Link>
-          <Link to="/demo/inventory">Inventory</Link><Link to="/demo/purchases">Purchasing</Link>
+        <nav className="fcol" aria-label={f.productsHeading}>
+          <h4>{f.productsHeading}</h4>
+          <Link to="/demo/pos">POS</Link>
+          <Link to="/demo/dashboard">Dashboard</Link>
+          <Link to="/demo/inventory">Inventory</Link>
+          <Link to="/demo/purchases">Purchasing</Link>
         </nav>
 
         <nav className="fcol" aria-label="Platform">
-          <h4>Platform</h4><Link to="/fitur">Fitur</Link><Link to="/tentang">Keamanan</Link>
-          <Link to="/solusi">Integrasi</Link>
+          <h4>Platform</h4>
+          <Link to="/fitur">{f.features}</Link>
+          <Link to="/tentang">{f.security}</Link>
+          <Link to="/solusi">{en ? 'Integrations' : 'Integrasi'}</Link>
         </nav>
 
-        <nav className="fcol" aria-label="Perusahaan"><h4>Perusahaan</h4><Link to="/tentang">Tentang</Link><Link to="/kontak">Kontak</Link><a href="mailto:support@niagantara.com">Dukungan</a></nav>
+        <nav className="fcol" aria-label={f.companyHeading}>
+          <h4>{f.companyHeading}</h4>
+          <Link to="/tentang">{f.about}</Link>
+          <Link to="/kontak">{f.contact}</Link>
+          <a href="mailto:support@niagantara.com">{en ? 'Support' : 'Dukungan'}</a>
+        </nav>
 
         <nav className="fcol flegal" aria-label="Legal">
-          <h4>Legal</h4><Link to="/privacy">Kebijakan Privasi</Link><Link to="/terms">Syarat &amp; Ketentuan</Link>
-          <Link to="/security">Laporan Keamanan</Link>
+          <h4>Legal</h4>
+          <Link to="/privacy">{f.privacy}</Link>
+          <Link to="/terms">{f.terms}</Link>
+          <Link to="/security">{f.security}</Link>
         </nav>
       </div>
 
       <div className="container fbottom">
-        <small>© 2026 NIAGANTARA. Seluruh hak dilindungi.</small>
+        <small>{f.rights}</small>
       </div>
     </footer>
   );
@@ -334,7 +367,7 @@ export function LazySection({
 
   return (
     <div ref={ref} className={className}>
-      {visible ? children : <div style={{ minHeight: 400 }} />}
+      {visible ? children : <div className="lazy-section-placeholder" />}
     </div>
   );
 }

@@ -1,1 +1,50 @@
-import{Body,Controller,Get,Headers,Param,Patch,Post,Query,Req,UseGuards}from'@nestjs/common';import{RequirePermission}from'../../common/decorators/permission.decorator.js';import{AuthGuard}from'../../common/guards/auth.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{CustomersService}from'./customers.service.js';import type{CustomerInput,CustomerQuery}from'./dto/customer.dto.js';@Controller('customers')@UseGuards(AuthGuard,TenantGuard,PermissionGuard)export class CustomersController{constructor(private readonly s:CustomersService){}@Get()@RequirePermission('customer.read')list(@Headers('x-company-id')c:string,@Query()q:CustomerQuery){return this.s.list(c,q)}@Get(':id')@RequirePermission('customer.read')get(@Headers('x-company-id')c:string,@Param('id')id:string){return this.s.get(c,id)}@Post()@RequirePermission('customer.create')create(@Req()r:any,@Headers('x-company-id')c:string,@Body()d:CustomerInput){return this.s.create(r.user.id,c,d)}@Patch(':id')@RequirePermission('customer.update')update(@Req()r:any,@Headers('x-company-id')c:string,@Param('id')id:string,@Body()d:Partial<CustomerInput>){return this.s.update(r.user.id,c,id,d)}}
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { RequirePermission } from '../../common/decorators/permission.decorator.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { CustomersService } from './customers.service.js';
+import type { CustomerInput, CustomerQuery } from './dto/customer.dto.js';
+@Controller('customers')
+@UseGuards(AuthGuard, TenantGuard, PermissionGuard)
+export class CustomersController {
+  constructor(private readonly s: CustomersService) {}
+  @Get() @RequirePermission('customer.read') list(
+    @Headers('x-company-id') c: string,
+    @Query() q: CustomerQuery,
+  ) {
+    return this.s.list(c, q);
+  }
+  @Get(':id') @RequirePermission('customer.read') get(
+    @Headers('x-company-id') c: string,
+    @Param('id') id: string,
+  ) {
+    return this.s.get(c, id);
+  }
+  @Post() @RequirePermission('customer.create') create(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Body() d: CustomerInput,
+  ) {
+    return this.s.create(r.user.id, c, d);
+  }
+  @Patch(':id') @RequirePermission('customer.update') update(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Param('id') id: string,
+    @Body() d: Partial<CustomerInput>,
+  ) {
+    return this.s.update(r.user.id, c, id, d);
+  }
+}

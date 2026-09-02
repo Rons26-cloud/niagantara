@@ -1,8 +1,25 @@
-import { Body, Controller, Get, Headers, Inject, Logger, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Inject,
+  Logger,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { AuthService } from './auth.service.js';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, VerifyRecoveryDto } from './dto/auth.dto.js';
+import {
+  RegisterDto,
+  LoginDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifyRecoveryDto,
+} from './dto/auth.dto.js';
 import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { MasterGuard } from '../../common/guards/master.guard.js';
 
 @Controller('auth')
 export class AuthController {
@@ -11,15 +28,21 @@ export class AuthController {
   constructor(@Inject(AuthService) private readonly service: AuthService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto, @Headers('x-request-id') suppliedRequestId?: string) {
-    const requestId = suppliedRequestId && /^[A-Za-z0-9_-]{1,128}$/.test(suppliedRequestId)
-      ? suppliedRequestId
-      : randomUUID();
-    this.logger.log(JSON.stringify({
-      request_id: requestId,
-      operation: 'auth.register',
-      register_stage: 'CONTROLLER_ENTER',
-    }));
+  register(
+    @Body() dto: RegisterDto,
+    @Headers('x-request-id') suppliedRequestId?: string,
+  ) {
+    const requestId =
+      suppliedRequestId && /^[A-Za-z0-9_-]{1,128}$/.test(suppliedRequestId)
+        ? suppliedRequestId
+        : randomUUID();
+    this.logger.log(
+      JSON.stringify({
+        request_id: requestId,
+        operation: 'auth.register',
+        register_stage: 'CONTROLLER_ENTER',
+      }),
+    );
     return this.service.register(dto, requestId);
   }
 
@@ -40,17 +63,38 @@ export class AuthController {
     return this.service.me(req.user.id);
   }
 
+  @Get('platform/profile')
+  @UseGuards(AuthGuard, MasterGuard)
+  platformProfile(@Req() req: any) {
+    return {
+      user: { id: req.user.id, email: req.user.email },
+      platformRole: req.platformRole,
+    };
+  }
+
   @Post('forgot-password')
-  forgot(@Body() dto: ForgotPasswordDto, @Headers('x-request-id') suppliedRequestId?: string) {
-    const requestId = suppliedRequestId && /^[A-Za-z0-9_-]{1,128}$/.test(suppliedRequestId)
-      ? suppliedRequestId
-      : randomUUID();
-    for (const stage of ['ROUTE_MATCH', 'DTO_PARSED', 'DTO_VALIDATED', 'CONTROLLER_ENTER', 'SERVICE_CALL_START']) {
-      this.logger.log(JSON.stringify({
-        request_id: requestId,
-        operation: 'auth.forgot_password',
-        forgot_password_stage: stage,
-      }));
+  forgot(
+    @Body() dto: ForgotPasswordDto,
+    @Headers('x-request-id') suppliedRequestId?: string,
+  ) {
+    const requestId =
+      suppliedRequestId && /^[A-Za-z0-9_-]{1,128}$/.test(suppliedRequestId)
+        ? suppliedRequestId
+        : randomUUID();
+    for (const stage of [
+      'ROUTE_MATCH',
+      'DTO_PARSED',
+      'DTO_VALIDATED',
+      'CONTROLLER_ENTER',
+      'SERVICE_CALL_START',
+    ]) {
+      this.logger.log(
+        JSON.stringify({
+          request_id: requestId,
+          operation: 'auth.forgot_password',
+          forgot_password_stage: stage,
+        }),
+      );
     }
     return this.service.forgotPassword(dto, requestId);
   }
@@ -61,7 +105,10 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  reset(@Body() dto: ResetPasswordDto, @Headers('authorization') authorization?: string) {
+  reset(
+    @Body() dto: ResetPasswordDto,
+    @Headers('authorization') authorization?: string,
+  ) {
     return this.service.resetPassword(dto, authorization);
   }
 }

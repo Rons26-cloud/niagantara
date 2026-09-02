@@ -1,2 +1,51 @@
-import{ArgumentsHost,Catch,ExceptionFilter,HttpException}from'@nestjs/common';import{errorMonitor}from'../runtime/error-monitor.js';
-@Catch()export class ApiExceptionFilter implements ExceptionFilter{catch(exception:unknown,host:ArgumentsHost){const http=host.switchToHttp();const request=typeof(http as any).getRequest==='function'?(http as any).getRequest():{};const response=http.getResponse();const candidate=exception as HttpException;const known=exception instanceof HttpException||(typeof candidate?.getStatus==='function'&&typeof candidate?.getResponse==='function');const status=known?candidate.getStatus():500;if(status>=500)errorMonitor.capture({requestId:request.requestId,code:status===500?'INTERNAL_ERROR':'UPSTREAM_ERROR',operation:String(request.url||'unknown').split('?')[0],exceptionClass:exception instanceof Error?exception.name:'UnknownError'});const raw=known?candidate.getResponse():{};const body=typeof raw==='object'&&raw?raw as Record<string,unknown>:{};const message=typeof body.message==='string'?body.message:status===500?'An unexpected error occurred.':'Request failed.';const reply=typeof response.code==='function'?response.code(status):response.status(status);reply.send({statusCode:status,code:body.code??(status===500?'INTERNAL_ERROR':'REQUEST_ERROR'),message,request_id:request.requestId??null});}}
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
+import { errorMonitor } from '../runtime/error-monitor.js';
+@Catch()
+export class ApiExceptionFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    const http = host.switchToHttp();
+    const request =
+      typeof (http as any).getRequest === 'function'
+        ? (http as any).getRequest()
+        : {};
+    const response = http.getResponse();
+    const candidate = exception as HttpException;
+    const known =
+      exception instanceof HttpException ||
+      (typeof candidate?.getStatus === 'function' &&
+        typeof candidate?.getResponse === 'function');
+    const status = known ? candidate.getStatus() : 500;
+    if (status >= 500)
+      errorMonitor.capture({
+        requestId: request.requestId,
+        code: status === 500 ? 'INTERNAL_ERROR' : 'UPSTREAM_ERROR',
+        operation: String(request.url || 'unknown').split('?')[0],
+        exceptionClass:
+          exception instanceof Error ? exception.name : 'UnknownError',
+      });
+    const raw = known ? candidate.getResponse() : {};
+    const body =
+      typeof raw === 'object' && raw ? (raw as Record<string, unknown>) : {};
+    const message =
+      typeof body.message === 'string'
+        ? body.message
+        : status === 500
+          ? 'An unexpected error occurred.'
+          : 'Request failed.';
+    const reply =
+      typeof response.code === 'function'
+        ? response.code(status)
+        : response.status(status);
+    reply.send({
+      statusCode: status,
+      code: body.code ?? (status === 500 ? 'INTERNAL_ERROR' : 'REQUEST_ERROR'),
+      message,
+      request_id: request.requestId ?? null,
+    });
+  }
+}

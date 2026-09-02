@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { api, ApiError } from './api';
+import { api, ApiError, isTokenExpired, onUnauthorized } from './api';
 
 export type SessionUser = { id: string; email?: string };
 
@@ -15,7 +15,12 @@ const KEY = 'niagantara.pos.session.v1';
 
 const saved = () => {
   try {
-    return JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
+    const value = JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
+    if (!value?.accessToken || isTokenExpired(value.accessToken)) {
+      sessionStorage.removeItem(KEY);
+      return null;
+    }
+    return value;
   } catch {
     return null;
   }
@@ -29,6 +34,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setToken] = useState<string | null>(
     initial?.accessToken ?? null,
   );
+  const clearSession = () => {
+    setUser(null);
+    setToken(null);
+    sessionStorage.removeItem(KEY);
+  };
+  useEffect(() => onUnauthorized(() => clearSession()), []);
   return (
     <AuthContext.Provider
       value={{
@@ -42,11 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             JSON.stringify({ user: u, accessToken: t }),
           );
         },
-        clearSession: () => {
-          setUser(null);
-          setToken(null);
-          sessionStorage.removeItem(KEY);
-        },
+        clearSession,
       }}
     >
       {children}
@@ -61,11 +68,14 @@ export function useAuth() {
 }
 
 export async function login(email: string, password: string) {
-  const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1')}/auth/login`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1')}/auth/login`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    },
+  );
   const body = await response.json().catch(() => ({}));
   if (!response.ok)
     throw new ApiError(response.status, body.code ?? 'LOGIN_FAILED');
@@ -81,7 +91,9 @@ export type MeCtx = {
 
 export function useCompanyContext(token: string | null) {
   const [ctx, setCtx] = useState<MeCtx | null>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'denied' | 'error'>('loading');
+  const [status, setStatus] = useState<
+    'loading' | 'ready' | 'denied' | 'error'
+  >('loading');
   useEffect(() => {
     if (!token) return;
     api<MeCtx>('/auth/me', token)
@@ -94,7 +106,9 @@ export function useCompanyContext(token: string | null) {
         setStatus('ready');
       })
       .catch((e) =>
-        setStatus(e instanceof ApiError && e.status === 403 ? 'denied' : 'error'),
+        setStatus(
+          e instanceof ApiError && e.status === 403 ? 'denied' : 'error',
+        ),
       );
   }, [token]);
   return { ctx, status };

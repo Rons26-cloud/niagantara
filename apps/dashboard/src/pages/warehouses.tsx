@@ -104,7 +104,12 @@ export function WarehousesPage({
       });
       setMsg(t('messages.saveSuccess'));
       setShowCreate(false);
-      setForm({ name: '', code: '', storeId: ctx.stores[0]?.id ?? '', branchId: ctx.accessible_branches[0]?.id ?? '' });
+      setForm({
+        name: '',
+        code: '',
+        storeId: ctx.stores[0]?.id ?? '',
+        branchId: ctx.accessible_branches[0]?.id ?? '',
+      });
       load();
     } catch (e) {
       setMsg(
@@ -137,7 +142,12 @@ export function WarehousesPage({
   }
 
   function openEdit(r: Warehouse) {
-    setForm({ name: r.name, code: r.code ?? '', storeId: r.storeId ?? r.store_id ?? '', branchId: r.branchId ?? r.branch_id ?? '' });
+    setForm({
+      name: r.name,
+      code: r.code ?? '',
+      storeId: r.storeId ?? r.store_id ?? '',
+      branchId: r.branchId ?? r.branch_id ?? '',
+    });
     setEditRow(r);
   }
 
@@ -205,7 +215,15 @@ export function WarehousesPage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Nama', 'Kode', 'Toko', 'Cabang', 'Status', 'Produk', 'Aksi'].map((k) => (
+              {[
+                'Nama',
+                'Kode',
+                'Toko',
+                'Cabang',
+                'Status',
+                'Produk',
+                'Aksi',
+              ].map((k) => (
                 <span key={k}>{k}</span>
               ))}
             </div>
@@ -213,8 +231,15 @@ export function WarehousesPage({
               <div className="tr" key={r.id}>
                 <span>{r.name ?? '—'}</span>
                 <span>{r.code ?? '—'}</span>
-                <span>{ctx.stores.find((s) => s.id === (r.storeId ?? r.store_id))?.name ?? '—'}</span>
-                <span>{ctx.accessible_branches.find((b) => b.id === (r.branchId ?? r.branch_id))?.name ?? '—'}</span>
+                <span>
+                  {ctx.stores.find((s) => s.id === (r.storeId ?? r.store_id))
+                    ?.name ?? '—'}
+                </span>
+                <span>
+                  {ctx.accessible_branches.find(
+                    (b) => b.id === (r.branchId ?? r.branch_id),
+                  )?.name ?? '—'}
+                </span>
                 <span>
                   <StatusBadge status={r.status ?? 'ACTIVE'} />
                 </span>
@@ -243,7 +268,11 @@ export function WarehousesPage({
           </Button>
         }
       >
-        <form id="warehouse-create-form" className="inline-form" onSubmit={create}>
+        <form
+          id="warehouse-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
           <Field label={t('common.name')}>
             <Input
               required
@@ -295,7 +324,11 @@ export function WarehousesPage({
           </Button>
         }
       >
-        <form id="warehouse-edit-form" className="inline-form" onSubmit={update}>
+        <form
+          id="warehouse-edit-form"
+          className="inline-form"
+          onSubmit={update}
+        >
           <Field label={t('common.name')}>
             <Input
               required

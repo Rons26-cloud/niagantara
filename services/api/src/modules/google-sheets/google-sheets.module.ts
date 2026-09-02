@@ -1,1 +1,23 @@
-import{Module}from'@nestjs/common';import{AuthGuard}from'../../common/guards/auth.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{GoogleClient}from'./google-client.js';import{GoogleOAuthCallbackController,GoogleSheetsController}from'./google-sheets.controller.js';import{GoogleSheetsRepository}from'./google-sheets.repository.js';import{GoogleSheetsService}from'./google-sheets.service.js';@Module({controllers:[GoogleSheetsController,GoogleOAuthCallbackController],providers:[GoogleSheetsService,GoogleSheetsRepository,GoogleClient,AuthGuard,TenantGuard,PermissionGuard]})export class GoogleSheetsModule{}
+import { Module } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { GoogleClient } from './google-client.js';
+import {
+  GoogleOAuthCallbackController,
+  GoogleSheetsController,
+} from './google-sheets.controller.js';
+import { GoogleSheetsRepository } from './google-sheets.repository.js';
+import { GoogleSheetsService } from './google-sheets.service.js';
+@Module({
+  controllers: [GoogleSheetsController, GoogleOAuthCallbackController],
+  providers: [
+    GoogleSheetsService,
+    GoogleSheetsRepository,
+    GoogleClient,
+    AuthGuard,
+    TenantGuard,
+    PermissionGuard,
+  ],
+})
+export class GoogleSheetsModule {}

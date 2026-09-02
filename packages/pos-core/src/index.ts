@@ -1,4 +1,4 @@
-export { api, ApiError } from './api';
+export { api, ApiError, isTokenExpired, onUnauthorized } from './api';
 export { PosPage, Receipt } from './pos-page';
 export type { PosCtx } from './pos-page';
 export * from './pos-logic';

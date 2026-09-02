@@ -1,31 +1,96 @@
-import assert from 'node:assert/strict'; import test from 'node:test'; import { addLine, cashChange, canUseShortcut, scanGuard, setQuantity, totals } from '../src/pos-logic.js';
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  addLine,
+  cashChange,
+  canUseShortcut,
+  scanGuard,
+  setQuantity,
+  totals,
+} from '../src/pos-logic.js';
 const product = { id: 'p1', price: 10000, stock: 5 };
-test('cart add and increment', () => { const once = addLine([], product); assert.equal(once[0].quantity, 1); assert.equal(addLine(once, product)[0].quantity, 2); });
-test('out of stock rejected', () => assert.deepEqual(addLine([], { ...product, stock: 0 }), []));
-test('quantity clamps/removes', () => { const cart = addLine([], product); assert.equal(setQuantity(cart, 'p1', 9)[0].quantity, 5); assert.deepEqual(setQuantity(cart, 'p1', 0), []); });
-test('totals and discount', () => assert.deepEqual(totals(addLine([], product), 1000, 10), { subtotal: 10000, discount: 1000, tax: 900, total: 9900 }));
-test('invalid totals safe', () => assert.equal(totals([], Infinity, NaN).total, 0));
-test('cash validation/change', () => { assert.equal(cashChange(100, 99), null); assert.equal(cashChange(100, 100), 0); assert.equal(cashChange(100, 125), 25); });
-test('scan duplicate guard', () => { assert.equal(scanGuard(null, 'ABC', 1000), true); assert.equal(scanGuard({ code: 'ABC', at: 1000 }, 'ABC', 1100), false); assert.equal(scanGuard({ code: 'ABC', at: 1000 }, 'ABC', 1300), true); });
-for (const key of ['F2', 'F4', 'F8', 'Escape', 'Enter']) test(`shortcut ${key}`, () => assert.equal(canUseShortcut(key, { tagName: 'DIV' }), true));
-for (const tagName of ['INPUT', 'TEXTAREA', 'SELECT']) test(`shortcut suppressed in ${tagName}`, () => assert.equal(canUseShortcut('F8', { tagName }), false));
-test('manual quantity finite', () => assert.equal(setQuantity(addLine([], product), 'p1', 2)[0].quantity, 2));
-test('manual quantity fractional floors', () => assert.equal(setQuantity(addLine([], product), 'p1', 2.8)[0].quantity, 2));
-test('manual NaN removes invalid line', () => assert.deepEqual(setQuantity(addLine([], product), 'p1', NaN), []));
-test('cart add preserves unrelated lines', () => assert.equal(addLine(addLine([], product), { id: 'p2', price: 20, stock: 2 }).length, 2));
-test('discount capped at subtotal', () => assert.equal(totals(addLine([], product), 999999).total, 0));
-test('tax capped at 100 percent', () => assert.equal(totals(addLine([], product), 0, 200).total, 20000));
-test('negative discount ignored', () => assert.equal(totals(addLine([], product), -5).discount, 0));
-test('negative tax ignored', () => assert.equal(totals(addLine([], product), 0, -5).tax, 0));
-test('cash invalid received rejected', () => assert.equal(cashChange(100, Number.NaN), null));
-test('cash negative received rejected', () => assert.equal(cashChange(100, -1), null));
-test('unknown scan accepted for lookup', () => assert.equal(scanGuard(null, 'UNKNOWN', 1), true));
-test('scan whitespace normalized for emptiness', () => assert.equal(scanGuard(null, '   ', 1), false));
-test('escape allowed outside fields', () => assert.equal(canUseShortcut('Escape', { tagName: 'DIV' }), true));
-test('enter allowed outside fields', () => assert.equal(canUseShortcut('Enter', { tagName: 'DIV' }), true));
-test('shortcut suppressed in contenteditable', () => assert.equal(canUseShortcut('F2', { tagName: 'DIV' }), true));
-test('stock zero prevents increment beyond zero', () => assert.deepEqual(addLine([], { id: 'z', price: 1, stock: 0 }), []));
-test('large stock remains finite', () => assert.equal(Number.isFinite(addLine([], { id: 'x', price: 1, stock: 100000 })[0].quantity), true));
-test('total remains non-negative', () => assert.ok(totals(addLine([], product), 20000).total >= 0));
-test('total remains finite', () => assert.equal(Number.isFinite(totals(addLine([], product)).total), true));
-test('cart line identity is stable', () => assert.equal(addLine([], product)[0].id, 'p1'));
+test('cart add and increment', () => {
+  const once = addLine([], product);
+  assert.equal(once[0].quantity, 1);
+  assert.equal(addLine(once, product)[0].quantity, 2);
+});
+test('out of stock rejected', () =>
+  assert.deepEqual(addLine([], { ...product, stock: 0 }), []));
+test('quantity clamps/removes', () => {
+  const cart = addLine([], product);
+  assert.equal(setQuantity(cart, 'p1', 9)[0].quantity, 5);
+  assert.deepEqual(setQuantity(cart, 'p1', 0), []);
+});
+test('totals and discount', () =>
+  assert.deepEqual(totals(addLine([], product), 1000, 10), {
+    subtotal: 10000,
+    discount: 1000,
+    tax: 900,
+    total: 9900,
+  }));
+test('invalid totals safe', () =>
+  assert.equal(totals([], Infinity, NaN).total, 0));
+test('cash validation/change', () => {
+  assert.equal(cashChange(100, 99), null);
+  assert.equal(cashChange(100, 100), 0);
+  assert.equal(cashChange(100, 125), 25);
+});
+test('scan duplicate guard', () => {
+  assert.equal(scanGuard(null, 'ABC', 1000), true);
+  assert.equal(scanGuard({ code: 'ABC', at: 1000 }, 'ABC', 1100), false);
+  assert.equal(scanGuard({ code: 'ABC', at: 1000 }, 'ABC', 1300), true);
+});
+for (const key of ['F2', 'F4', 'F8', 'Escape', 'Enter'])
+  test(`shortcut ${key}`, () =>
+    assert.equal(canUseShortcut(key, { tagName: 'DIV' }), true));
+for (const tagName of ['INPUT', 'TEXTAREA', 'SELECT'])
+  test(`shortcut suppressed in ${tagName}`, () =>
+    assert.equal(canUseShortcut('F8', { tagName }), false));
+test('manual quantity finite', () =>
+  assert.equal(setQuantity(addLine([], product), 'p1', 2)[0].quantity, 2));
+test('manual quantity fractional floors', () =>
+  assert.equal(setQuantity(addLine([], product), 'p1', 2.8)[0].quantity, 2));
+test('manual NaN removes invalid line', () =>
+  assert.deepEqual(setQuantity(addLine([], product), 'p1', NaN), []));
+test('cart add preserves unrelated lines', () =>
+  assert.equal(
+    addLine(addLine([], product), { id: 'p2', price: 20, stock: 2 }).length,
+    2,
+  ));
+test('discount capped at subtotal', () =>
+  assert.equal(totals(addLine([], product), 999999).total, 0));
+test('tax capped at 100 percent', () =>
+  assert.equal(totals(addLine([], product), 0, 200).total, 20000));
+test('negative discount ignored', () =>
+  assert.equal(totals(addLine([], product), -5).discount, 0));
+test('negative tax ignored', () =>
+  assert.equal(totals(addLine([], product), 0, -5).tax, 0));
+test('cash invalid received rejected', () =>
+  assert.equal(cashChange(100, Number.NaN), null));
+test('cash negative received rejected', () =>
+  assert.equal(cashChange(100, -1), null));
+test('unknown scan accepted for lookup', () =>
+  assert.equal(scanGuard(null, 'UNKNOWN', 1), true));
+test('scan whitespace normalized for emptiness', () =>
+  assert.equal(scanGuard(null, '   ', 1), false));
+test('escape allowed outside fields', () =>
+  assert.equal(canUseShortcut('Escape', { tagName: 'DIV' }), true));
+test('enter allowed outside fields', () =>
+  assert.equal(canUseShortcut('Enter', { tagName: 'DIV' }), true));
+test('shortcut suppressed in contenteditable', () =>
+  assert.equal(canUseShortcut('F2', { tagName: 'DIV' }), true));
+test('stock zero prevents increment beyond zero', () =>
+  assert.deepEqual(addLine([], { id: 'z', price: 1, stock: 0 }), []));
+test('large stock remains finite', () =>
+  assert.equal(
+    Number.isFinite(
+      addLine([], { id: 'x', price: 1, stock: 100000 })[0].quantity,
+    ),
+    true,
+  ));
+test('total remains non-negative', () =>
+  assert.ok(totals(addLine([], product), 20000).total >= 0));
+test('total remains finite', () =>
+  assert.equal(Number.isFinite(totals(addLine([], product)).total), true));
+test('cart line identity is stable', () =>
+  assert.equal(addLine([], product)[0].id, 'p1'));

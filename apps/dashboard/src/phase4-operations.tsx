@@ -53,7 +53,11 @@ export function PurchasesPage({
     setError(null);
     api<any[]>('/purchases', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -181,7 +185,9 @@ export function PurchasesPage({
             <dt>Supplier</dt>
             <dd>{detail.supplier?.name ?? detail.supplierId ?? '—'}</dd>
             <dt>Total</dt>
-            <dd>Rp {Number(detail.grand_total ?? 0).toLocaleString('id-ID')}</dd>
+            <dd>
+              Rp {Number(detail.grand_total ?? 0).toLocaleString('id-ID')}
+            </dd>
           </dl>
           {detail.items?.length > 0 && (
             <div className="table" style={{ marginTop: 16 }}>
@@ -195,7 +201,9 @@ export function PurchasesPage({
                   <span>{item.product?.name ?? item.productId ?? '—'}</span>
                   <span>{item.quantity}</span>
                   <span>{item.received_quantity ?? 0}</span>
-                  <span>Rp {Number(item.unit_cost ?? 0).toLocaleString('id-ID')}</span>
+                  <span>
+                    Rp {Number(item.unit_cost ?? 0).toLocaleString('id-ID')}
+                  </span>
                 </div>
               ))}
             </div>
@@ -218,7 +226,11 @@ export function PurchasesPage({
           </Button>
         }
       >
-        <form id="purchase-create-form" className="inline-form" onSubmit={create}>
+        <form
+          id="purchase-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
           <Field label="Supplier ID">
             <Input
               required
@@ -230,7 +242,9 @@ export function PurchasesPage({
             <Input
               required
               value={form.warehouseId}
-              onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, warehouseId: e.target.value })
+              }
             />
           </Field>
           <Field label="Product ID">
@@ -286,7 +300,11 @@ export function AttendancePage({
     setError(null);
     api<any[]>('/attendance', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -346,11 +364,16 @@ export function AttendancePage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Employee', 'Branch', 'Date', 'Clock In', 'Clock Out', 'Status'].map(
-                (k) => (
-                  <span key={k}>{k}</span>
-                ),
-              )}
+              {[
+                'Employee',
+                'Branch',
+                'Date',
+                'Clock In',
+                'Clock Out',
+                'Status',
+              ].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
             </div>
             {slice.map((r: any) => (
               <div className="tr" key={r.id}>

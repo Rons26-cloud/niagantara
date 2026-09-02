@@ -127,7 +127,10 @@ export function DemoPreview() {
   return (
     <DemoStoreProvider>
       <div className="demo-preview-shell">
-        <DemoShell currentPage={currentPage} onNavigate={(page) => setCurrentPage(page as DemoPage)}>
+        <DemoShell
+          currentPage={currentPage}
+          onNavigate={(page) => setCurrentPage(page as DemoPage)}
+        >
           <DemoPageContent currentPage={currentPage} />
         </DemoShell>
       </div>

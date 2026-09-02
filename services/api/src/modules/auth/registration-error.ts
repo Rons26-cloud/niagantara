@@ -16,13 +16,16 @@ export interface UpstreamAuthError {
   message?: string;
 }
 
-export function upstreamAuthErrorFromUnknown(error: unknown): UpstreamAuthError {
+export function upstreamAuthErrorFromUnknown(
+  error: unknown,
+): UpstreamAuthError {
   if (!error || typeof error !== 'object') return {};
   const candidate = error as Record<string, unknown>;
   return {
     status: typeof candidate.status === 'number' ? candidate.status : undefined,
     code: typeof candidate.code === 'string' ? candidate.code : undefined,
-    message: typeof candidate.message === 'string' ? candidate.message : undefined,
+    message:
+      typeof candidate.message === 'string' ? candidate.message : undefined,
   };
 }
 
@@ -31,11 +34,13 @@ export interface RegistrationErrorClassification {
   upstreamStatus?: number;
   upstreamCode?: string;
   publicStatus: number;
-  publicCode: 'AUTH_RATE_LIMITED' | 'INVALID_REGISTRATION' | 'AUTH_PROVIDER_ERROR';
+  publicCode:
+    'AUTH_RATE_LIMITED' | 'INVALID_REGISTRATION' | 'AUTH_PROVIDER_ERROR';
   publicMessage: string;
 }
 
-const normalized = (value: string | undefined) => value?.trim().toLowerCase() ?? '';
+const normalized = (value: string | undefined) =>
+  value?.trim().toLowerCase() ?? '';
 
 export function classifyRegistrationError(
   error: UpstreamAuthError | null | undefined,
@@ -62,44 +67,88 @@ export function classifyRegistrationError(
     ['over_email_send_rate_limit', 'over_request_rate_limit'].includes(code) ||
     message.includes('rate limit')
   ) {
-    return result('EMAIL_RATE_LIMIT', HttpStatus.TOO_MANY_REQUESTS, 'AUTH_RATE_LIMITED',
-      'Registration is temporarily rate limited. Please try again later.');
+    return result(
+      'EMAIL_RATE_LIMIT',
+      HttpStatus.TOO_MANY_REQUESTS,
+      'AUTH_RATE_LIMITED',
+      'Registration is temporarily rate limited. Please try again later.',
+    );
   }
   if (
-    ['user_already_exists', 'email_exists', 'user_already_registered'].includes(code) ||
-    message.includes('already registered') || message.includes('already exists')
+    ['user_already_exists', 'email_exists', 'user_already_registered'].includes(
+      code,
+    ) ||
+    message.includes('already registered') ||
+    message.includes('already exists')
   ) {
-    return result('EMAIL_ALREADY_REGISTERED', HttpStatus.BAD_REQUEST, 'INVALID_REGISTRATION',
-      'Registration could not be accepted.');
+    return result(
+      'EMAIL_ALREADY_REGISTERED',
+      HttpStatus.BAD_REQUEST,
+      'INVALID_REGISTRATION',
+      'Registration could not be accepted.',
+    );
   }
-  if (['email_address_invalid', 'invalid_email'].includes(code) || message.includes('invalid email')) {
-    return result('INVALID_EMAIL', HttpStatus.BAD_REQUEST, 'INVALID_REGISTRATION',
-      'Registration could not be accepted.');
+  if (
+    ['email_address_invalid', 'invalid_email'].includes(code) ||
+    message.includes('invalid email')
+  ) {
+    return result(
+      'INVALID_EMAIL',
+      HttpStatus.BAD_REQUEST,
+      'INVALID_REGISTRATION',
+      'Registration could not be accepted.',
+    );
   }
   if (
     ['signup_disabled', 'email_provider_disabled'].includes(code) ||
-    message.includes('signups are disabled') || message.includes('signup is disabled')
+    message.includes('signups are disabled') ||
+    message.includes('signup is disabled')
   ) {
-    return result('SIGNUP_DISABLED', HttpStatus.SERVICE_UNAVAILABLE, 'AUTH_PROVIDER_ERROR',
-      'Registration is temporarily unavailable.');
+    return result(
+      'SIGNUP_DISABLED',
+      HttpStatus.SERVICE_UNAVAILABLE,
+      'AUTH_PROVIDER_ERROR',
+      'Registration is temporarily unavailable.',
+    );
   }
   if (
-    status === HttpStatus.UNAUTHORIZED || status === HttpStatus.FORBIDDEN ||
+    status === HttpStatus.UNAUTHORIZED ||
+    status === HttpStatus.FORBIDDEN ||
     ['invalid_api_key', 'bad_jwt'].includes(code)
   ) {
-    return result('AUTH_CONFIGURATION_ERROR', HttpStatus.SERVICE_UNAVAILABLE, 'AUTH_PROVIDER_ERROR',
-      'Registration is temporarily unavailable.');
+    return result(
+      'AUTH_CONFIGURATION_ERROR',
+      HttpStatus.SERVICE_UNAVAILABLE,
+      'AUTH_PROVIDER_ERROR',
+      'Registration is temporarily unavailable.',
+    );
   }
-  if (code === 'database_error' || message.includes('database error') || message.includes('error saving new user')) {
-    return result('AUTH_DATABASE_ERROR', HttpStatus.SERVICE_UNAVAILABLE, 'AUTH_PROVIDER_ERROR',
-      'Registration is temporarily unavailable.');
+  if (
+    code === 'database_error' ||
+    message.includes('database error') ||
+    message.includes('error saving new user')
+  ) {
+    return result(
+      'AUTH_DATABASE_ERROR',
+      HttpStatus.SERVICE_UNAVAILABLE,
+      'AUTH_PROVIDER_ERROR',
+      'Registration is temporarily unavailable.',
+    );
   }
   if (status !== undefined && status >= 500) {
-    return result('AUTH_PROVIDER_ERROR', HttpStatus.BAD_GATEWAY, 'AUTH_PROVIDER_ERROR',
-      'Registration provider is temporarily unavailable.');
+    return result(
+      'AUTH_PROVIDER_ERROR',
+      HttpStatus.BAD_GATEWAY,
+      'AUTH_PROVIDER_ERROR',
+      'Registration provider is temporarily unavailable.',
+    );
   }
-  return result('UNKNOWN_AUTH_ERROR', HttpStatus.BAD_GATEWAY, 'AUTH_PROVIDER_ERROR',
-    'Registration provider is temporarily unavailable.');
+  return result(
+    'UNKNOWN_AUTH_ERROR',
+    HttpStatus.BAD_GATEWAY,
+    'AUTH_PROVIDER_ERROR',
+    'Registration provider is temporarily unavailable.',
+  );
 }
 
 export function registrationErrorLog(

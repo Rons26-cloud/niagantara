@@ -12,8 +12,6 @@ import { Link } from './router';
 import { Dashboard, PosPreview, InventoryPreview, Metric } from './previews';
 import {
   PLANS,
-  PRICING_TRUST,
-  PRICING_DESCRIPTION,
   PAYMENT_METHODS,
   PAYMENT_TITLE,
   PAYMENT_SOON,
@@ -69,21 +67,43 @@ function MoreLink({ to }: { to: string }) {
 }
 
 export function HeroSection() {
-  const w = useW();
+  const { translations, language } = useTranslation();
+  const w = translations.website;
+  const en = language === 'en';
   return (
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-copy">
-          <div className="eyebrow"><i /> PLATFORM OPERASIONAL BISNIS TERINTEGRASI</div>
-          <h1>Kelola Bisnis Lebih Mudah <span>bersama NIAGANTARA</span></h1>
-          <p>Satukan kasir, stok, pembelian, supplier, cabang, tim, dan pemantauan operasional dalam satu platform yang terhubung.</p>
+          <div className="eyebrow">
+            <i /> {en ? 'INTEGRATED BUSINESS OPERATIONS PLATFORM' : 'PLATFORM OPERASIONAL BISNIS TERINTEGRASI'}
+          </div>
+          <h1>
+            {en ? 'Manage Your Business More Easily ' : 'Kelola Bisnis Lebih Mudah '}
+            <span>{en ? 'with NIAGANTARA' : 'bersama NIAGANTARA'}</span>
+          </h1>
+          <p>
+            {en
+              ? 'Connect POS, inventory, purchasing, suppliers, branches, teams, and operational monitoring in one platform.'
+              : 'Satukan kasir, stok, pembelian, supplier, cabang, tim, dan pemantauan operasional dalam satu platform yang terhubung.'}
+          </p>
           <div className="actions">
-            <Button to="/kontak">Mulai Sekarang</Button>
+            <Button to="/kontak">{en ? 'Get Started' : 'Mulai Sekarang'}</Button>
             <Button secondary to="/demo">
-              Lihat Platform <small>▶</small>
+              {en ? 'Explore Platform' : 'Lihat Platform'} <small>▶</small>
             </Button>
           </div>
-          <div className="trust">{['POS','Inventory','Dashboard','Multi Cabang','Purchasing','Realtime'].map((x)=><span key={x}>✓ {x}</span>)}</div>
+          <div className="trust">
+            {[
+              'POS',
+              'Inventory',
+              'Dashboard',
+              en ? 'Multi-branch' : 'Multi Cabang',
+              'Purchasing',
+              'Realtime',
+            ].map((x) => (
+              <span key={x}>✓ {x}</span>
+            ))}
+          </div>
         </div>
         <div className="hero-visual">
           <div className="float stock">
@@ -91,8 +111,8 @@ export function HeroSection() {
               <Package size={16} aria-hidden="true" />
             </i>
             <span>
-              <small>Status operasional</small>
-              <b>Perlu perhatian</b>
+              <small>{en ? 'Operational status' : 'Status operasional'}</small>
+              <b>{en ? 'Needs attention' : 'Perlu perhatian'}</b>
             </span>
             <em>{w.hero.needsAttention}</em>
           </div>
@@ -100,20 +120,19 @@ export function HeroSection() {
             <Link
               to="/demo"
               className="hero-hero-shot"
-              ariaLabel="Buka demo NIAGANTARA"
+              ariaLabel={en ? 'Open NIAGANTARA demo' : 'Buka demo NIAGANTARA'}
             >
               <img
                 src="/phone/niagantara-hero.png"
-                alt="Pratinjau dashboard NIAGANTARA — klik untuk membuka demo"
+                alt={en ? 'NIAGANTARA dashboard preview — open demo' : 'Pratinjau dashboard NIAGANTARA — klik untuk membuka demo'}
                 loading="eager"
                 decoding="async"
               />
               <span className="hero-shot-badge">
-                <PlayCircle size={14} aria-hidden="true" /> Lihat Demo
+                <PlayCircle size={14} aria-hidden="true" /> {en ? 'View Demo' : 'Lihat Demo'}
               </span>
             </Link>
           </div>
-          <small className="preview-disclaimer">Ilustrasi antarmuka produk · klik untuk membuka demo</small>
         </div>
       </div>
     </section>
@@ -139,28 +158,60 @@ export function LogoStrip() {
 }
 
 export function FeaturesSection({ heading = true }: { heading?: boolean }) {
-  const features = [
-    ['POS / Kasir','Transaksi cepat dengan pencarian produk, barcode, pembayaran, shift, dan struk.'],
-    ['Dashboard Owner','Pantau metrik, cabang, stok, shift, integrasi, dan aktivitas operasional.'],
-    ['Inventory','Kelola stok, minimum stok, penyesuaian, transfer, dan ledger pergerakan.'],
-    ['Purchasing','Kelola pembelian, penerimaan barang, status, dan pembaruan stok.'],
-    ['Supplier','Simpan data supplier dan hubungkan dengan proses pembelian.'],
-    ['Multi Cabang','Gunakan konteks perusahaan, toko, dan cabang sesuai hak akses.'],
-    ['Tim & Hak Akses','Atur pengguna, peran, permission, dan penempatan cabang.'],
-    ['Integrasi','Hubungkan data operasional dengan Google Sheets secara terkontrol.'],
+  const { language } = useTranslation();
+  const en = language === 'en';
+  const features = en ? [
+    ['POS / Checkout', 'Fast transactions with product search, barcodes, payments, shifts, and receipts.'],
+    ['Owner Dashboard', 'Monitor metrics, branches, stock, shifts, integrations, and operational activity.'],
+    ['Inventory', 'Manage stock, minimum levels, adjustments, transfers, and movement ledgers.'],
+    ['Purchasing', 'Manage purchases, goods receiving, statuses, and stock updates.'],
+    ['Suppliers', 'Store supplier data and connect it with purchasing workflows.'],
+    ['Multi-branch', 'Use company, store, and branch contexts based on access rights.'],
+    ['Team & Access', 'Manage users, roles, permissions, and branch assignments.'],
+    ['Integrations', 'Connect operational data with Google Sheets securely.'],
+  ] : [
+    [
+      'POS / Kasir',
+      'Transaksi cepat dengan pencarian produk, barcode, pembayaran, shift, dan struk.',
+    ],
+    [
+      'Dashboard Owner',
+      'Pantau metrik, cabang, stok, shift, integrasi, dan aktivitas operasional.',
+    ],
+    [
+      'Inventory',
+      'Kelola stok, minimum stok, penyesuaian, transfer, dan ledger pergerakan.',
+    ],
+    [
+      'Purchasing',
+      'Kelola pembelian, penerimaan barang, status, dan pembaruan stok.',
+    ],
+    ['Supplier', 'Simpan data supplier dan hubungkan dengan proses pembelian.'],
+    [
+      'Multi Cabang',
+      'Gunakan konteks perusahaan, toko, dan cabang sesuai hak akses.',
+    ],
+    [
+      'Tim & Hak Akses',
+      'Atur pengguna, peran, permission, dan penempatan cabang.',
+    ],
+    [
+      'Integrasi',
+      'Hubungkan data operasional dengan Google Sheets secara terkontrol.',
+    ],
   ];
   return (
     <section id="fitur" className="section features">
       <div className="container">
         {heading && (
           <Heading
-            kicker="KAPABILITAS PLATFORM"
-            title="Satu Platform untuk <span>Operasional Bisnis</span>"
-            text="Modul yang saling terhubung untuk pekerjaan harian owner, supervisor, tim gudang, purchasing, dan kasir."
+            kicker={en ? 'PLATFORM CAPABILITIES' : 'KAPABILITAS PLATFORM'}
+            title={en ? 'One Platform for <span>Business Operations</span>' : 'Satu Platform untuk <span>Operasional Bisnis</span>'}
+            text={en ? 'Connected modules for the daily work of owners, supervisors, warehouse teams, purchasing teams, and cashiers.' : 'Modul yang saling terhubung untuk pekerjaan harian owner, supervisor, tim gudang, purchasing, dan kasir.'}
           />
         )}
         <div className="feature-grid">
-          {features.map(([title,text], i) => (
+          {features.map(([title, text], i) => (
             <article className="feature-card" key={title}>
               <Icon>
                 <SidebarIcon icon={FEATURE_ICONS[i]} size={24} />
@@ -168,7 +219,7 @@ export function FeaturesSection({ heading = true }: { heading?: boolean }) {
               <h3>{title}</h3>
               <p>{text}</p>
               <Link to="/fitur">
-                Pelajari fitur <span aria-hidden="true">↗</span>
+                {en ? 'Explore feature' : 'Pelajari fitur'} <span aria-hidden="true">↗</span>
               </Link>
             </article>
           ))}
@@ -198,8 +249,9 @@ export function ShowcaseSection() {
               decoding="async"
             />
           </div>
-          <div className="product-showcase-pos"><PosPreview w={w} /></div>
-          <small>Preview produk menggunakan komponen demonstrasi NIAGANTARA · seluruh angka merupakan data contoh.</small>
+          <div className="product-showcase-pos">
+            <PosPreview w={w} />
+          </div>
         </div>
       </div>
     </section>
@@ -514,7 +566,11 @@ export function MobileSection() {
   const navIcons = [Home, Package, TrendingUp, BarChart3, UserCircle];
   const bulletLinks = ['/demo', '/demo', '/fitur'];
   return (
-    <section id="mobile" className="section mobile" aria-labelledby="mobile-showcase-title">
+    <section
+      id="mobile"
+      className="section mobile"
+      aria-labelledby="mobile-showcase-title"
+    >
       <div className="container mobile-grid">
         <div>
           <Kicker>{w.mobileSection.kicker}</Kicker>
@@ -528,7 +584,10 @@ export function MobileSection() {
               const Icon = featureIcons[i] ?? CheckCircle2;
               return (
                 <li key={b}>
-                  <Link className="mobile-feature-item" to={bulletLinks[i] ?? '/demo'}>
+                  <Link
+                    className="mobile-feature-item"
+                    to={bulletLinks[i] ?? '/demo'}
+                  >
                     <span className="mobile-feature-icon">
                       <Icon size={18} aria-hidden="true" />
                     </span>
@@ -536,7 +595,9 @@ export function MobileSection() {
                       <b>{b}</b>
                       <small>{featureDetails[i]}</small>
                     </span>
-                    <span className="mobile-feature-go" aria-hidden="true">→</span>
+                    <span className="mobile-feature-go" aria-hidden="true">
+                      →
+                    </span>
                   </Link>
                 </li>
               );
@@ -569,14 +630,20 @@ export function MobileSection() {
           <div className="flexible-device">
             <Link className="flexible-device-top" to="/demo">
               <strong>NIAGANTARA</strong>
-              <span aria-label="Toko Pusat" title="Toko Pusat">A</span>
+              <span aria-label="Toko Pusat" title="Toko Pusat">
+                A
+              </span>
             </Link>
-            <small className="flexible-greeting">{w.mobileSection.welcome}</small>
+            <small className="flexible-greeting">
+              {w.mobileSection.welcome}
+            </small>
             <div className="flexible-context" aria-hidden="true">
               <span>Toko Pusat</span>
               <em>Paket FREE</em>
             </div>
-            <Link className="flexible-h4" to="/demo">{w.mobileSection.summary}</Link>
+            <Link className="flexible-h4" to="/demo">
+              {w.mobileSection.summary}
+            </Link>
             <div className="flexible-kpis">
               <div>
                 <small>{w.hero.todaySales}</small>
@@ -607,7 +674,10 @@ export function MobileSection() {
                 ))}
               </div>
             </div>
-            <nav className="flexible-nav" aria-label="Mobile dashboard navigation">
+            <nav
+              className="flexible-nav"
+              aria-label="Mobile dashboard navigation"
+            >
               {nav.map((n, i) => {
                 const Icon = navIcons[i];
                 return (
@@ -625,64 +695,73 @@ export function MobileSection() {
   );
 }
 
-export function PricingSection({ heading = true }: { heading?: boolean }) {
+export function FreeAccessSection() {
   const w = useW();
   const lang = useLang(w);
-  const [selected, setSelected] = useState<PlanPresentation | null>(null);
   return (
-    <section id="harga" className="section pricing">
+    <section id="akses-gratis" className="section pricing free-access">
       <div className="container pricing-wrap">
         <div className="pricing-meta">
-          {heading && (
-            <div className="pricing-heading">
-              <Kicker>{w.pricing.kicker}</Kicker>
-              <h2
-                dangerouslySetInnerHTML={{ __html: w.pricing.title }}
-              />
-              <p>{PRICING_DESCRIPTION[lang]}</p>
-            </div>
-          )}
+          <div className="pricing-heading">
+            <Kicker>{lang === 'id' ? 'AKSES GRATIS' : 'FREE ACCESS'}</Kicker>
+            <h2>
+              {lang === 'id'
+                ? 'Gunakan seluruh dashboard tanpa biaya.'
+                : 'Use the complete dashboard at no cost.'}
+            </h2>
+            <p>
+              {lang === 'id'
+                ? 'Selama masa peluncuran, fitur operasional inti NIAGANTARA dapat digunakan gratis. Tidak ada pilihan paket atau pembayaran yang perlu diselesaikan.'
+                : 'During launch, NIAGANTARA core operations features are free to use. There is no plan or payment to complete.'}
+            </p>
+          </div>
           <ul className="pricing-trust">
-            {PRICING_TRUST.map((t) => (
-              <li key={t.en}>
+            {[
+              lang === 'id' ? 'Dashboard bisnis lengkap' : 'Complete business dashboard',
+              lang === 'id' ? 'POS, stok, laporan, dan operasional' : 'POS, inventory, reports, and operations',
+              lang === 'id' ? 'Tanpa kartu kredit' : 'No credit card required',
+            ].map((item) => (
+              <li key={item}>
                 <CheckCircle2 size={14} aria-hidden="true" />
-                {t[lang]}
+                {item}
               </li>
             ))}
           </ul>
-          <PaymentMethods />
-          <MoreLink to="/harga" />
         </div>
-        <div className="plan-grid">
-          {PLANS.map((p) => (
-            <PriceCard
-              key={p.name}
-              plan={p}
-              lang={lang}
-              recommended={w.pricing.recommended}
-              onSelect={() => setSelected(p)}
-            />
-          ))}
+        <div className="free-access-card">
+          <span className="plan-badge">{lang === 'id' ? 'AKSES PENUH' : 'FULL ACCESS'}</span>
+          <small className="plan-name">NIAGANTARA FREE</small>
+          <h3>{lang === 'id' ? 'Mulai kelola bisnis hari ini' : 'Start managing your business today'}</h3>
+          <p className="plan-summary">
+            {lang === 'id'
+              ? 'Daftar, siapkan toko dan cabang, lalu gunakan dashboard sesuai hak akses tim Anda.'
+              : 'Register, set up stores and branches, then use the dashboard based on your team permissions.'}
+          </p>
+          <a className="plan-cta primary" href="https://niagantara-app.pages.dev">
+            {lang === 'id' ? 'Buat Akun Gratis' : 'Create Free Account'}
+          </a>
+          <small className="free-access-note">
+            {lang === 'id'
+              ? 'Jika paket berbayar diperkenalkan nanti, informasinya akan diumumkan terlebih dahulu.'
+              : 'If paid plans are introduced later, they will be announced in advance.'}
+          </small>
         </div>
       </div>
-      {selected && (
-        <PaymentModal
-          plan={selected}
-          lang={lang}
-          onClose={() => setSelected(null)}
-        />
-      )}
     </section>
   );
 }
 
 function PaymentBrandIcon({ id }: { id: string }) {
-  const brandFont =
-    'Inter, Arial, Helvetica, sans-serif';
+  const brandFont = 'Inter, Arial, Helvetica, sans-serif';
   switch (id) {
     case 'visa':
       return (
-        <svg viewBox="0 0 36 12" height="15" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 36 12"
+          height="15"
+          aria-hidden="true"
+          focusable="false"
+        >
           <text
             x="0"
             y="10.5"
@@ -699,14 +778,24 @@ function PaymentBrandIcon({ id }: { id: string }) {
       );
     case 'mastercard':
       return (
-        <svg viewBox="0 0 24 16" height="16" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 24 16"
+          height="16"
+          aria-hidden="true"
+          focusable="false"
+        >
           <circle cx="9.2" cy="8" r="6.6" fill="#EB001B" opacity="0.92" />
           <circle cx="14.8" cy="8" r="6.6" fill="#F79E1B" opacity="0.92" />
         </svg>
       );
     case 'jcb':
       return (
-        <svg viewBox="0 0 30 12" height="15" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 30 12"
+          height="15"
+          aria-hidden="true"
+          focusable="false"
+        >
           <g
             fontFamily={brandFont}
             fontSize="11"
@@ -714,15 +803,26 @@ function PaymentBrandIcon({ id }: { id: string }) {
             fontStyle="italic"
             letterSpacing="0.5"
           >
-            <text x="0" y="10.5" fill="#0E4C96">J</text>
-            <text x="10" y="10.5" fill="#E2001A">C</text>
-            <text x="20" y="10.5" fill="#1E3383">B</text>
+            <text x="0" y="10.5" fill="#0E4C96">
+              J
+            </text>
+            <text x="10" y="10.5" fill="#E2001A">
+              C
+            </text>
+            <text x="20" y="10.5" fill="#1E3383">
+              B
+            </text>
           </g>
         </svg>
       );
     case 'qris':
       return (
-        <svg viewBox="0 0 24 24" height="18" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 24 24"
+          height="18"
+          aria-hidden="true"
+          focusable="false"
+        >
           <rect
             x="1.5"
             y="1.5"
@@ -791,9 +891,17 @@ function PaymentBrandIcon({ id }: { id: string }) {
       );
     case 'bank-transfer':
       return (
-        <svg viewBox="0 0 24 20" height="16" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 24 20"
+          height="16"
+          aria-hidden="true"
+          focusable="false"
+        >
           <path d="M12 1.5 2 7h20L12 1.5Z" fill="#64748B" />
-          <path d="M5 9.5h3v5H5zM10.5 9.5h3v5h-3zM16 9.5h3v5h-3z" fill="#94A3B8" />
+          <path
+            d="M5 9.5h3v5H5zM10.5 9.5h3v5h-3zM16 9.5h3v5h-3z"
+            fill="#94A3B8"
+          />
           <rect x="2" y="16.5" width="20" height="2" rx="1" fill="#64748B" />
         </svg>
       );
@@ -905,19 +1013,23 @@ export function FaqSection() {
 }
 
 export function CtaSection() {
+  const { language } = useTranslation();
+  const en = language === 'en';
   return (
     <section id="kontak" className="cta">
       <div className="container">
-        <Kicker>NIAGANTARA UNTUK BISNIS ANDA</Kicker>
-        <h2>Siap Menyatukan Operasional Bisnis Anda?</h2>
-        <p>Kelola transaksi, stok, pembelian, cabang dan tim dalam satu ekosistem NIAGANTARA.</p>
+        <Kicker>{en ? 'NIAGANTARA FOR YOUR BUSINESS' : 'NIAGANTARA UNTUK BISNIS ANDA'}</Kicker>
+        <h2>{en ? 'Ready to Unify Your Business Operations?' : 'Siap Menyatukan Operasional Bisnis Anda?'}</h2>
+        <p>
+          {en ? 'Manage transactions, inventory, purchasing, branches, and teams in one NIAGANTARA ecosystem.' : 'Kelola transaksi, stok, pembelian, cabang dan tim dalam satu ekosistem NIAGANTARA.'}
+        </p>
         <div className="actions">
           <a className="button" href="mailto:support@niagantara.com">
-            Mulai Sekarang
+            {en ? 'Get Started' : 'Mulai Sekarang'}
             <span aria-hidden="true">→</span>
           </a>
           <Button secondary to="/fitur">
-            Pelajari Fitur
+            {en ? 'Explore Features' : 'Pelajari Fitur'}
           </Button>
         </div>
       </div>
@@ -958,9 +1070,7 @@ function PriceCard({
       role="button"
       tabIndex={0}
     >
-      {plan.highlight && (
-        <span className="plan-badge">{recommended}</span>
-      )}
+      {plan.highlight && <span className="plan-badge">{recommended}</span>}
       <small className="plan-name">{plan.name}</small>
       <h3 id={`plan-title-${plan.id}`}>{plan.title[lang]}</h3>
       <p className="plan-summary">{plan.summary[lang]}</p>
@@ -1028,8 +1138,16 @@ function PaymentModal({
   const copy = {
     title: lang === 'id' ? 'Selesaikan Pembayaran' : 'Complete Payment',
     package: lang === 'id' ? 'Paket' : 'Plan',
-    choose: lang === 'id' ? 'Pilih metode pembayaran' : 'Choose a payment method',
-    pay: plan.priceIdr === 0 ? (lang === 'id' ? 'Aktifkan Gratis' : 'Activate Free') : (lang === 'id' ? 'Bayar Sekarang' : 'Pay Now'),
+    choose:
+      lang === 'id' ? 'Pilih metode pembayaran' : 'Choose a payment method',
+    pay:
+      plan.priceIdr === 0
+        ? lang === 'id'
+          ? 'Aktifkan Gratis'
+          : 'Activate Free'
+        : lang === 'id'
+          ? 'Bayar Sekarang'
+          : 'Pay Now',
     totalDue: lang === 'id' ? 'Total tagihan' : 'Total due',
     close: lang === 'id' ? 'Tutup' : 'Close',
     successTitle: lang === 'id' ? 'Permintaan diterima' : 'Request received',
@@ -1041,9 +1159,20 @@ function PaymentModal({
   };
 
   return (
-    <div className="pay-backdrop" role="dialog" aria-modal="true" aria-label={copy.title} onClick={closePay}>
+    <div
+      className="pay-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.title}
+      onClick={closePay}
+    >
       <div className="pay-modal" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="pay-close" onClick={closePay} aria-label={copy.close}>
+        <button
+          type="button"
+          className="pay-close"
+          onClick={closePay}
+          aria-label={copy.close}
+        >
           <Minus size={16} />
           <Plus size={16} />
         </button>
@@ -1059,7 +1188,11 @@ function PaymentModal({
               <b>{plan.name}</b> · {plan.priceLabel}
               {plan.priceIdr !== 0 ? ` / ${plan.cadence[lang]}` : ''}
             </p>
-            <button type="button" className="plan-cta primary" onClick={closePay}>
+            <button
+              type="button"
+              className="plan-cta primary"
+              onClick={closePay}
+            >
               {copy.done}
             </button>
           </div>
@@ -1091,9 +1224,14 @@ function PaymentModal({
                       </span>
                       <span>
                         <b>{pm.label}</b>
-                        <em>{pm.status === 'planned' ? PAYMENT_SOON[lang] : ''}</em>
+                        <em>
+                          {pm.status === 'planned' ? PAYMENT_SOON[lang] : ''}
+                        </em>
                       </span>
-                      <i className={`pay-radio${active ? ' on' : ''}`} aria-hidden="true" />
+                      <i
+                        className={`pay-radio${active ? ' on' : ''}`}
+                        aria-hidden="true"
+                      />
                     </button>
                   </li>
                 );
@@ -1101,7 +1239,10 @@ function PaymentModal({
             </ul>
             <div className="pay-total">
               <span>{copy.totalDue}</span>
-              <b>{plan.priceLabel}{plan.priceIdr !== 0 ? ` / ${plan.cadence[lang]}` : ''}</b>
+              <b>
+                {plan.priceLabel}
+                {plan.priceIdr !== 0 ? ` / ${plan.cadence[lang]}` : ''}
+              </b>
             </div>
             <button
               type="button"
@@ -1150,7 +1291,7 @@ export function HomePage() {
           <MobileSection />
         </LazySection>
         <LazySection>
-          <PricingSection />
+          <FreeAccessSection />
         </LazySection>
         <LazySection>
           <StepsSection />
@@ -1184,17 +1325,6 @@ export function SolutionsPage() {
       <InventorySolutionSection />
       <BranchesSection />
       <SheetsSection />
-      <CtaSection />
-    </Shell>
-  );
-}
-
-export function PricingPage() {
-  return (
-    <Shell>
-      <PricingSection />
-      <StepsSection />
-      <FaqSection />
       <CtaSection />
     </Shell>
   );

@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../../integrations/supabase/supabase.service.js';
-import type { AdjustmentInput, InventoryQuery, MovementQuery, TransferInput } from './dto/inventory.dto.js';
+import type {
+  AdjustmentInput,
+  InventoryQuery,
+  MovementQuery,
+  TransferInput,
+} from './dto/inventory.dto.js';
 @Injectable()
 export class InventoryRepository {
   constructor(private readonly db: SupabaseService) {}
@@ -20,7 +25,9 @@ export class InventoryRepository {
     if (q.categoryId) query = query.eq('products.category_id', q.categoryId);
     if (q.search) {
       const search = q.search.replace(/[%_,]/g, '');
-      query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%`, { referencedTable: 'products' });
+      query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%`, {
+        referencedTable: 'products',
+      });
     }
     return query;
   }
@@ -29,7 +36,9 @@ export class InventoryRepository {
     const offset = Math.max(Number(q.offset) || 0, 0);
     let query = this.db.client
       .from('inventory_movements')
-      .select('*,product:products(id,name,sku),warehouse:warehouses(id,name),branch:branches(id,name),actor:profiles(id,full_name)')
+      .select(
+        '*,product:products(id,name,sku),warehouse:warehouses(id,name),branch:branches(id,name),actor:profiles(id,full_name)',
+      )
       .eq('company_id', c)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -68,6 +77,10 @@ export class InventoryRepository {
     });
   }
   transferScopes(c: string, d: TransferInput) {
-    return this.db.client.from('warehouses').select('id,branch_id').eq('company_id', c).in('id', [d.sourceWarehouseId, d.destinationWarehouseId]);
+    return this.db.client
+      .from('warehouses')
+      .select('id,branch_id')
+      .eq('company_id', c)
+      .in('id', [d.sourceWarehouseId, d.destinationWarehouseId]);
   }
 }

@@ -1,1 +1,20 @@
-import{Module}from'@nestjs/common';import{AuthGuard}from'../../common/guards/auth.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{AuditModule}from'../audit/audit.module.js';import{SuppliersController}from'./suppliers.controller.js';import{SuppliersService}from'./suppliers.service.js';import{SuppliersRepository}from'./suppliers.repository.js';@Module({imports:[AuditModule],controllers:[SuppliersController],providers:[SuppliersService,SuppliersRepository,AuthGuard,TenantGuard,PermissionGuard]})export class SuppliersModule{}
+import { Module } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { AuditModule } from '../audit/audit.module.js';
+import { SuppliersController } from './suppliers.controller.js';
+import { SuppliersService } from './suppliers.service.js';
+import { SuppliersRepository } from './suppliers.repository.js';
+@Module({
+  imports: [AuditModule],
+  controllers: [SuppliersController],
+  providers: [
+    SuppliersService,
+    SuppliersRepository,
+    AuthGuard,
+    TenantGuard,
+    PermissionGuard,
+  ],
+})
+export class SuppliersModule {}

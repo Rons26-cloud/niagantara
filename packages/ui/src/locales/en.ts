@@ -1,15 +1,9 @@
-/**
- * English Translations
- */
-
 export const en = {
-  // Brand
   brand: {
     name: 'NIAGANTARA',
     tagline: 'Business Control Platform',
   },
 
-  // Navigation
   nav: {
     home: 'Home',
     features: 'Features',
@@ -26,7 +20,6 @@ export const en = {
     trial: 'Try Free',
   },
 
-  // Auth
   auth: {
     login: 'Sign In',
     logout: 'Sign Out',
@@ -48,7 +41,6 @@ export const en = {
     success: 'Success',
   },
 
-  // Dashboard
   dashboard: {
     title: 'Owner Dashboard',
     overview: 'Overview',
@@ -86,7 +78,6 @@ export const en = {
     },
   },
 
-  // Pages
   pages: {
     dashboard: 'Home',
     pos: 'POS / Cashier',
@@ -118,7 +109,6 @@ export const en = {
     help: 'Help',
   },
 
-  // Common
   common: {
     save: 'Save',
     saving: 'Saving...',
@@ -190,7 +180,6 @@ export const en = {
     difference: 'Difference',
   },
 
-  // Context
   context: {
     company: 'Company',
     store: 'Store',
@@ -199,7 +188,6 @@ export const en = {
     notSelected: 'Not selected',
   },
 
-  // Inventory
   inventory: {
     currentStock: 'Current Stock',
     minimumStock: 'Minimum Stock',
@@ -213,9 +201,9 @@ export const en = {
     out: 'Out',
   },
 
-  // POS
   pos: {
-    tagline: 'The scanner becomes an accelerator, not a transaction dependency.',
+    tagline:
+      'The scanner becomes an accelerator, not a transaction dependency.',
     title: 'Ready for transactions',
     searchProduct: 'Search product or scan barcode...',
     allProducts: 'All Products',
@@ -232,7 +220,6 @@ export const en = {
     printReceipt: 'Print Receipt',
   },
 
-  // Status
   status: {
     paid: 'Paid',
     pending: 'Pending',
@@ -245,7 +232,6 @@ export const en = {
     published: 'Published',
   },
 
-  // Forms
   forms: {
     required: 'Required',
     invalidEmail: 'Invalid email',
@@ -254,7 +240,6 @@ export const en = {
     invalidFormat: 'Invalid format',
   },
 
-  // Messages
   messages: {
     saveSuccess: 'Data saved successfully',
     saveError: 'Failed to save data',
@@ -266,14 +251,14 @@ export const en = {
     unsavedChanges: 'There are unsaved changes',
   },
 
-  // Public Website
   website: {
     eyebrow: 'MODERN BUSINESS OPERATIONS PLATFORM',
     stripLabel: 'DESIGNED FOR MORE CONTROLLED OPERATIONS',
     seeMore: 'See more',
     hero: {
       title: 'All Your Business<br /><span>In One Control</span>',
-      subtitle: 'NIAGANTARA is a Nusantara business dashboard platform for UMKM through enterprises—manage POS, sales, inventory, finance, branches, and reporting in one integrated system.',
+      subtitle:
+        'NIAGANTARA is a Nusantara business dashboard platform for UMKM through enterprises—manage POS, sales, inventory, finance, branches, and reporting in one integrated system.',
       cta: 'Get Started',
       demo: 'View Demo',
       trust: ['Multi-Branch', 'Realtime', 'Secure', 'Integrated'],
@@ -285,17 +270,42 @@ export const en = {
     features: {
       kicker: 'ONE ECOSYSTEM, SIMPLER',
       title: 'One Platform for Your<br /><span>Business Operations</span>',
-      subtitle: 'All the tools you need to run your daily business, connected in one consistent data source.',
+      subtitle:
+        'All the tools you need to run your daily business, connected in one consistent data source.',
       learnMore: 'Learn more',
       items: [
-        { title: 'POS / Cashier', text: 'Fast transactions directly connected to stock.' },
-        { title: 'Products & Stock', text: 'Monitor inventory and transfers between branches.' },
-        { title: 'Sales', text: 'See revenue and transaction trends more clearly.' },
-        { title: 'Finance', text: 'Record income, expenses, cash, and profit.' },
-        { title: 'Customers', text: 'Build customer relationships with tidy data.' },
-        { title: 'Suppliers', text: 'Manage suppliers and purchases in one flow.' },
-        { title: 'Employees', text: 'Set access according to roles and responsibilities.' },
-        { title: 'Multi-Branch', text: 'Manage companies, stores, and branches separately.' },
+        {
+          title: 'POS / Cashier',
+          text: 'Fast transactions directly connected to stock.',
+        },
+        {
+          title: 'Products & Stock',
+          text: 'Monitor inventory and transfers between branches.',
+        },
+        {
+          title: 'Sales',
+          text: 'See revenue and transaction trends more clearly.',
+        },
+        {
+          title: 'Finance',
+          text: 'Record income, expenses, cash, and profit.',
+        },
+        {
+          title: 'Customers',
+          text: 'Build customer relationships with tidy data.',
+        },
+        {
+          title: 'Suppliers',
+          text: 'Manage suppliers and purchases in one flow.',
+        },
+        {
+          title: 'Employees',
+          text: 'Set access according to roles and responsibilities.',
+        },
+        {
+          title: 'Multi-Branch',
+          text: 'Manage companies, stores, and branches separately.',
+        },
         { title: 'Reports', text: 'Turn operational data into insight.' },
         { title: 'Google Sheets', text: 'Sync supported business data.' },
       ],
@@ -303,28 +313,46 @@ export const en = {
     showcase: {
       kicker: 'NON-STOP VISIBILITY',
       title: 'Monitor Your Business <span>in Realtime</span>',
-      subtitle: 'One clear view to understand what is happening across your operations.',
+      subtitle:
+        'One clear view to understand what is happening across your operations.',
     },
     solutions: {
       pos: {
         kicker: 'FASTER TRANSACTIONS',
         title: 'POS / Cashier<br /><span>Integrated</span>',
         text: 'Give your team a fast checkout experience. Every sale is recorded instantly and stock is updated automatically.',
-        bullets: ['Product search & barcode scanner', 'Payments and order notes', 'Easy-to-search transaction history', 'Automatic per-branch stock updates'],
+        bullets: [
+          'Product search & barcode scanner',
+          'Payments and order notes',
+          'Easy-to-search transaction history',
+          'Automatic per-branch stock updates',
+        ],
         cta: 'Discover NIAGANTARA POS',
       },
       inventory: {
         kicker: 'ACCURATE STOCK DATA',
         title: 'Stock Under<br /><span>Better Control</span>',
         text: 'Know what is available, what needs reordering, and how stock moves at every location.',
-        pills: ['Products', 'Categories', 'Stock in', 'Inter-branch transfer', 'Stock history'],
+        pills: [
+          'Products',
+          'Categories',
+          'Stock in',
+          'Inter-branch transfer',
+          'Stock history',
+        ],
         link: 'Explore inventory solution',
         heading: 'Product List',
         addProduct: '+ Add Product',
         searchPlaceholder: 'Search products...',
         allCategories: 'All Categories',
         filter: 'Filter',
-        tableHeaders: ['Product', 'Category', 'Current Stock', 'Minimum Stock', 'Status'],
+        tableHeaders: [
+          'Product',
+          'Category',
+          'Current Stock',
+          'Minimum Stock',
+          'Status',
+        ],
         unit: 'unit',
       },
     },
@@ -337,7 +365,8 @@ export const en = {
     finance: {
       kicker: 'FROM DATA TO DIRECTION',
       title: 'Business Data Becomes <span>Decisions</span>',
-      subtitle: 'Use the same data to view revenue, profit, cash flow, and branch performance with confidence.',
+      subtitle:
+        'Use the same data to view revenue, profit, cash flow, and branch performance with confidence.',
       monthlyRevenue: 'Revenue this month',
       vsLastMonth: 'vs last month',
       netProfit: 'Net profit',
@@ -382,24 +411,49 @@ export const en = {
     pricing: {
       kicker: 'CHOOSE HOW YOU GROW',
       title: 'Transparent <span>Pricing</span>',
-      subtitle: 'Subscription plans are being prepared for different business needs.',
+      subtitle:
+        'Subscription plans are being prepared for different business needs.',
       recommended: 'RECOMMENDED',
       comingSoon: 'Coming soon',
       notifyMe: 'Notify me',
       plans: [
-        { name: 'FREE', title: 'Get to know NIAGANTARA', text: 'To try the foundation of business management.' },
-        { name: 'BUSINESS', title: 'More connected operations', text: 'For teams that want to work from one source of data.' },
-        { name: 'ENTERPRISE', title: 'Control at larger scale', text: 'For organizations with special operational needs.' },
+        {
+          name: 'FREE',
+          title: 'Get to know NIAGANTARA',
+          text: 'To try the foundation of business management.',
+        },
+        {
+          name: 'BUSINESS',
+          title: 'More connected operations',
+          text: 'For teams that want to work from one source of data.',
+        },
+        {
+          name: 'ENTERPRISE',
+          title: 'Control at larger scale',
+          text: 'For organizations with special operational needs.',
+        },
       ],
     },
     steps: {
       kicker: 'START IN FOUR STEPS',
       title: 'From setup to <span>ready to operate</span>',
       items: [
-        { title: 'Create Account', text: 'Register your business and administrator account.' },
-        { title: 'Create Store', text: 'Define the store structure as your operations center.' },
-        { title: 'Add Branches & Products', text: 'Build your catalog and business locations.' },
-        { title: 'Start Managing', text: 'Run operations with better visibility.' },
+        {
+          title: 'Create Account',
+          text: 'Register your business and administrator account.',
+        },
+        {
+          title: 'Create Store',
+          text: 'Define the store structure as your operations center.',
+        },
+        {
+          title: 'Add Branches & Products',
+          text: 'Build your catalog and business locations.',
+        },
+        {
+          title: 'Start Managing',
+          text: 'Run operations with better visibility.',
+        },
       ],
     },
     faq: {
@@ -408,13 +462,34 @@ export const en = {
       text: 'If you cannot find the answer you are looking for, contact our team.',
       contactLink: 'Contact support',
       items: [
-        { q: 'What is NIAGANTARA?', a: 'NIAGANTARA is a Business Control Platform to manage business operations—from POS, sales, stock, finance, to reporting—in one integrated system.' },
-        { q: 'Can it be used for many branches?', a: 'Yes. The Company, Store, and Branch structure helps owners manage many locations with isolated access and data.' },
-        { q: 'Is POS available?', a: 'Yes. POS is integrated with products, stock, transaction history, and branch context.' },
-        { q: 'Does it support Google Sheets?', a: 'Yes. Company admins can connect Google Sheets to sync supported business data.' },
-        { q: 'Is there a mobile app?', a: 'The mobile experience is being prepared. The web dashboard remains responsive for mobile devices.' },
-        { q: 'How is data secured?', a: 'NIAGANTARA uses authentication, role-based access, tenant and branch isolation, audit logging, security events, and Row Level Security.' },
-        { q: 'How do I get started?', a: 'Create an account, create a store, add branches and products, then start managing transactions and your operations.' },
+        {
+          q: 'What is NIAGANTARA?',
+          a: 'NIAGANTARA is a Business Control Platform to manage business operations—from POS, sales, stock, finance, to reporting—in one integrated system.',
+        },
+        {
+          q: 'Can it be used for many branches?',
+          a: 'Yes. The Company, Store, and Branch structure helps owners manage many locations with isolated access and data.',
+        },
+        {
+          q: 'Is POS available?',
+          a: 'Yes. POS is integrated with products, stock, transaction history, and branch context.',
+        },
+        {
+          q: 'Does it support Google Sheets?',
+          a: 'Yes. Company admins can connect Google Sheets to sync supported business data.',
+        },
+        {
+          q: 'Is there a mobile app?',
+          a: 'The mobile experience is being prepared. The web dashboard remains responsive for mobile devices.',
+        },
+        {
+          q: 'How is data secured?',
+          a: 'NIAGANTARA uses authentication, role-based access, tenant and branch isolation, audit logging, security events, and Row Level Security.',
+        },
+        {
+          q: 'How do I get started?',
+          a: 'Create an account, create a store, add branches and products, then start managing transactions and your operations.',
+        },
       ],
     },
     contact: {
@@ -422,7 +497,8 @@ export const en = {
     },
     cta: {
       title: 'Ready to Manage Your Business Better?',
-      subtitle: 'Start using NIAGANTARA and manage your business operations in one platform.',
+      subtitle:
+        'Start using NIAGANTARA and manage your business operations in one platform.',
       tryFree: 'Start Free',
       signIn: 'Sign In',
     },
@@ -499,7 +575,6 @@ export const en = {
     },
   },
 
-  // Master Dashboard
   master: {
     title: 'Master Dashboard',
     companies: 'Companies',
@@ -539,7 +614,8 @@ export const en = {
     securityEvents: 'Recent Security Events',
     latestActivity: 'Latest Activities',
     signIn: 'Master sign in',
-    signInHint: 'Platform role required (super_master / master_admin / support / auditor).',
+    signInHint:
+      'Platform role required (super_master / master_admin / support / auditor).',
     accessDenied: 'This account does not hold a platform role.',
     notConfigured: 'Not available yet',
     backendGap:
@@ -552,7 +628,6 @@ export const en = {
     autoRefresh: 'Auto-refresh every 30s',
   },
 
-  // Settings page (user dashboard)
   settings: {
     title: 'Settings',
     profile: 'Profile',
@@ -574,26 +649,29 @@ export const en = {
     planNotConfigured:
       'Subscription plans have not been enabled for this environment yet.',
     session: 'Session',
-    sessionNote: 'Your session is stored locally and expires with the token issued at sign-in.',
+    sessionNote:
+      'Your session is stored locally and expires with the token issued at sign-in.',
     dangerZone: 'Danger zone',
     signOutAll: 'Sign out on this device',
   },
 
-  // Help
   help: {
     title: 'Help & Tutorials',
     intro: 'Short guidance for each area of the platform.',
     contact: 'Contact support',
     items: {
-      dashboard: 'Monitor daily sales, stock alerts, cash position, and branch activity.',
+      dashboard:
+        'Monitor daily sales, stock alerts, cash position, and branch activity.',
       pos: 'Open a cashier shift, then search or scan products to check out customers.',
-      sales: 'Review transactions, print receipts, cancel or refund when permitted.',
+      sales:
+        'Review transactions, print receipts, cancel or refund when permitted.',
       shifts: 'Track opening/closing cash per cashier shift per branch.',
       products: 'Maintain your catalog: names, SKU, cost and selling prices.',
       categories: 'Group products so POS and reports stay organized.',
       barcode: 'Look up products instantly by scanned code.',
       inventory: 'Watch stock levels per warehouse and record adjustments.',
-      purchases: 'Record supplier orders; receiving updates stock automatically.',
+      purchases:
+        'Record supplier orders; receiving updates stock automatically.',
       suppliers: 'Manage vendor partners and their contacts.',
       customers: 'Keep customer records for faster checkout and reporting.',
       employees: 'Manage staff records and branch assignments.',
@@ -602,7 +680,8 @@ export const en = {
       payables: 'Track what your business owes suppliers.',
       receivables: 'Track what customers still owe you.',
       reports: 'Cash-basis finance summary across the selected period.',
-      sheets: 'Connect Google Sheets to mirror sales/inventory data automatically.',
+      sheets:
+        'Connect Google Sheets to mirror sales/inventory data automatically.',
       warehouses: 'Define storage locations per branch.',
       branches: 'Create branches under each store.',
       stores: 'Organize branches into stores under your company.',
@@ -611,7 +690,6 @@ export const en = {
     },
   },
 
-  // Onboarding
   onboarding: {
     title: 'Welcome to NIAGANTARA',
     subtitle: 'Set up your business control center in a few steps.',
@@ -626,11 +704,10 @@ export const en = {
     done: 'Go to Dashboard',
   },
 
-  // Demo-specific translations
   demo: {
-    mode: 'Demo Mode',
-    sampleData: 'Sample data • changes are not saved',
-    reset: 'Reset Demo',
+    mode: 'Preview',
+    sampleData: 'Interactive preview',
+    reset: 'Restart',
     interactiveDemo: 'Interactive demo — changes are not saved',
     changesNotSaved: 'Demo changes saved successfully',
     transactionSuccess: 'Transaction successful!',
@@ -684,12 +761,17 @@ export const en = {
     transferTo: 'Transfer to',
     transferFrom: 'Transfer from',
     gettingStarted: 'Getting Started',
-    gettingStartedText: 'Welcome to the NIAGANTARA demo. This is an interactive simulation environment to try out the platform features.',
+    gettingStartedText:
+      'Welcome to the NIAGANTARA demo. This is an interactive simulation environment to try out the platform features.',
     modules: 'Modules',
-    posDescription: 'Integrated point-of-sale system with inventory management and sales tracking.',
-    inventoryDescription: 'Monitor stock per product, category, and location with low stock alerts.',
-    reportsDescription: 'View sales, finance, and branch performance reports in one dashboard.',
-    googleSheetsDescription: 'Integration with Google Sheets for flexible data analysis.',
+    posDescription:
+      'Integrated point-of-sale system with inventory management and sales tracking.',
+    inventoryDescription:
+      'Monitor stock per product, category, and location with low stock alerts.',
+    reportsDescription:
+      'View sales, finance, and branch performance reports in one dashboard.',
+    googleSheetsDescription:
+      'Integration with Google Sheets for flexible data analysis.',
     appearance: 'Appearance',
     notifications: 'Notifications',
     lowStockNotifications: 'Low Stock Alerts',

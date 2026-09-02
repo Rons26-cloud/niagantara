@@ -61,7 +61,11 @@ export function ExpensesPage({
         setRows(a);
         setCategories(b);
       })
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -86,7 +90,12 @@ export function ExpensesPage({
       });
       setMsg(t('messages.saveSuccess'));
       setShowCreate(false);
-      setForm({ categoryId: '', amount: '0', description: '', paymentMethod: 'CASH' });
+      setForm({
+        categoryId: '',
+        amount: '0',
+        description: '',
+        paymentMethod: 'CASH',
+      });
       load();
     } catch (e) {
       setMsg(
@@ -103,7 +112,10 @@ export function ExpensesPage({
   const totalToday = rows
     .filter((r) => r.expense_date === today)
     .reduce((n: number, r: any) => n + Number(r.amount ?? 0), 0);
-  const totalAll = rows.reduce((n: number, r: any) => n + Number(r.amount ?? 0), 0);
+  const totalAll = rows.reduce(
+    (n: number, r: any) => n + Number(r.amount ?? 0),
+    0,
+  );
 
   const { page, pageCount, setPage, slice } = usePaged(rows);
 
@@ -113,8 +125,16 @@ export function ExpensesPage({
   return (
     <>
       <div className="metrics">
-        <StatCard label="Pengeluaran Hari Ini" value={fmtRp(totalToday)} note={today} />
-        <StatCard label="Total Pengeluaran" value={fmtRp(totalAll)} note={`${rows.length} transaksi`} />
+        <StatCard
+          label="Pengeluaran Hari Ini"
+          value={fmtRp(totalToday)}
+          note={today}
+        />
+        <StatCard
+          label="Total Pengeluaran"
+          value={fmtRp(totalAll)}
+          note={`${rows.length} transaksi`}
+        />
         <StatCard label="Kategori" value={String(categories.length)} />
         <StatCard label="Jumlah Transaksi" value={String(rows.length)} />
       </div>
@@ -169,7 +189,11 @@ export function ExpensesPage({
           </Button>
         }
       >
-        <form id="expense-create-form" className="inline-form" onSubmit={create}>
+        <form
+          id="expense-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
           <Field label="Kategori">
             <Select
               required
@@ -197,13 +221,17 @@ export function ExpensesPage({
             <Input
               required
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </Field>
           <Field label="Metode Pembayaran">
             <Select
               value={form.paymentMethod}
-              onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, paymentMethod: e.target.value })
+              }
             >
               <option value="CASH">Cash</option>
               <option value="BANK_TRANSFER">Bank Transfer</option>

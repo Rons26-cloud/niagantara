@@ -25,22 +25,52 @@ export const demoStores: DemoStore[] = [
 ];
 
 export const demoBranches: DemoBranch[] = [
-  { id: 'branch-1', name: 'Main Branch / Medan', code: 'MDN', storeId: 'store-1' },
+  {
+    id: 'branch-1',
+    name: 'Main Branch / Medan',
+    code: 'MDN',
+    storeId: 'store-1',
+  },
   { id: 'branch-2', name: 'Cabang Binjai', code: 'BJI', storeId: 'store-1' },
-  { id: 'branch-3', name: 'Cabang Deli Serdang', code: 'DS', storeId: 'store-1' },
+  {
+    id: 'branch-3',
+    name: 'Cabang Deli Serdang',
+    code: 'DS',
+    storeId: 'store-1',
+  },
 ];
 
 export const demoWarehouses: DemoWarehouse[] = [
-  { id: 'wh-1', name: 'Gudang Utama', code: 'GU', storeId: 'store-1', branchId: 'branch-1' },
-  { id: 'wh-2', name: 'Gudang Binjai', code: 'GB', storeId: 'store-1', branchId: 'branch-2' },
+  {
+    id: 'wh-1',
+    name: 'Gudang Utama',
+    code: 'GU',
+    storeId: 'store-1',
+    branchId: 'branch-1',
+  },
+  {
+    id: 'wh-2',
+    name: 'Gudang Binjai',
+    code: 'GB',
+    storeId: 'store-1',
+    branchId: 'branch-2',
+  },
 ];
 
 export const demoCategories: DemoCategory[] = [
-  { id: 'cat-1', name: 'Sembako', description: 'Bahan pokok kebutuhan sehari-hari' },
+  {
+    id: 'cat-1',
+    name: 'Sembako',
+    description: 'Bahan pokok kebutuhan sehari-hari',
+  },
   { id: 'cat-2', name: 'Minuman', description: 'Aneka minuman' },
   { id: 'cat-3', name: 'Snack', description: 'Makanan ringan' },
   { id: 'cat-4', name: 'Perawatan', description: 'Produk perawatan tubuh' },
-  { id: 'cat-5', name: 'Elektronik', description: 'Barang elektronik rumah tangga' },
+  {
+    id: 'cat-5',
+    name: 'Elektronik',
+    description: 'Barang elektronik rumah tangga',
+  },
 ];
 
 export const demoProducts: DemoProduct[] = [

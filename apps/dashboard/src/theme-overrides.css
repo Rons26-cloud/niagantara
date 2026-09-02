@@ -1,7 +1,6 @@
 @import '@niagantara/ui/design-tokens.css';
 @import '@niagantara/ui/components.css';
 
-/* Sidebar and shell layout */
 .shell {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -136,10 +135,9 @@
   background: var(--danger);
 }
 .user-management-table .tr {
-  grid-template-columns: minmax(190px, 1.4fr) minmax(110px, 0.7fr) minmax(
-      180px,
-      1.2fr
-    ) minmax(90px, 0.6fr) minmax(180px, auto);
+  grid-template-columns:
+    minmax(190px, 1.4fr) minmax(110px, 0.7fr) minmax(180px, 1.2fr)
+    minmax(90px, 0.6fr) minmax(180px, auto);
 }
 .user-management-table .tr span:first-child {
   display: grid;
@@ -205,7 +203,10 @@
   color: var(--text-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease,
+    border-color 0.1s ease;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -255,7 +256,10 @@
   color: var(--text-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease,
+    border-color 0.1s ease;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -269,7 +273,6 @@
   border-color: var(--danger);
 }
 
-/* Workspace and header */
 .workspace {
   background: var(--bg-primary);
   padding: 24px;
@@ -319,7 +322,6 @@
   font-weight: 600;
 }
 
-/* Panels and metrics */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border-color);
@@ -370,7 +372,6 @@
   color: var(--text-muted);
 }
 
-/* Tables */
 .table {
   background: var(--surface);
   border: 1px solid var(--border-color);
@@ -402,7 +403,6 @@
   background: var(--surface-elevated);
 }
 
-/* Forms */
 .inline-form {
   display: flex;
   flex-direction: column;
@@ -449,7 +449,6 @@
   background: var(--accent-primary, #1d4ed8);
 }
 
-/* State pages */
 .state {
   display: flex;
   align-items: center;
@@ -486,7 +485,6 @@
   background: var(--accent-primary, #1d4ed8);
 }
 
-/* Enterprise dashboard shell */
 .shell {
   --sidebar-width: 280px;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
@@ -507,7 +505,7 @@
   gap: 10px;
   padding: 14px 12px;
   overflow: hidden;
-  background: var(--sidebar-bg, #0E1726);
+  background: var(--sidebar-bg, #0e1726);
   border-right: 1px solid var(--sidebar-border, rgba(255, 255, 255, 0.06));
   color: var(--sidebar-text-active, #fff);
 }
@@ -527,7 +525,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md, 8px);
   background: rgba(255, 255, 255, 0.06);
-  color: var(--sidebar-text, #94A3B8);
+  color: var(--sidebar-text, #94a3b8);
 }
 
 .sidebar-workspace-icon {
@@ -549,7 +547,7 @@
 
 .sidebar-workspace-copy small,
 .sidebar-account-copy small {
-  color: color-mix(in srgb, var(--sidebar-text, #94A3B8) 85%, transparent);
+  color: color-mix(in srgb, var(--sidebar-text, #94a3b8) 85%, transparent);
   font-size: 10px;
   letter-spacing: 0.04em;
   text-transform: capitalize;
@@ -599,7 +597,7 @@
   gap: 8px;
   min-height: 24px;
   padding: 2px 8px;
-  color: color-mix(in srgb, var(--sidebar-text, #94A3B8) 78%, transparent);
+  color: color-mix(in srgb, var(--sidebar-text, #94a3b8) 78%, transparent);
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -613,7 +611,7 @@
   height: 18px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.08);
-  color: var(--sidebar-text, #94A3B8);
+  color: var(--sidebar-text, #94a3b8);
   font-size: 9px;
   letter-spacing: 0;
 }
@@ -624,17 +622,17 @@
   border: 1px solid transparent;
   font-size: 13px;
   line-height: 1.2;
-  color: var(--sidebar-text, #94A3B8);
+  color: var(--sidebar-text, #94a3b8);
 }
 
 .sidebar nav button:hover {
-  background: var(--sidebar-bg-2, #13203A);
+  background: var(--sidebar-bg-2, #13203a);
   border-color: transparent;
   color: #fff;
 }
 
 .sidebar nav button.active {
-  background: var(--accent-primary, #2563EB);
+  background: var(--accent-primary, #2563eb);
   border-color: transparent;
   color: #fff;
   font-weight: 600;
@@ -707,7 +705,7 @@
   gap: 14px;
   margin-bottom: 18px;
   padding: 0 0 14px;
-  border-bottom: 1px solid var(--border-subtle, #EDF1F5);
+  border-bottom: 1px solid var(--border-subtle, #edf1f5);
 }
 
 .workspace header .eyebrow {
@@ -797,7 +795,7 @@
 }
 
 :root[data-theme='blue'] .sidebar {
-  background: var(--sidebar-bg, #0E1726);
+  background: var(--sidebar-bg, #0e1726);
 }
 
 :root[data-theme='blue'] .panel,
@@ -1035,7 +1033,9 @@
     line-height: 1.1;
     letter-spacing: -0.01em;
     cursor: pointer;
-    transition: color 0.15s ease, background 0.15s ease;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -1131,13 +1131,11 @@
   }
 }
 
-/* Muted text */
 .muted {
   color: var(--text-muted);
   font-size: 14px;
 }
 
-/* Panel states */
 .panel.error {
   border-color: var(--danger);
   background: rgba(239, 68, 68, 0.05);
@@ -1148,7 +1146,6 @@
   background: rgba(245, 158, 11, 0.05);
 }
 
-/* Mobile top bar (app-like) */
 .mobile-topbar {
   display: none;
   position: sticky;
@@ -1204,7 +1201,6 @@
   cursor: pointer;
 }
 
-/* Bottom tab bar (app-like) */
 .mobile-tabbar {
   display: none;
   position: sticky;
@@ -1235,10 +1231,9 @@
 }
 
 .mobile-tabbar button.active {
-  color: var(--accent-primary, #3B82F6);
+  color: var(--accent-primary, #3b82f6);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .shell {
     grid-template-columns: 1fr;
@@ -1354,7 +1349,7 @@
     display: none !important;
   }
 }
-/* Remaining components: adaptive tokens */
+
 .search,
 .sales-filters,
 .sync-row,
@@ -1386,7 +1381,6 @@
   color: var(--text-primary);
 }
 
-/* Sidebar nav groups */
 .nav-group {
   display: grid;
   gap: 0.3rem;
@@ -1400,7 +1394,7 @@
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #6b7280);
   padding: 0 0.8rem;
 }
 
@@ -1417,7 +1411,6 @@
   }
 }
 
-/* Mobile topbar identity */
 .mobile-titles {
   flex: 1;
   min-width: 0;
@@ -1445,7 +1438,7 @@
 }
 .mobile-brand-sub {
   font-size: 11px;
-  color: var(--text-muted, #6B7280);
+  color: var(--text-muted, #6b7280);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1455,19 +1448,23 @@
   border-color: var(--border-color);
 }
 
-/* Auth pages adapt to both themes */
 .auth-page {
-  background: linear-gradient(160deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, color-mix(in srgb, var(--accent-secondary) 6%, var(--bg-primary)) 100%);
+  background: linear-gradient(
+    160deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 50%,
+    color-mix(in srgb, var(--accent-secondary) 6%, var(--bg-primary)) 100%
+  );
 }
 
 .auth-card {
   background: var(--surface);
   border-color: var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* Final responsive contract: keep this last so legacy compatibility rules
-   cannot turn the mobile drawer back into a horizontal desktop sidebar. */
 @media (max-width: 900px) {
   .shell,
   .shell.sidebar-collapsed {

@@ -39,7 +39,10 @@ const useFmt = () => {
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
-const withoutId = <T extends { id: string }>({ id: _dropped, ...fields }: T): Omit<T, 'id'> => fields;
+const withoutId = <T extends { id: string }>({
+  id: _dropped,
+  ...fields
+}: T): Omit<T, 'id'> => fields;
 
 interface CartLine {
   productId: string;
@@ -79,8 +82,7 @@ export function DemoPOS() {
   const [payment, setPayment] = useState<'CASH' | 'QRIS' | 'TRANSFER'>('CASH');
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
 
-  const branchName =
-    branches.find((b) => b.id === selectedBranch)?.name ?? '';
+  const branchName = branches.find((b) => b.id === selectedBranch)?.name ?? '';
   const cashier = employees[0]?.name ?? 'Rony Tech';
 
   const filtered = products.filter((p) => {
@@ -118,7 +120,9 @@ export function DemoPOS() {
     setCart((prev) =>
       qty <= 0
         ? prev.filter((l) => l.productId !== productId)
-        : prev.map((l) => (l.productId === productId ? { ...l, quantity: qty } : l)),
+        : prev.map((l) =>
+            l.productId === productId ? { ...l, quantity: qty } : l,
+          ),
     );
 
   const subtotal = cart.reduce((sum, l) => sum + l.price * l.quantity, 0);
@@ -164,8 +168,16 @@ export function DemoPOS() {
       <div className="demo-pos-layout">
         <div className="demo-pos-catalog">
           <div className="demo-toolbar">
-            <SearchInput value={search} onValueChange={setSearch} placeholder={t('pos.searchProduct')} />
-            <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label={t('common.category')}>
+            <SearchInput
+              value={search}
+              onValueChange={setSearch}
+              placeholder={t('pos.searchProduct')}
+            />
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              aria-label={t('common.category')}
+            >
               <option value="all">{t('demo.allCategories')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.name}>
@@ -174,7 +186,11 @@ export function DemoPOS() {
               ))}
             </Select>
           </div>
-          <div className="demo-chips" role="tablist" aria-label={t('common.category')}>
+          <div
+            className="demo-chips"
+            role="tablist"
+            aria-label={t('common.category')}
+          >
             <button
               className={`demo-chip${category === 'all' ? ' active' : ''}`}
               onClick={() => setCategory('all')}
@@ -202,21 +218,27 @@ export function DemoPOS() {
                   disabled={out}
                 >
                   <span className="demo-pos-product-name">{product.name}</span>
-                  <span className="demo-pos-product-price">{fmtCurrency(product.sellingPrice)}</span>
+                  <span className="demo-pos-product-price">
+                    {fmtCurrency(product.sellingPrice)}
+                  </span>
                   <span className="demo-pos-product-stock">
                     {out ? '—' : `${product.stock} ${product.unit}`}
                   </span>
                 </button>
               );
             })}
-            {filtered.length === 0 && <p className="demo-empty-state">{t('demo.noProductsFound')}</p>}
+            {filtered.length === 0 && (
+              <p className="demo-empty-state">{t('demo.noProductsFound')}</p>
+            )}
           </div>
         </div>
 
         <div className="demo-pos-cart">
           <Card title={`${t('pos.cart')} (${cart.length})`}>
             <div className="demo-pos-cart-items">
-              {cart.length === 0 && <p className="demo-pos-cart-empty">{t('demo.emptyCart')}</p>}
+              {cart.length === 0 && (
+                <p className="demo-pos-cart-empty">{t('demo.emptyCart')}</p>
+              )}
               {cart.map((line) => (
                 <div key={line.productId} className="demo-pos-cart-item">
                   <div className="demo-pos-item-line">
@@ -230,9 +252,23 @@ export function DemoPOS() {
                   </div>
                   <div className="demo-pos-item-line">
                     <div className="demo-pos-item-qty">
-                      <button onClick={() => setQty(line.productId, line.quantity - 1)} aria-label="-">−</button>
+                      <button
+                        onClick={() =>
+                          setQty(line.productId, line.quantity - 1)
+                        }
+                        aria-label="-"
+                      >
+                        −
+                      </button>
                       <span aria-live="polite">{line.quantity}</span>
-                      <button onClick={() => setQty(line.productId, line.quantity + 1)} aria-label="+">+</button>
+                      <button
+                        onClick={() =>
+                          setQty(line.productId, line.quantity + 1)
+                        }
+                        aria-label="+"
+                      >
+                        +
+                      </button>
                     </div>
                     <button
                       className="demo-pos-remove"
@@ -258,7 +294,9 @@ export function DemoPOS() {
                     type="number"
                     min={0}
                     value={discount || ''}
-                    onChange={(e) => setDiscount(Math.max(0, Number(e.target.value) || 0))}
+                    onChange={(e) =>
+                      setDiscount(Math.max(0, Number(e.target.value) || 0))
+                    }
                     aria-label={t('common.discount')}
                   />
                 </label>
@@ -271,7 +309,11 @@ export function DemoPOS() {
 
             <div className="demo-pos-payment">
               <h3>{t('demo.paymentMethod')}</h3>
-              <div className="demo-pos-payment-methods" role="radiogroup" aria-label={t('demo.paymentMethod')}>
+              <div
+                className="demo-pos-payment-methods"
+                role="radiogroup"
+                aria-label={t('demo.paymentMethod')}
+              >
                 {(
                   [
                     ['CASH', t('demo.paymentCash')],
@@ -374,9 +416,22 @@ export function DemoSales() {
     <div className="demo-sales">
       <Card title={t('pages.sales')}>
         <div className="demo-toolbar">
-          <SearchInput value={search} onValueChange={setSearch} placeholder={t('common.search')} />
-          <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} aria-label={t('common.date')} />
-          <Select value={branch} onChange={(e) => setBranch(e.target.value)} aria-label={t('context.branch')}>
+          <SearchInput
+            value={search}
+            onValueChange={setSearch}
+            placeholder={t('common.search')}
+          />
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            aria-label={t('common.date')}
+          />
+          <Select
+            value={branch}
+            onChange={(e) => setBranch(e.target.value)}
+            aria-label={t('context.branch')}
+          >
             <option value="all">{t('demo.allBranches')}</option>
             {branches.map((b) => (
               <option key={b.id} value={b.name}>
@@ -384,7 +439,11 @@ export function DemoSales() {
               </option>
             ))}
           </Select>
-          <Select value={payment} onChange={(e) => setPayment(e.target.value)} aria-label={t('common.payment')}>
+          <Select
+            value={payment}
+            onChange={(e) => setPayment(e.target.value)}
+            aria-label={t('common.payment')}
+          >
             <option value="all">{t('demo.allPayments')}</option>
             <option value="CASH">{t('demo.paymentCash')}</option>
             <option value="QRIS">QRIS</option>
@@ -423,16 +482,24 @@ export function DemoSales() {
               <StatusBadge status={sale.status} />
             </div>
           ))}
-          {filtered.length === 0 && <p className="demo-empty-state">{t('dashboard.noData')}</p>}
+          {filtered.length === 0 && (
+            <p className="demo-empty-state">{t('dashboard.noData')}</p>
+          )}
         </div>
-        <Pagination page={paged.page} pageCount={paged.pageCount} onPage={paged.setPage} />
+        <Pagination
+          page={paged.page}
+          pageCount={paged.pageCount}
+          onPage={paged.setPage}
+        />
       </Card>
 
       <Modal
         open={!!detail}
         onClose={() => setDetail(null)}
         title={`${t('demo.saleDetail')} — ${detail?.invoice ?? ''}`}
-        footer={<Button onClick={() => setDetail(null)}>{t('common.close')}</Button>}
+        footer={
+          <Button onClick={() => setDetail(null)}>{t('common.close')}</Button>
+        }
       >
         {detail && (
           <dl className="demo-detail-grid">
@@ -449,11 +516,15 @@ export function DemoSales() {
             <dt>{t('common.items')}</dt>
             <dd>{detail.items}</dd>
             <dt>{t('common.total')}</dt>
-            <dd><b>{fmtCurrency(detail.total)}</b></dd>
+            <dd>
+              <b>{fmtCurrency(detail.total)}</b>
+            </dd>
             <dt>{t('common.payment')}</dt>
             <dd>{detail.payment}</dd>
             <dt>{t('common.status')}</dt>
-            <dd><StatusBadge status={detail.status} /></dd>
+            <dd>
+              <StatusBadge status={detail.status} />
+            </dd>
           </dl>
         )}
       </Modal>
@@ -464,8 +535,15 @@ export function DemoSales() {
 export function DemoShifts() {
   const { t } = useTranslation();
   const { fmtCurrency } = useFmt();
-  const { shifts, openShift, closeShift, sales, branches, selectedBranch, employees } =
-    useDemoStore();
+  const {
+    shifts,
+    openShift,
+    closeShift,
+    sales,
+    branches,
+    selectedBranch,
+    employees,
+  } = useDemoStore();
 
   const [openingCash, setOpeningCash] = useState('500000');
   const [cashier, setCashier] = useState(employees[0]?.name ?? 'Dewi Lestari');
@@ -481,7 +559,8 @@ export function DemoShifts() {
   const previewDiff =
     closingTarget != null && closingCash !== ''
       ? Number(closingCash) -
-        (closingTarget.expectedCash + (closingTarget.status === 'OPEN' ? demoCashSales : 0))
+        (closingTarget.expectedCash +
+          (closingTarget.status === 'OPEN' ? demoCashSales : 0))
       : null;
 
   const handleOpen = () => {
@@ -516,7 +595,10 @@ export function DemoShifts() {
           >
             <label>
               {t('demo.cashier')}
-              <Select value={cashier} onChange={(e) => setCashier(e.target.value)}>
+              <Select
+                value={cashier}
+                onChange={(e) => setCashier(e.target.value)}
+              >
                 {employees.map((emp) => (
                   <option key={emp.id} value={emp.name}>
                     {emp.name}
@@ -561,7 +643,9 @@ export function DemoShifts() {
                 variant="danger"
                 onClick={() => {
                   setClosingId(activeShift.id);
-                  setClosingCash(String(activeShift.expectedCash + demoCashSales));
+                  setClosingCash(
+                    String(activeShift.expectedCash + demoCashSales),
+                  );
                 }}
               >
                 ■ {t('demo.closeShift')}
@@ -587,11 +671,19 @@ export function DemoShifts() {
               <span>{shift.cashier}</span>
               <span>{shift.branch}</span>
               <span>{new Date(shift.openingTime).toLocaleString()}</span>
-              <span>{shift.closingTime ? new Date(shift.closingTime).toLocaleString() : '—'}</span>
+              <span>
+                {shift.closingTime
+                  ? new Date(shift.closingTime).toLocaleString()
+                  : '—'}
+              </span>
               <span className="demo-num">{fmtCurrency(shift.openingCash)}</span>
               <span
                 className={`demo-num ${
-                  shift.difference == null ? '' : shift.difference === 0 ? 'demo-positive' : 'demo-negative'
+                  shift.difference == null
+                    ? ''
+                    : shift.difference === 0
+                      ? 'demo-positive'
+                      : 'demo-negative'
                 }`}
               >
                 {shift.difference == null
@@ -631,7 +723,10 @@ export function DemoShifts() {
           </label>
           <label>
             {t('common.difference')}
-            <Input readOnly value={previewDiff != null ? String(previewDiff) : ''} />
+            <Input
+              readOnly
+              value={previewDiff != null ? String(previewDiff) : ''}
+            />
           </label>
         </div>
       </Modal>
@@ -689,7 +784,11 @@ export function DemoCustomers() {
         actions={<Button onClick={openAdd}>+ {t('common.add')}</Button>}
       >
         <div className="demo-toolbar">
-          <SearchInput value={search} onValueChange={setSearch} placeholder={t('common.search')} />
+          <SearchInput
+            value={search}
+            onValueChange={setSearch}
+            placeholder={t('common.search')}
+          />
         </div>
         <div className="demo-table">
           <div className="demo-table-header demo-cols-5">
@@ -711,15 +810,22 @@ export function DemoCustomers() {
               <span>{customer.name}</span>
               <span>{customer.phone}</span>
               <span>{customer.email}</span>
-              <span className="demo-num">{fmtCurrency(customer.totalPurchases)}</span>
-              <div className="demo-table-actions" onClick={(e) => e.stopPropagation()}>
+              <span className="demo-num">
+                {fmtCurrency(customer.totalPurchases)}
+              </span>
+              <div
+                className="demo-table-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Button variant="ghost" onClick={() => openEdit(customer)}>
                   {t('common.edit')}
                 </Button>
               </div>
             </div>
           ))}
-          {filtered.length === 0 && <p className="demo-empty-state">{t('dashboard.noData')}</p>}
+          {filtered.length === 0 && (
+            <p className="demo-empty-state">{t('dashboard.noData')}</p>
+          )}
         </div>
       </Card>
 
@@ -727,7 +833,9 @@ export function DemoCustomers() {
         open={!!detail}
         onClose={() => setDetail(null)}
         title={detail?.name ?? ''}
-        footer={<Button onClick={() => setDetail(null)}>{t('common.close')}</Button>}
+        footer={
+          <Button onClick={() => setDetail(null)}>{t('common.close')}</Button>
+        }
       >
         {detail && (
           <dl className="demo-detail-grid">
@@ -758,22 +866,42 @@ export function DemoCustomers() {
           </>
         }
       >
-        <form className="demo-form-grid" onSubmit={(e) => { e.preventDefault(); save(); }}>
+        <form
+          className="demo-form-grid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
           <label>
             {t('common.name')}
-            <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              required
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
           </label>
           <label>
             {t('common.phone')}
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
           </label>
           <label className="demo-form-full">
             {t('common.email')}
-            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
           </label>
           <label className="demo-form-full">
             {t('common.address')}
-            <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            <Input
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
           </label>
         </form>
       </Modal>
@@ -823,7 +951,11 @@ export function DemoSuppliers() {
         actions={<Button onClick={openAdd}>+ {t('common.add')}</Button>}
       >
         <div className="demo-toolbar">
-          <SearchInput value={search} onValueChange={setSearch} placeholder={t('common.search')} />
+          <SearchInput
+            value={search}
+            onValueChange={setSearch}
+            placeholder={t('common.search')}
+          />
         </div>
         <div className="demo-table">
           <div className="demo-table-header demo-cols-5">
@@ -846,7 +978,9 @@ export function DemoSuppliers() {
               </div>
             </div>
           ))}
-          {filtered.length === 0 && <p className="demo-empty-state">{t('dashboard.noData')}</p>}
+          {filtered.length === 0 && (
+            <p className="demo-empty-state">{t('dashboard.noData')}</p>
+          )}
         </div>
       </Card>
 
@@ -863,26 +997,51 @@ export function DemoSuppliers() {
           </>
         }
       >
-        <form className="demo-form-grid" onSubmit={(e) => { e.preventDefault(); save(); }}>
+        <form
+          className="demo-form-grid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
           <label>
             {t('common.name')}
-            <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              required
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
           </label>
           <label>
             {t('demo.contactPerson')}
-            <Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} />
+            <Input
+              value={form.contactPerson}
+              onChange={(e) =>
+                setForm({ ...form, contactPerson: e.target.value })
+              }
+            />
           </label>
           <label>
             {t('common.phone')}
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
           </label>
           <label>
             {t('common.email')}
-            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
           </label>
           <label className="demo-form-full">
             {t('common.address')}
-            <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            <Input
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
           </label>
         </form>
       </Modal>
@@ -893,8 +1052,16 @@ export function DemoSuppliers() {
 export function DemoPurchases() {
   const { t } = useTranslation();
   const { fmtCurrency } = useFmt();
-  const { purchases, suppliers, products, branches, selectedBranch, addPurchase, updatePurchaseStatus, addStockMovement } =
-    useDemoStore();
+  const {
+    purchases,
+    suppliers,
+    products,
+    branches,
+    selectedBranch,
+    addPurchase,
+    updatePurchaseStatus,
+    addStockMovement,
+  } = useDemoStore();
   const [creating, setCreating] = useState(false);
   const [supplierId, setSupplierId] = useState('');
   const [productId, setProductId] = useState('');
@@ -944,7 +1111,9 @@ export function DemoPurchases() {
     <div className="demo-purchases">
       <Card
         title={t('pages.purchases')}
-        actions={<Button onClick={() => setCreating(true)}>+ {t('common.add')}</Button>}
+        actions={
+          <Button onClick={() => setCreating(true)}>+ {t('common.add')}</Button>
+        }
       >
         <div className="demo-table">
           <div className="demo-table-header demo-cols-6">
@@ -964,7 +1133,9 @@ export function DemoPurchases() {
               <StatusBadge status={purchase.status} />
               <div className="demo-table-actions">
                 {purchase.status === 'PENDING' && (
-                  <Button onClick={() => receive(purchase)}>✓ {t('demo.receive')}</Button>
+                  <Button onClick={() => receive(purchase)}>
+                    ✓ {t('demo.receive')}
+                  </Button>
                 )}
               </div>
             </div>
@@ -994,7 +1165,11 @@ export function DemoPurchases() {
         >
           <label className="demo-form-full">
             {t('common.supplier')}
-            <Select required value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
+            <Select
+              required
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+            >
               <option value="">—</option>
               {suppliers.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -1005,7 +1180,11 @@ export function DemoPurchases() {
           </label>
           <label className="demo-form-full">
             {t('demo.selectProduct')}
-            <Select required value={productId} onChange={(e) => setProductId(e.target.value)}>
+            <Select
+              required
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+            >
               <option value="">—</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -1016,7 +1195,12 @@ export function DemoPurchases() {
           </label>
           <label>
             {t('common.quantity')}
-            <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+            <Input
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
           </label>
         </form>
       </Modal>
@@ -1038,7 +1222,15 @@ export function DemoEmployees() {
   });
 
   const openAdd = () => {
-    setEditing({ id: '', name: '', email: '', phone: '', role: 'Kasir', branch: branches[0]?.name ?? '', status: 'ACTIVE' });
+    setEditing({
+      id: '',
+      name: '',
+      email: '',
+      phone: '',
+      role: 'Kasir',
+      branch: branches[0]?.name ?? '',
+      status: 'ACTIVE',
+    });
     setForm({
       name: '',
       email: '',
@@ -1105,14 +1297,27 @@ export function DemoEmployees() {
           </>
         }
       >
-        <form className="demo-form-grid" onSubmit={(e) => { e.preventDefault(); save(); }}>
+        <form
+          className="demo-form-grid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
           <label>
             {t('common.name')}
-            <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              required
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
           </label>
           <label>
             {t('demo.role')}
-            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+            <Select
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+            >
               {['Owner', 'Manager', 'Kasir', 'Gudang'].map((role) => (
                 <option key={role} value={role}>
                   {role}
@@ -1122,15 +1327,25 @@ export function DemoEmployees() {
           </label>
           <label>
             {t('common.email')}
-            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
           </label>
           <label>
             {t('common.phone')}
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
           </label>
           <label>
             {t('context.branch')}
-            <Select value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value })}>
+            <Select
+              value={form.branch}
+              onChange={(e) => setForm({ ...form, branch: e.target.value })}
+            >
               {branches.map((b) => (
                 <option key={b.id} value={b.name}>
                   {b.name}
@@ -1142,7 +1357,12 @@ export function DemoEmployees() {
             {t('common.status')}
             <Select
               value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value as DemoEmployee['status'] })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  status: e.target.value as DemoEmployee['status'],
+                })
+              }
             >
               <option value="ACTIVE">ACTIVE</option>
               <option value="INACTIVE">INACTIVE</option>
@@ -1156,7 +1376,8 @@ export function DemoEmployees() {
 
 export function DemoAttendance() {
   const { t } = useTranslation();
-  const { attendance, employees, branches, selectedBranch, clockIn, clockOut } = useDemoStore();
+  const { attendance, employees, branches, selectedBranch, clockIn, clockOut } =
+    useDemoStore();
   const [employeeId, setEmployeeId] = useState('');
 
   const branchName = branches.find((b) => b.id === selectedBranch)?.name ?? '';
@@ -1183,7 +1404,11 @@ export function DemoAttendance() {
             handleClockIn();
           }}
         >
-          <Select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} aria-label={t('common.employee')}>
+          <Select
+            value={employeeId}
+            onChange={(e) => setEmployeeId(e.target.value)}
+            aria-label={t('common.employee')}
+          >
             <option value="">— {t('common.employee')} —</option>
             {employees.map((emp) => (
               <option key={emp.id} value={emp.id}>
@@ -1212,7 +1437,10 @@ export function DemoAttendance() {
               <span>{att.branch}</span>
               <div className="demo-table-actions">
                 {!att.clockOut && (
-                  <Button variant="secondary" onClick={() => handleClockOut(att.id)}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleClockOut(att.id)}
+                  >
                     ○ {t('demo.clockOut')}
                   </Button>
                 )}
@@ -1228,7 +1456,8 @@ export function DemoAttendance() {
 export function DemoExpenses() {
   const { t } = useTranslation();
   const { fmtCurrency } = useFmt();
-  const { expenses, branches, selectedBranch, addExpense, deleteExpense } = useDemoStore();
+  const { expenses, branches, selectedBranch, addExpense, deleteExpense } =
+    useDemoStore();
   const [category, setCategory] = useState('Operasional');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -1262,8 +1491,18 @@ export function DemoExpenses() {
         >
           <label>
             {t('common.category')}
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {['Operasional', 'Listrik', 'Transportasi', 'ATK', 'Gaji', 'Lainnya'].map((cat) => (
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {[
+                'Operasional',
+                'Listrik',
+                'Transportasi',
+                'ATK',
+                'Gaji',
+                'Lainnya',
+              ].map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
@@ -1272,11 +1511,20 @@ export function DemoExpenses() {
           </label>
           <label>
             {t('common.amount')}
-            <Input type="number" min={0} required value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <Input
+              type="number"
+              min={0}
+              required
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
           </label>
           <label>
             {t('common.description')}
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </label>
           <Button type="submit">+ {t('common.save')}</Button>
         </form>
@@ -1294,11 +1542,16 @@ export function DemoExpenses() {
           {expenses.map((expense: DemoExpense) => (
             <div key={expense.id} className="demo-table-row demo-cols-5">
               <span>{expense.date}</span>
-              <span><Badge tone="neutral">{expense.category}</Badge></span>
+              <span>
+                <Badge tone="neutral">{expense.category}</Badge>
+              </span>
               <span>{expense.description || '—'}</span>
               <span className="demo-num">{fmtCurrency(expense.amount)}</span>
               <div className="demo-table-actions">
-                <Button variant="danger" onClick={() => setConfirmId(expense.id)}>
+                <Button
+                  variant="danger"
+                  onClick={() => setConfirmId(expense.id)}
+                >
                   {t('common.delete')}
                 </Button>
               </div>
@@ -1385,11 +1638,26 @@ export function DemoReports() {
 
   const periodFactor = PERIOD_FACTORS[period] ?? 1;
   const branchFactor =
-    branch === 'all' ? 1.69 : { 'branch-1': 1, 'branch-2': 0.42, 'branch-3': 0.27 }[branch] ?? 1;
+    branch === 'all'
+      ? 1.69
+      : ({ 'branch-1': 1, 'branch-2': 0.42, 'branch-3': 0.27 }[branch] ?? 1);
   const f = periodFactor * branchFactor;
 
   const WEEK = ['W1', 'W2', 'W3', 'W4'] as const;
-  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'] as const;
+  const MONTHS = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ] as const;
 
   const chart = useMemo(() => {
     const baseSales = [34, 41, 38, 46];
@@ -1411,15 +1679,21 @@ export function DemoReports() {
   const maxVal = Math.max(...chart.map((c) => c.value));
   const totalSales = Math.round(12842000 * f);
   const totalExpenses = Math.round(
-    expenses.reduce((sum, e) => sum + e.amount, 0) * (period === 'week' ? 0.25 : periodFactor / 4.3),
+    expenses.reduce((sum, e) => sum + e.amount, 0) *
+      (period === 'week' ? 0.25 : periodFactor / 4.3),
   );
   const totalProfit = totalSales - totalExpenses;
 
   const stats: [string, string][] = [
-    [t('dashboard.totalSales'), fmtCurrency(reportType === 'profit' ? totalProfit : totalSales)],
+    [
+      t('dashboard.totalSales'),
+      fmtCurrency(reportType === 'profit' ? totalProfit : totalSales),
+    ],
     [
       t('dashboard.todayTransactions'),
-      String(Math.round(32 * (period === 'week' ? 1 : periodFactor) * branchFactor)),
+      String(
+        Math.round(32 * (period === 'week' ? 1 : periodFactor) * branchFactor),
+      ),
     ],
     [t('demo.finance.expense'), fmtCurrency(totalExpenses)],
     [t('demo.finance.profit'), fmtCurrency(totalProfit)],
@@ -1429,13 +1703,21 @@ export function DemoReports() {
     <div className="demo-reports">
       <Card title={t('pages.reports')}>
         <div className="demo-toolbar">
-          <Select value={period} onChange={(e) => setPeriod(e.target.value)} aria-label={t('common.date')}>
+          <Select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            aria-label={t('common.date')}
+          >
             <option value="week">{t('demo.thisWeek')}</option>
             <option value="month">{t('demo.thisMonth')}</option>
             <option value="quarter">{t('demo.thisQuarter')}</option>
             <option value="year">{t('demo.thisYear')}</option>
           </Select>
-          <Select value={branch} onChange={(e) => setBranch(e.target.value)} aria-label={t('context.branch')}>
+          <Select
+            value={branch}
+            onChange={(e) => setBranch(e.target.value)}
+            aria-label={t('context.branch')}
+          >
             <option value="all">{t('demo.allBranches')}</option>
             {branches.map((b) => (
               <option key={b.id} value={b.id}>
@@ -1443,7 +1725,11 @@ export function DemoReports() {
               </option>
             ))}
           </Select>
-          <Select value={reportType} onChange={(e) => setReportType(e.target.value)} aria-label={t('demo.reportType')}>
+          <Select
+            value={reportType}
+            onChange={(e) => setReportType(e.target.value)}
+            aria-label={t('demo.reportType')}
+          >
             <option value="sales">{t('dashboard.totalSales')}</option>
             <option value="expenses">{t('demo.finance.expense')}</option>
             <option value="profit">{t('demo.finance.profit')}</option>
@@ -1460,7 +1746,11 @@ export function DemoReports() {
         </div>
 
         <div className="demo-chart-container">
-          <div className="demo-bar-chart" role="img" aria-label={t('pages.reports')}>
+          <div
+            className="demo-bar-chart"
+            role="img"
+            aria-label={t('pages.reports')}
+          >
             {chart.map((item) => (
               <div key={item.label} className="demo-bar-group">
                 <div
@@ -1481,7 +1771,8 @@ export function DemoReports() {
 
 export function DemoInventory() {
   const { t } = useTranslation();
-  const { products, stockMovements, warehouses, branches, stores } = useDemoStore();
+  const { products, stockMovements, warehouses, branches, stores } =
+    useDemoStore();
   const [tab, setTab] = useState('overview');
   const [movementFilter, setMovementFilter] = useState('ALL');
 
@@ -1514,14 +1805,26 @@ export function DemoInventory() {
             {products.map((product) => (
               <div key={product.id} className="demo-table-row demo-cols-5">
                 <span>{product.name}</span>
-                <span><Badge tone="neutral">{product.category}</Badge></span>
-                <span className={`demo-num ${product.stock <= product.minimumStock ? 'demo-low-stock' : ''}`}>
+                <span>
+                  <Badge tone="neutral">{product.category}</Badge>
+                </span>
+                <span
+                  className={`demo-num ${product.stock <= product.minimumStock ? 'demo-low-stock' : ''}`}
+                >
                   {product.stock} {product.unit}
                 </span>
                 <span className="demo-num">
                   {product.minimumStock} {product.unit}
                 </span>
-                <StatusBadge status={product.stock <= 0 ? 'OUT_OF_STOCK' : product.stock <= product.minimumStock ? 'LOW_STOCK' : 'ACTIVE'} />
+                <StatusBadge
+                  status={
+                    product.stock <= 0
+                      ? 'OUT_OF_STOCK'
+                      : product.stock <= product.minimumStock
+                        ? 'LOW_STOCK'
+                        : 'ACTIVE'
+                  }
+                />
               </div>
             ))}
           </div>
@@ -1539,7 +1842,8 @@ export function DemoInventory() {
                   <span className="demo-mini-main">
                     <b>{product.name}</b>
                     <small>
-                      {product.stock} / min {product.minimumStock} {product.unit}
+                      {product.stock} / min {product.minimumStock}{' '}
+                      {product.unit}
                     </small>
                   </span>
                   <StatusBadge status="LOW_STOCK" />
@@ -1563,8 +1867,12 @@ export function DemoInventory() {
               <div key={wh.id} className="demo-table-row demo-cols-4">
                 <span>{wh.name}</span>
                 <span className="demo-mono">{wh.code}</span>
-                <span>{stores.find((s) => s.id === wh.storeId)?.name ?? '—'}</span>
-                <span>{branches.find((b) => b.id === wh.branchId)?.name ?? '—'}</span>
+                <span>
+                  {stores.find((s) => s.id === wh.storeId)?.name ?? '—'}
+                </span>
+                <span>
+                  {branches.find((b) => b.id === wh.branchId)?.name ?? '—'}
+                </span>
               </div>
             ))}
           </div>
@@ -1580,11 +1888,13 @@ export function DemoInventory() {
               aria-label={t('common.type')}
             >
               <option value="ALL">{t('dashboard.viewAll')}</option>
-              {['SALE', 'PURCHASE', 'ADJUSTMENT', 'TRANSFER', 'RETURN'].map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
+              {['SALE', 'PURCHASE', 'ADJUSTMENT', 'TRANSFER', 'RETURN'].map(
+                (type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ),
+              )}
             </Select>
           </div>
           <div className="demo-table">
@@ -1599,15 +1909,21 @@ export function DemoInventory() {
               <div key={movement.id} className="demo-table-row demo-cols-5">
                 <span>{movement.date}</span>
                 <span>{movement.productName}</span>
-                <span><Badge tone="info">{movement.type}</Badge></span>
-                <span className={`demo-num ${movement.quantity < 0 ? 'demo-negative' : 'demo-positive'}`}>
+                <span>
+                  <Badge tone="info">{movement.type}</Badge>
+                </span>
+                <span
+                  className={`demo-num ${movement.quantity < 0 ? 'demo-negative' : 'demo-positive'}`}
+                >
                   {movement.quantity > 0 ? '+' : ''}
                   {movement.quantity}
                 </span>
                 <span>{movement.reason ?? '—'}</span>
               </div>
             ))}
-            {movements.length === 0 && <p className="demo-empty-state">{t('dashboard.noData')}</p>}
+            {movements.length === 0 && (
+              <p className="demo-empty-state">{t('dashboard.noData')}</p>
+            )}
           </div>
         </Card>
       )}
@@ -1629,7 +1945,11 @@ export function DemoStockTransfer() {
   const toName = branches.find((b) => b.id === toBranch)?.name ?? '';
   const qty = Number(quantity) || 0;
   const valid =
-    fromBranch !== toBranch && !!productId && qty > 0 && !!product && qty <= product.stock;
+    fromBranch !== toBranch &&
+    !!productId &&
+    qty > 0 &&
+    !!product &&
+    qty <= product.stock;
 
   const handleTransfer = () => {
     if (!valid || !product) return;
@@ -1668,7 +1988,11 @@ export function DemoStockTransfer() {
         >
           <label>
             {t('demo.fromBranch')}
-            <Select value={fromBranch} onChange={(e) => setFromBranch(e.target.value)} required>
+            <Select
+              value={fromBranch}
+              onChange={(e) => setFromBranch(e.target.value)}
+              required
+            >
               {branches.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -1678,7 +2002,11 @@ export function DemoStockTransfer() {
           </label>
           <label>
             {t('demo.toBranch')}
-            <Select value={toBranch} onChange={(e) => setToBranch(e.target.value)} required>
+            <Select
+              value={toBranch}
+              onChange={(e) => setToBranch(e.target.value)}
+              required
+            >
               {branches.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -1688,7 +2016,11 @@ export function DemoStockTransfer() {
           </label>
           <label>
             {t('demo.selectProduct')}
-            <Select value={productId} onChange={(e) => setProductId(e.target.value)} required>
+            <Select
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              required
+            >
               <option value="">—</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -1699,11 +2031,21 @@ export function DemoStockTransfer() {
           </label>
           <label>
             {t('common.quantity')}
-            <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
+            <Input
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+            />
           </label>
           <label>
             {t('demo.reason')}
-            <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={`${t('common.stock')}…`} />
+            <Input
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder={`${t('common.stock')}…`}
+            />
           </label>
           <Button type="submit" disabled={!valid}>
             ⇄ {t('demo.transfer')}
@@ -1730,7 +2072,9 @@ export function DemoCategories() {
             <div key={cat.id} className="demo-table-row demo-cols-3">
               <span>{cat.name}</span>
               <span>{cat.description}</span>
-              <span className="demo-num">{products.filter((p) => p.category === cat.name).length}</span>
+              <span className="demo-num">
+                {products.filter((p) => p.category === cat.name).length}
+              </span>
             </div>
           ))}
         </div>
@@ -1756,8 +2100,12 @@ export function DemoWarehouses() {
             <div key={wh.id} className="demo-table-row demo-cols-4">
               <span>{wh.name}</span>
               <span className="demo-mono">{wh.code}</span>
-              <span>{stores.find((s) => s.id === wh.storeId)?.name ?? '—'}</span>
-              <span>{branches.find((b) => b.id === wh.branchId)?.name ?? '—'}</span>
+              <span>
+                {stores.find((s) => s.id === wh.storeId)?.name ?? '—'}
+              </span>
+              <span>
+                {branches.find((b) => b.id === wh.branchId)?.name ?? '—'}
+              </span>
             </div>
           ))}
         </div>
@@ -1783,7 +2131,9 @@ export function DemoBranches() {
             <div key={branch.id} className="demo-table-row demo-cols-4">
               <span>{branch.name}</span>
               <span className="demo-mono">{branch.code}</span>
-              <span>{stores.find((s) => s.id === branch.storeId)?.name ?? '—'}</span>
+              <span>
+                {stores.find((s) => s.id === branch.storeId)?.name ?? '—'}
+              </span>
               <StatusBadge status="ACTIVE" />
             </div>
           ))}
@@ -1808,7 +2158,9 @@ export function DemoStores() {
           {stores.map((store) => (
             <div key={store.id} className="demo-table-row demo-cols-3">
               <span>{store.name}</span>
-              <span>{branches.filter((b) => b.storeId === store.id).length}</span>
+              <span>
+                {branches.filter((b) => b.storeId === store.id).length}
+              </span>
               <StatusBadge status="ACTIVE" />
             </div>
           ))}
@@ -1824,7 +2176,10 @@ const SHEET_COLS = ['A', 'B', 'C', 'D'];
 export function DemoGoogleSheets() {
   const { t } = useTranslation();
   const { sheet, updateSheetCell } = useDemoStore();
-  const [selected, setSelected] = useState<{ row: number; col: number }>({ row: 0, col: 0 });
+  const [selected, setSelected] = useState<{ row: number; col: number }>({
+    row: 0,
+    col: 0,
+  });
   const [draft, setDraft] = useState<string | null>(null);
 
   const cellValue = (row: number, col: number) =>
@@ -1847,17 +2202,29 @@ export function DemoGoogleSheets() {
       <div className="demo-sheets-banner">{t('demo.interactiveDemo')}</div>
       <Card title={t('pages.googleSheets')}>
         <div className="demo-sheet-tabs" role="tablist" aria-label={sheet.name}>
-          <button className="demo-sheet-tab active" role="tab" aria-selected="true">
+          <button
+            className="demo-sheet-tab active"
+            role="tab"
+            aria-selected="true"
+          >
             <Table2 size={14} aria-hidden="true" /> {sheet.name}
           </button>
-          <button className="demo-sheet-tab" role="tab" aria-selected="false" disabled title={t('demo.mode')}>
+          <button
+            className="demo-sheet-tab"
+            role="tab"
+            aria-selected="false"
+            disabled
+            title={t('demo.mode')}
+          >
             ＋ Q4_Forecast
           </button>
         </div>
         <div className="demo-sheet-container">
           <div className="demo-sheet-toolbar">
             <span className="demo-sheet-name">{sheet.name}</span>
-            <span className="demo-sheet-status">● {t('demo.sheetsConnected')}</span>
+            <span className="demo-sheet-status">
+              ● {t('demo.sheetsConnected')}
+            </span>
           </div>
           <div className="demo-sheet-formula">
             <span className="demo-cell-ref">
@@ -1894,7 +2261,9 @@ export function DemoGoogleSheets() {
                         key={col}
                         className={`demo-sheet-cell${isSel ? ' selected' : ''}`}
                         onClick={() => startEdit(row, col)}
-                        onKeyDown={(e) => e.key === 'Enter' && startEdit(row, col)}
+                        onKeyDown={(e) =>
+                          e.key === 'Enter' && startEdit(row, col)
+                        }
                         tabIndex={0}
                         role="gridcell"
                         aria-selected={isSel}
@@ -1956,11 +2325,19 @@ export function DemoSettings() {
           <h3>{t('demo.notifications')}</h3>
           <div className="demo-settings-item">
             <span>{t('demo.lowStockNotifications')}</span>
-            <Switch checked={lowStockAlerts} onChange={setLowStockAlerts} label={t('demo.lowStockNotifications')} />
+            <Switch
+              checked={lowStockAlerts}
+              onChange={setLowStockAlerts}
+              label={t('demo.lowStockNotifications')}
+            />
           </div>
           <div className="demo-settings-item">
             <span>{t('demo.dailyReports')}</span>
-            <Switch checked={dailyReports} onChange={setDailyReports} label={t('demo.dailyReports')} />
+            <Switch
+              checked={dailyReports}
+              onChange={setDailyReports}
+              label={t('demo.dailyReports')}
+            />
           </div>
         </div>
       </Card>

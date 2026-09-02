@@ -16,8 +16,24 @@ import {
   Switch as ThemeSwitchControl,
 } from '@niagantara/ui';
 import type { Language, Theme } from '@niagantara/ui';
-import { getLanguage, getTheme, setLanguage, setTheme, useTranslation } from '@niagantara/ui';
-import { Package, ReceiptText, BarChart3, Boxes, MonitorSmartphone, Clock, TrendingUp, AlertTriangle, CalendarDays } from 'lucide-react';
+import {
+  getLanguage,
+  getTheme,
+  setLanguage,
+  setTheme,
+  useTranslation,
+} from '@niagantara/ui';
+import {
+  Package,
+  ReceiptText,
+  BarChart3,
+  Boxes,
+  MonitorSmartphone,
+  Clock,
+  TrendingUp,
+  AlertTriangle,
+  CalendarDays,
+} from 'lucide-react';
 
 export type OrgCtx = {
   user: { id: string };
@@ -43,15 +59,18 @@ export function loadStoredBranch(): string | null {
 export function storeBranch(id: string) {
   try {
     sessionStorage.setItem(BRANCH_KEY, id);
-  } catch {
-    /* storage unavailable */
-  }
+  } catch {}
 }
 
 export function useResource<T>(
   fetcher: () => Promise<T>,
   deps: unknown[],
-): { data: T | null; loading: boolean; error: string | null; reload: () => void } {
+): {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+  reload: () => void;
+} {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +112,12 @@ type Sale = {
   grand_total: number;
   refunded_total?: number;
   created_at: string;
-  items?: { product_id: string; product_name: string; quantity: number; line_total: number }[];
+  items?: {
+    product_id: string;
+    product_name: string;
+    quantity: number;
+    line_total: number;
+  }[];
 };
 
 export function DashboardHome({
@@ -123,27 +147,50 @@ export function DashboardHome({
     () => api<any[]>('/inventory/low-stock', token, company),
     [company, token],
   );
-  const finance = useResource<any>(() => api('/finance/reports', token, company), [company, token]);
+  const finance = useResource<any>(
+    () => api('/finance/reports', token, company),
+    [company, token],
+  );
   const sheets = useResource<any>(
-    () => (can('sheet.read') ? api<any>('/google-sheets', token, company) : Promise.resolve(null)),
+    () =>
+      can('sheet.read')
+        ? api<any>('/google-sheets', token, company)
+        : Promise.resolve(null),
     [company, token],
   );
   const products = useResource<any[]>(
-    () => (can('product.read') ? api<any[]>('/products?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    () =>
+      can('product.read')
+        ? api<any[]>('/products?limit=1', token, company).then(
+            (r: any) => r.data ?? r,
+          )
+        : Promise.resolve([]),
     [company, token],
   );
   const customers = useResource<any[]>(
-    () => (can('customer.read') ? api<any[]>('/customers?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    () =>
+      can('customer.read')
+        ? api<any[]>('/customers?limit=1', token, company).then(
+            (r: any) => r.data ?? r,
+          )
+        : Promise.resolve([]),
     [company, token],
   );
   const employees = useResource<any[]>(
-    () => (can('employee.read') ? api<any[]>('/employees?limit=1', token, company).then((r: any) => r.data ?? r) : Promise.resolve([])),
+    () =>
+      can('employee.read')
+        ? api<any[]>('/employees?limit=1', token, company).then(
+            (r: any) => r.data ?? r,
+          )
+        : Promise.resolve([]),
     [company, token],
   );
 
   useEffect(() => {
     const onRealtime = (event: Event) => {
-      const resources = (event as CustomEvent<{ resources?: string[] }>).detail?.resources ?? [];
+      const resources =
+        (event as CustomEvent<{ resources?: string[] }>).detail?.resources ??
+        [];
       if (resources.includes('sales')) sales.reload();
       if (resources.includes('inventory')) lowStock.reload();
       if (resources.includes('finance')) finance.reload();
@@ -170,7 +217,10 @@ export function DashboardHome({
   );
 
   const topProducts = useMemo(() => {
-    const map = new Map<string, { name: string; qty: number; revenue: number }>();
+    const map = new Map<
+      string,
+      { name: string; qty: number; revenue: number }
+    >();
     for (const s of paidSales)
       for (const item of s.items ?? []) {
         const cur = map.get(item.product_id) ?? {
@@ -189,7 +239,11 @@ export function DashboardHome({
     const start = new Date(from);
     const end = new Date(to);
     const days: { day: string; total: number }[] = [];
-    for (let d = new Date(start); d <= end && days.length < 62; d.setDate(d.getDate() + 1)) {
+    for (
+      let d = new Date(start);
+      d <= end && days.length < 62;
+      d.setDate(d.getDate() + 1)
+    ) {
       const key = isoDay(d);
       const total = paidSales
         .filter((s) => s.created_at.slice(0, 10) === key)
@@ -215,13 +269,21 @@ export function DashboardHome({
   }, [sales.data]);
 
   const recentActivity = useMemo(() => {
-    const items: { id: string; text: string; time: string; type: 'sale' | 'alert' }[] = [];
+    const items: {
+      id: string;
+      text: string;
+      time: string;
+      type: 'sale' | 'alert';
+    }[] = [];
     const recentSales = (sales.data ?? []).slice(0, 5);
     for (const s of recentSales) {
       items.push({
         id: `sale-${s.id}`,
         text: `Penjualan ${fmtRp(Number(s.grand_total))} - ${s.status}`,
-        time: new Date(s.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        time: new Date(s.created_at).toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
         type: 'sale',
       });
     }
@@ -241,10 +303,18 @@ export function DashboardHome({
     <>
       <div className="ng-filterbar">
         <Field label={t('common.date')}>
-          <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <Input
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+          />
         </Field>
         <Field label="→">
-          <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          <Input
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+          />
         </Field>
         {ctx.accessible_branches.length > 0 && (
           <div className="ng-filterbar__context">
@@ -290,47 +360,141 @@ export function DashboardHome({
         />
       </div>
 
-      <div className="metrics" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+      <div
+        className="metrics"
+        style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
+      >
         <Card title="Total Produk">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary, #2563EB)' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background:
+                  'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent-primary, #2563EB)',
+              }}
+            >
               <Package size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary, #111827)',
+                  lineHeight: 1,
+                }}
+              >
                 {products.loading ? '...' : (products.data?.length ?? 0)}
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+              <div
+                style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--text-muted, #6B7280)',
+                }}
+              >
                 {products.error ? 'Gagal memuat' : 'produk terdaftar'}
               </div>
             </div>
           </div>
         </Card>
         <Card title="Total Pelanggan">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, #059669 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background: 'color-mix(in srgb, #059669 10%, transparent)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#059669',
+              }}
+            >
               <ReceiptText size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary, #111827)',
+                  lineHeight: 1,
+                }}
+              >
                 {customers.loading ? '...' : (customers.data?.length ?? 0)}
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+              <div
+                style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--text-muted, #6B7280)',
+                }}
+              >
                 {customers.error ? 'Gagal memuat' : 'pelanggan terdaftar'}
               </div>
             </div>
           </div>
         </Card>
         <Card title="Staff Aktif">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'color-mix(in srgb, #7C3AED 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background: 'color-mix(in srgb, #7C3AED 10%, transparent)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#7C3AED',
+              }}
+            >
               <BarChart3 size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary, #111827)',
+                  lineHeight: 1,
+                }}
+              >
                 {employees.loading ? '...' : (employees.data?.length ?? 0)}
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted, #6B7280)' }}>
+              <div
+                style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--text-muted, #6B7280)',
+                }}
+              >
                 {employees.error ? 'Gagal memuat' : 'karyawan aktif'}
               </div>
             </div>
@@ -338,7 +502,9 @@ export function DashboardHome({
         </Card>
       </div>
 
-      {(can('finance.read') || can('payable.read') || can('receivable.read')) && (
+      {(can('finance.read') ||
+        can('payable.read') ||
+        can('receivable.read')) && (
         <div className="metrics metrics--finance">
           <StatCard
             label={t('website.finance.revenue') || 'Revenue'}
@@ -357,9 +523,7 @@ export function DashboardHome({
           <StatCard
             label={t('pages.payables')}
             value={
-              finance.loading
-                ? ''
-                : fmtRp(Number(finance.data?.purchases ?? 0))
+              finance.loading ? '' : fmtRp(Number(finance.data?.purchases ?? 0))
             }
             note="period purchases"
             loading={finance.loading}
@@ -369,7 +533,11 @@ export function DashboardHome({
           <StatCard
             label="Operating cash result"
             value={fmtRp(Number(finance.data?.operatingCashResult ?? 0))}
-            tone={Number(finance.data?.operatingCashResult ?? 0) >= 0 ? 'success' : 'danger'}
+            tone={
+              Number(finance.data?.operatingCashResult ?? 0) >= 0
+                ? 'success'
+                : 'danger'
+            }
             loading={finance.loading}
             error={!!finance.error}
             onRetry={finance.reload}
@@ -378,19 +546,51 @@ export function DashboardHome({
       )}
 
       <div className="dash-columns">
-        <Card title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><TrendingUp size={16} /> Revenue Trend</span>}>
+        <Card
+          title={
+            <span
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <TrendingUp size={16} /> Revenue Trend
+            </span>
+          }
+        >
           {dailySeries.length > 1 ? (
             <>
-              <MiniBars data={dailySeries.map((d) => ({ label: d.day, value: d.total }))} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted, #6B7280)' }}>
+              <MiniBars
+                data={dailySeries.map((d) => ({
+                  label: d.day,
+                  value: d.total,
+                }))}
+              />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginTop: '0.5rem',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted, #6B7280)',
+                }}
+              >
                 <span>{dailySeries.length} hari</span>
-                <span>Tertinggi: {fmtRp(Math.max(...dailySeries.map((d) => d.total)))}</span>
+                <span>
+                  Tertinggi:{' '}
+                  {fmtRp(Math.max(...dailySeries.map((d) => d.total)))}
+                </span>
               </div>
             </>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <TrendingUp size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
-              <p className="muted" style={{ margin: 0 }}>Pilih rentang tanggal lebih dari satu hari untuk melihat trend.</p>
+              <TrendingUp
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
+              <p className="muted" style={{ margin: 0 }}>
+                Pilih rentang tanggal lebih dari satu hari untuk melihat trend.
+              </p>
             </div>
           )}
         </Card>
@@ -398,7 +598,9 @@ export function DashboardHome({
         <Card title="Aksi Cepat">
           <div className="quick-actions">
             {can('pos.access') && (
-              <Button onClick={() => go('pos')}><MonitorSmartphone size={14} /> {t('pages.pos')}</Button>
+              <Button onClick={() => go('pos')}>
+                <MonitorSmartphone size={14} /> {t('pages.pos')}
+              </Button>
             )}
             {can('sale.read') && (
               <Button variant="secondary" onClick={() => go('sales')}>
@@ -422,13 +624,21 @@ export function DashboardHome({
             )}
           </div>
           {sheets.data?.connection && (
-            <Alert tone={sheets.data.connection.status === 'connected' ? 'success' : 'warning'}>
+            <Alert
+              tone={
+                sheets.data.connection.status === 'connected'
+                  ? 'success'
+                  : 'warning'
+              }
+            >
               Google Sheets: <b>{sheets.data.connection.google_email}</b> ·{' '}
               {sheets.data.connection.status}
             </Alert>
           )}
           {!can('sheet.read') && (
-            <p className="muted" style={{ fontSize: '0.82rem' }}>Google Sheets status memerlukan izin sheet.read.</p>
+            <p className="muted" style={{ fontSize: '0.82rem' }}>
+              Google Sheets status memerlukan izin sheet.read.
+            </p>
           )}
         </Card>
       </div>
@@ -440,19 +650,60 @@ export function DashboardHome({
               {recentActivity.map((item) => (
                 <li key={item.id} style={{ gap: '0.6rem' }}>
                   {item.type === 'sale' ? (
-                    <ReceiptText size={14} style={{ color: 'var(--accent-primary, #2563EB)', flexShrink: 0 }} />
+                    <ReceiptText
+                      size={14}
+                      style={{
+                        color: 'var(--accent-primary, #2563EB)',
+                        flexShrink: 0,
+                      }}
+                    />
                   ) : (
-                    <AlertTriangle size={14} style={{ color: 'var(--warning, #F59E0B)', flexShrink: 0 }} />
+                    <AlertTriangle
+                      size={14}
+                      style={{
+                        color: 'var(--warning, #F59E0B)',
+                        flexShrink: 0,
+                      }}
+                    />
                   )}
-                  <b style={{ fontSize: '0.85rem', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.text}</b>
-                  <em style={{ fontStyle: 'normal', marginLeft: 'auto', color: 'var(--text-muted, #6B7280)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>{item.time}</em>
+                  <b
+                    style={{
+                      fontSize: '0.85rem',
+                      flex: 1,
+                      minWidth: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.text}
+                  </b>
+                  <em
+                    style={{
+                      fontStyle: 'normal',
+                      marginLeft: 'auto',
+                      color: 'var(--text-muted, #6B7280)',
+                      fontSize: '0.78rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.time}
+                  </em>
                 </li>
               ))}
             </ul>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <Clock size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
-              <p className="muted" style={{ margin: 0 }}>Belum ada aktivitas terkini pada periode ini.</p>
+              <Clock
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
+              <p className="muted" style={{ margin: 0 }}>
+                Belum ada aktivitas terkini pada periode ini.
+              </p>
             </div>
           )}
         </Card>
@@ -471,12 +722,25 @@ export function DashboardHome({
             </ul>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <Package size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <Package
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
               <p className="muted" style={{ margin: '0 0 0.5rem' }}>
-                {sales.error ? 'Data tidak tersedia' : 'Belum ada produk terjual pada periode ini'}
+                {sales.error
+                  ? 'Data tidak tersedia'
+                  : 'Belum ada produk terjual pada periode ini'}
               </p>
               {!sales.error && (
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                <span
+                  style={{
+                    fontSize: '0.82rem',
+                    color: 'var(--text-muted, #94A3B8)',
+                  }}
+                >
                   Penjualan akan muncul di sini setelah transaksi POS pertama.
                 </span>
               )}
@@ -508,9 +772,22 @@ export function DashboardHome({
             </ul>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <ReceiptText size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
-              <p className="muted" style={{ margin: '0 0 0.5rem' }}>Belum ada penjualan pada rentang ini</p>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+              <ReceiptText
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
+              <p className="muted" style={{ margin: '0 0 0.5rem' }}>
+                Belum ada penjualan pada rentang ini
+              </p>
+              <span
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--text-muted, #94A3B8)',
+                }}
+              >
                 Ubah filter tanggal atau lakukan transaksi di POS.
               </span>
             </div>
@@ -534,9 +811,17 @@ export function DashboardHome({
             </ul>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <BarChart3 size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <BarChart3
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
               <p className="muted" style={{ margin: 0 }}>
-                {sales.error ? 'Data tidak tersedia' : 'Belum ada data distribusi penjualan'}
+                {sales.error
+                  ? 'Data tidak tersedia'
+                  : 'Belum ada data distribusi penjualan'}
               </p>
             </div>
           )}
@@ -545,7 +830,13 @@ export function DashboardHome({
 
       <div className="dash-columns">
         <Card
-          title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><AlertTriangle size={16} /> Stok Rendah</span>}
+          title={
+            <span
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <AlertTriangle size={16} /> Stok Rendah
+            </span>
+          }
           actions={
             can('inventory.read') ? (
               <Button variant="ghost" onClick={() => go('inventory')}>
@@ -556,14 +847,21 @@ export function DashboardHome({
         >
           {(lowStock.data?.length ?? 0) > 0 ? (
             <>
-              <p className="muted" style={{ fontSize: '0.82rem', marginBottom: '0.5rem' }}>{t('dashboard.lowStockHint')}</p>
+              <p
+                className="muted"
+                style={{ fontSize: '0.82rem', marginBottom: '0.5rem' }}
+              >
+                {t('dashboard.lowStockHint')}
+              </p>
               <ul className="mini-list mini-list--stock">
                 {lowStock.data!.slice(0, 8).map((row: any) => (
                   <li key={row.id}>
                     <b>{row.product?.name ?? row.product_id}</b>
                     <span>{row.branch?.name ?? '—'}</span>
                     <StatusBadge
-                      status={Number(row.quantity) <= 0 ? 'OUT_OF_STOCK' : 'LOW_STOCK'}
+                      status={
+                        Number(row.quantity) <= 0 ? 'OUT_OF_STOCK' : 'LOW_STOCK'
+                      }
                     />
                     <em>
                       {row.quantity}/{row.minimum_stock}
@@ -574,52 +872,160 @@ export function DashboardHome({
             </>
           ) : (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-              <Boxes size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
+              <Boxes
+                size={24}
+                style={{
+                  color: 'var(--text-muted, #94A3B8)',
+                  marginBottom: '0.5rem',
+                }}
+              />
               <p className="muted" style={{ margin: '0 0 0.5rem' }}>
-                {lowStock.error ? 'Data tidak tersedia' : t('inventory.stockSafe')}
+                {lowStock.error
+                  ? 'Data tidak tersedia'
+                  : t('inventory.stockSafe')}
               </p>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+              <span
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--text-muted, #94A3B8)',
+                }}
+              >
                 {lowStock.error ? undefined : t('dashboard.lowStockHint')}
               </span>
             </div>
           )}
         </Card>
 
-        <Card title={<span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Shift Mendatang</span>}>
+        <Card
+          title={
+            <span
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <CalendarDays size={16} /> Shift Mendatang
+            </span>
+          }
+        >
           {(() => {
             const now = new Date();
             const todayStr = isoDay(now);
-            const todaySales = (sales.data ?? []).filter((s) => s.created_at.slice(0, 10) === todayStr);
+            const todaySales = (sales.data ?? []).filter(
+              (s) => s.created_at.slice(0, 10) === todayStr,
+            );
             if (todaySales.length > 0) {
-              const total = fmtRp(todaySales.reduce((n, s) => n + Number(s.grand_total), 0));
+              const total = fmtRp(
+                todaySales.reduce((n, s) => n + Number(s.grand_total), 0),
+              );
               return (
                 <div style={{ padding: '0.5rem 0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0', borderBottom: '1px solid var(--border-color, #E5E7EB)' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary, #2563EB)', fontSize: '0.78rem', fontWeight: 700 }}>
-                      {ctx.accessible_branches.length > 0 ? ctx.accessible_branches[0].name?.[0] ?? '?' : '?'}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.6rem 0',
+                      borderBottom: '1px solid var(--border-color, #E5E7EB)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        background:
+                          'color-mix(in srgb, var(--accent-primary, #2563EB) 10%, transparent)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--accent-primary, #2563EB)',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {ctx.accessible_branches.length > 0
+                        ? (ctx.accessible_branches[0].name?.[0] ?? '?')
+                        : '?'}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary, #111827)' }}>
-                        {branch?.name ?? ctx.accessible_branches[0]?.name ?? 'Semua Cabang'}
+                      <div
+                        style={{
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          color: 'var(--text-primary, #111827)',
+                        }}
+                      >
+                        {branch?.name ??
+                          ctx.accessible_branches[0]?.name ??
+                          'Semua Cabang'}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted, #6B7280)' }}>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: 'var(--text-muted, #6B7280)',
+                        }}
+                      >
                         {todaySales.length} transaksi hari ini
                       </div>
                     </div>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary, #111827)' }}>{total}</span>
+                    <span
+                      style={{
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        color: 'var(--text-primary, #111827)',
+                      }}
+                    >
+                      {total}
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', fontSize: '0.78rem' }}>
-                    <span style={{ color: 'var(--text-muted, #6B7280)' }}>Rata-rata per transaksi</span>
-                    <span style={{ fontWeight: 600, color: 'var(--text-primary, #111827)' }}>{fmtRp(todaySales.length ? Number(todaySales.reduce((n, s) => n + Number(s.grand_total), 0)) / todaySales.length : 0)}</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginTop: '0.75rem',
+                      fontSize: '0.78rem',
+                    }}
+                  >
+                    <span style={{ color: 'var(--text-muted, #6B7280)' }}>
+                      Rata-rata per transaksi
+                    </span>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        color: 'var(--text-primary, #111827)',
+                      }}
+                    >
+                      {fmtRp(
+                        todaySales.length
+                          ? Number(
+                              todaySales.reduce(
+                                (n, s) => n + Number(s.grand_total),
+                                0,
+                              ),
+                            ) / todaySales.length
+                          : 0,
+                      )}
+                    </span>
                   </div>
                 </div>
               );
             }
             return (
               <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                <CalendarDays size={24} style={{ color: 'var(--text-muted, #94A3B8)', marginBottom: '0.5rem' }} />
-                <p className="muted" style={{ margin: '0 0 0.5rem' }}>Belum ada shift aktif hari ini</p>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #94A3B8)' }}>
+                <CalendarDays
+                  size={24}
+                  style={{
+                    color: 'var(--text-muted, #94A3B8)',
+                    marginBottom: '0.5rem',
+                  }}
+                />
+                <p className="muted" style={{ margin: '0 0 0.5rem' }}>
+                  Belum ada shift aktif hari ini
+                </p>
+                <span
+                  style={{
+                    fontSize: '0.82rem',
+                    color: 'var(--text-muted, #94A3B8)',
+                  }}
+                >
                   Mulai shift dari halaman POS untuk memulai pencatatan.
                 </span>
               </div>
@@ -654,40 +1060,140 @@ export function CommandCenter({
     [company, token],
   );
   const sheets = useResource<any>(
-    () => (ctx.permissions.includes('sheet.read') ? api('/google-sheets', token, company) : Promise.resolve(null)),
+    () =>
+      ctx.permissions.includes('sheet.read')
+        ? api('/google-sheets', token, company)
+        : Promise.resolve(null),
     [company, token, ctx.permissions],
   );
-  const activeShifts = (shifts.data ?? []).filter((item) => item.status === 'OPEN' || item.status === 'ACTIVE');
+  const activeShifts = (shifts.data ?? []).filter(
+    (item) => item.status === 'OPEN' || item.status === 'ACTIVE',
+  );
   const hasError = lowStock.error || shifts.error || sheets.error;
-  const retry = () => { lowStock.reload(); shifts.reload(); sheets.reload(); };
+  const retry = () => {
+    lowStock.reload();
+    shifts.reload();
+    sheets.reload();
+  };
   const status = lowStock.data?.length ? 'WARNING' : 'HEALTHY';
   return (
     <div className="command-center">
       <div className="ng-filterbar">
-        <Badge tone="info">{t('context.branch')}: {branch?.name ?? t('context.allBranches')}</Badge>
-        <span className="muted">Status operasional berbasis data yang tersedia</span>
+        <Badge tone="info">
+          {t('context.branch')}: {branch?.name ?? t('context.allBranches')}
+        </Badge>
+        <span className="muted">
+          Status operasional berbasis data yang tersedia
+        </span>
       </div>
-      {hasError && <ErrorState message="Sebagian data operasional tidak dapat dimuat." onRetry={retry} retryLabel="Coba lagi" />}
+      {hasError && (
+        <ErrorState
+          message="Sebagian data operasional tidak dapat dimuat."
+          onRetry={retry}
+          retryLabel="Coba lagi"
+        />
+      )}
       <div className="metrics command-center__summary">
-        <StatCard label="Cabang Aktif" value={String(ctx.accessible_branches.length)} loading={false} />
-        <StatCard label="Shift Aktif" value={String(activeShifts.length)} loading={shifts.loading} error={!!shifts.error} onRetry={shifts.reload} />
-        <StatCard label="Stok Kritis" value={String(lowStock.data?.length ?? 0)} tone={lowStock.data?.length ? 'warning' : 'default'} loading={lowStock.loading} error={!!lowStock.error} onRetry={lowStock.reload} />
-        <StatCard label="Integrasi Sheets" value={sheets.loading ? '...' : sheets.data?.connection?.status ?? 'Belum terhubung'} loading={false} />
+        <StatCard
+          label="Cabang Aktif"
+          value={String(ctx.accessible_branches.length)}
+          loading={false}
+        />
+        <StatCard
+          label="Shift Aktif"
+          value={String(activeShifts.length)}
+          loading={shifts.loading}
+          error={!!shifts.error}
+          onRetry={shifts.reload}
+        />
+        <StatCard
+          label="Stok Kritis"
+          value={String(lowStock.data?.length ?? 0)}
+          tone={lowStock.data?.length ? 'warning' : 'default'}
+          loading={lowStock.loading}
+          error={!!lowStock.error}
+          onRetry={lowStock.reload}
+        />
+        <StatCard
+          label="Integrasi Sheets"
+          value={
+            sheets.loading
+              ? '...'
+              : (sheets.data?.connection?.status ?? 'Belum terhubung')
+          }
+          loading={false}
+        />
       </div>
       <div className="dash-columns">
         <Card title="Kesehatan Cabang">
           <ul className="mini-list">
-            {ctx.accessible_branches.length ? ctx.accessible_branches.map((item: any) => (
-              <li key={item.id}><b>{item.name}</b><StatusBadge status={status} /><span>{status === 'WARNING' ? 'Ada stok rendah' : 'Tidak ada peringatan'}</span></li>
-            )) : <EmptyState title="Belum ada cabang" description="Tambahkan cabang untuk melihat status operasional." />}
+            {ctx.accessible_branches.length ? (
+              ctx.accessible_branches.map((item: any) => (
+                <li key={item.id}>
+                  <b>{item.name}</b>
+                  <StatusBadge status={status} />
+                  <span>
+                    {status === 'WARNING'
+                      ? 'Ada stok rendah'
+                      : 'Tidak ada peringatan'}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <EmptyState
+                title="Belum ada cabang"
+                description="Tambahkan cabang untuk melihat status operasional."
+              />
+            )}
           </ul>
         </Card>
         <Card title="Shift Berjalan">
-          {activeShifts.length ? <ul className="mini-list">{activeShifts.slice(0, 6).map((item: any) => <li key={item.id}><b>{item.cashier?.name ?? item.cashier_id ?? 'Kasir'}</b><span>{item.opened_at ? new Date(item.opened_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Waktu tidak tersedia'}</span></li>)}</ul> : <EmptyState title="Tidak ada shift aktif" description="Shift aktif akan tampil ketika kasir membuka shift." />}
+          {activeShifts.length ? (
+            <ul className="mini-list">
+              {activeShifts.slice(0, 6).map((item: any) => (
+                <li key={item.id}>
+                  <b>{item.cashier?.name ?? item.cashier_id ?? 'Kasir'}</b>
+                  <span>
+                    {item.opened_at
+                      ? new Date(item.opened_at).toLocaleTimeString('id-ID', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : 'Waktu tidak tersedia'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState
+              title="Tidak ada shift aktif"
+              description="Shift aktif akan tampil ketika kasir membuka shift."
+            />
+          )}
         </Card>
       </div>
       <Card title="Peringatan Operasional">
-        {lowStock.data?.length ? <ul className="mini-list">{lowStock.data.slice(0, 8).map((item: any) => <li key={item.id}><AlertTriangle size={15} aria-hidden="true" /><b>{item.product?.name ?? 'Produk'}</b><span>{item.quantity} / minimum {item.minimum_stock}</span><Button variant="ghost" onClick={() => go('inventory')}>Lihat stok</Button></li>)}</ul> : <EmptyState title="Tidak ada peringatan" description="Belum ada stok di bawah batas minimum." />}
+        {lowStock.data?.length ? (
+          <ul className="mini-list">
+            {lowStock.data.slice(0, 8).map((item: any) => (
+              <li key={item.id}>
+                <AlertTriangle size={15} aria-hidden="true" />
+                <b>{item.product?.name ?? 'Produk'}</b>
+                <span>
+                  {item.quantity} / minimum {item.minimum_stock}
+                </span>
+                <Button variant="ghost" onClick={() => go('inventory')}>
+                  Lihat stok
+                </Button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState
+            title="Tidak ada peringatan"
+            description="Belum ada stok di bawah batas minimum."
+          />
+        )}
       </Card>
     </div>
   );
@@ -702,7 +1208,11 @@ export function MiniBars({
   return (
     <div className="minibars" role="img" aria-label="Sales chart">
       {data.map((d) => (
-        <div key={d.label} className="minibars__col" title={`${d.label}: ${d.value}`}>
+        <div
+          key={d.label}
+          className="minibars__col"
+          title={`${d.label}: ${d.value}`}
+        >
           <i style={{ height: `${Math.max((d.value / max) * 100, 2)}%` }} />
           <span>{d.label}</span>
         </div>
@@ -720,7 +1230,11 @@ export function Onboarding({
 }) {
   const { t } = useTranslation();
   const steps = [
-    { done: ctx.stores.length > 0, label: t('onboarding.createStore'), page: 'stores' },
+    {
+      done: ctx.stores.length > 0,
+      label: t('onboarding.createStore'),
+      page: 'stores',
+    },
     {
       done: ctx.accessible_branches.length > 0,
       label: t('onboarding.createBranch'),
@@ -746,7 +1260,6 @@ export function Onboarding({
     </Card>
   );
 }
-
 
 export function TransferForm({
   company,
@@ -780,7 +1293,12 @@ export function TransferForm({
         }),
       });
       setMsg(t('messages.saveSuccess'));
-      setForm({ fromWarehouseId: '', toWarehouseId: '', productId: '', quantity: '1' });
+      setForm({
+        fromWarehouseId: '',
+        toWarehouseId: '',
+        productId: '',
+        quantity: '1',
+      });
       onDone();
     } catch (err) {
       setMsg(`${t('messages.saveError')} (${describeError(err)})`);
@@ -793,7 +1311,9 @@ export function TransferForm({
           <Select
             required
             value={form.fromWarehouseId}
-            onChange={(e) => setForm({ ...form, fromWarehouseId: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, fromWarehouseId: e.target.value })
+            }
           >
             <option value="">—</option>
             {warehouses.map((w: any) => (
@@ -807,7 +1327,9 @@ export function TransferForm({
           <Select
             required
             value={form.toWarehouseId}
-            onChange={(e) => setForm({ ...form, toWarehouseId: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, toWarehouseId: e.target.value })
+            }
           >
             <option value="">—</option>
             {warehouses.map((w: any) => (
@@ -839,7 +1361,6 @@ export function TransferForm({
     </Card>
   );
 }
-
 
 export function SettingsPage({
   ctx,
@@ -997,7 +1518,9 @@ export function HelpPage() {
     <Card title={t('help.title')}>
       <p className="muted">{t('help.intro')}</p>
       <div className="help-grid">
-        {HELP_KEYS.filter((k) => t(`help.items.${k}`) !== `help.items.${k}`).map((k) => (
+        {HELP_KEYS.filter(
+          (k) => t(`help.items.${k}`) !== `help.items.${k}`,
+        ).map((k) => (
           <article key={k}>
             <h3>{t(`pages.${k}`)}</h3>
             <p>{t(`help.items.${k}`)}</p>

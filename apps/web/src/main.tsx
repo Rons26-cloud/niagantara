@@ -10,7 +10,6 @@ import {
   FaqPage,
   FeaturesPage,
   HomePage,
-  PricingPage,
   SolutionsPage,
 } from './pages';
 import './styles.css';
@@ -35,7 +34,6 @@ const DemoApp = lazy(() =>
 const lazyRoutes: Record<string, ComponentType> = {
   '/fitur': FeaturesPage,
   '/solusi': SolutionsPage,
-  '/harga': PricingPage,
   '/tentang': AboutPage,
   '/faq': FaqPage,
   '/kontak': ContactPage,
@@ -47,7 +45,8 @@ const lazyRoutes: Record<string, ComponentType> = {
 const legacyAliases: Record<string, string> = {
   '/features': '/fitur',
   '/solutions': '/solusi',
-  '/pricing': '/harga',
+  '/pricing': '/',
+  '/harga': '/',
   '/about': '/tentang',
   '/contact': '/kontak',
   '/security-report': '/security',

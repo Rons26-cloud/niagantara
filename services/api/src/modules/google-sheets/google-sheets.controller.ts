@@ -38,19 +38,31 @@ export class GoogleSheetsController {
 
   @Post('oauth/start')
   @RequirePermission('sheet.manage')
-  oauth(@Req() r: any, @Headers('x-company-id') c: string, @Body() d: OAuthReplaceDto) {
+  oauth(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Body() d: OAuthReplaceDto,
+  ) {
     return this.s.oauthStart(c, r.user.id, Boolean(d.replace));
   }
 
   @Post('workbooks')
   @RequirePermission('sheet.manage')
-  workbook(@Req() r: any, @Headers('x-company-id') c: string, @Body() d: CreateWorkbookDto) {
+  workbook(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Body() d: CreateWorkbookDto,
+  ) {
     return this.s.createWorkbook(c, r.user.id, d);
   }
 
   @Post('definitions')
   @RequirePermission('sheet.manage')
-  definition(@Req() r: any, @Headers('x-company-id') c: string, @Body() d: DefinitionDto) {
+  definition(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Body() d: DefinitionDto,
+  ) {
     return this.s.addDefinition(c, r.user.id, d);
   }
 
@@ -101,7 +113,11 @@ export class GoogleSheetsController {
 
   @Post('recovery/:id/retry')
   @RequirePermission('sheet.manage')
-  retry(@Req() r: any, @Headers('x-company-id') c: string, @Param('id') id: string) {
+  retry(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Param('id') id: string,
+  ) {
     return this.s.retry(c, r.user.id, id);
   }
 

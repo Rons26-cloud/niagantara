@@ -49,16 +49,33 @@ export function SuppliersPage({
   const [msg, setMsg] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState('');
-  const emptyForm = { supplierCode: '', name: '', contactPerson: '', phone: '', email: '', address: '', notes: '', status: 'active' };
+  const emptyForm = {
+    supplierCode: '',
+    name: '',
+    contactPerson: '',
+    phone: '',
+    email: '',
+    address: '',
+    notes: '',
+    status: 'active',
+  };
   const [form, setForm] = useState(emptyForm);
   const [status, setStatus] = useState('');
 
   const load = () => {
     setLoading(true);
     setError(null);
-    api<Supplier[]>(`/suppliers?limit=100${status ? `&status=${status}` : ''}`, token, company)
+    api<Supplier[]>(
+      `/suppliers?limit=100${status ? `&status=${status}` : ''}`,
+      token,
+      company,
+    )
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -102,7 +119,16 @@ export function SuppliersPage({
     try {
       const value = await api<Supplier>('/suppliers/' + r.id, token, company);
       setDetail(value);
-      setForm({ supplierCode: value.supplier_code ?? '', name: value.name ?? '', contactPerson: value.contact_person ?? '', phone: value.phone ?? '', email: value.email ?? '', address: value.address ?? '', notes: value.notes ?? '', status: value.status ?? 'active' });
+      setForm({
+        supplierCode: value.supplier_code ?? '',
+        name: value.name ?? '',
+        contactPerson: value.contact_person ?? '',
+        phone: value.phone ?? '',
+        email: value.email ?? '',
+        address: value.address ?? '',
+        notes: value.notes ?? '',
+        status: value.status ?? 'active',
+      });
     } catch {
       setDetail(r);
     }
@@ -113,11 +139,22 @@ export function SuppliersPage({
     if (!detail) return;
     setMsg(t('common.saving'));
     try {
-      const updated = await api<Supplier>('/suppliers/' + detail.id, token, company, { method: 'PATCH', body: JSON.stringify(form) });
+      const updated = await api<Supplier>(
+        '/suppliers/' + detail.id,
+        token,
+        company,
+        { method: 'PATCH', body: JSON.stringify(form) },
+      );
       setDetail(updated);
       setMsg(t('messages.saveSuccess'));
       load();
-    } catch (e) { setMsg(e instanceof ApiError ? `${e.status} · ${e.code}` : t('messages.saveError')); }
+    } catch (e) {
+      setMsg(
+        e instanceof ApiError
+          ? `${e.status} · ${e.code}`
+          : t('messages.saveError'),
+      );
+    }
   }
 
   if (loading) return <LoadingState label={t('common.loading')} />;
@@ -133,7 +170,13 @@ export function SuppliersPage({
             onChange={(e) => setSearch(e.target.value)}
           />
         </Field>
-        <Field label="Status"><Select value={status} onChange={(e) => setStatus(e.target.value)}><option value="">Semua</option><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></Select></Field>
+        <Field label="Status">
+          <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">Semua</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Tidak aktif</option>
+          </Select>
+        </Field>
         {ctx.permissions.includes('supplier.create') && (
           <Button onClick={() => setShowCreate(true)}>
             <Plus size={14} /> {t('common.add')} {t('common.supplier')}
@@ -194,8 +237,10 @@ export function SuppliersPage({
             </Button>
           </div>
           <dl className="def-grid">
-            <dt>Kode</dt><dd>{detail.supplier_code ?? '—'}</dd>
-            <dt>Kontak</dt><dd>{detail.contact_person ?? '—'}</dd>
+            <dt>Kode</dt>
+            <dd>{detail.supplier_code ?? '—'}</dd>
+            <dt>Kontak</dt>
+            <dd>{detail.contact_person ?? '—'}</dd>
             <dt>Email</dt>
             <dd>{detail.email ?? '—'}</dd>
             <dt>Telepon</dt>
@@ -204,19 +249,77 @@ export function SuppliersPage({
             <dd>
               <StatusBadge status={detail.status ?? 'ACTIVE'} />
             </dd>
-            <dt>Alamat</dt><dd>{detail.address ?? '—'}</dd>
-            <dt>Catatan</dt><dd>{detail.notes ?? '—'}</dd>
+            <dt>Alamat</dt>
+            <dd>{detail.address ?? '—'}</dd>
+            <dt>Catatan</dt>
+            <dd>{detail.notes ?? '—'}</dd>
           </dl>
           {ctx.permissions.includes('supplier.update') && (
-            <form className="inline-form" onSubmit={update} style={{ marginTop: 16 }}>
-              <Field label="Kode"><Input required value={form.supplierCode} onChange={(e) => setForm({ ...form, supplierCode: e.target.value })} /></Field>
-              <Field label={t('common.name')}><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
-              <Field label="Kontak"><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} /></Field>
-              <Field label={t('common.phone')}><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
-              <Field label={t('common.email')}><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
-              <Field label="Alamat"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
-              <Field label="Catatan"><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
-              <Field label="Status"><Select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></Select></Field>
+            <form
+              className="inline-form"
+              onSubmit={update}
+              style={{ marginTop: 16 }}
+            >
+              <Field label="Kode">
+                <Input
+                  required
+                  value={form.supplierCode}
+                  onChange={(e) =>
+                    setForm({ ...form, supplierCode: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label={t('common.name')}>
+                <Input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </Field>
+              <Field label="Kontak">
+                <Input
+                  value={form.contactPerson}
+                  onChange={(e) =>
+                    setForm({ ...form, contactPerson: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label={t('common.phone')}>
+                <Input
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </Field>
+              <Field label={t('common.email')}>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </Field>
+              <Field label="Alamat">
+                <Input
+                  value={form.address}
+                  onChange={(e) =>
+                    setForm({ ...form, address: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label="Catatan">
+                <Input
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </Field>
+              <Field label="Status">
+                <Select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  <option value="active">Aktif</option>
+                  <option value="inactive">Tidak aktif</option>
+                </Select>
+              </Field>
               <Button type="submit">{t('common.save')}</Button>
             </form>
           )}
@@ -233,8 +336,20 @@ export function SuppliersPage({
           </Button>
         }
       >
-        <form id="supplier-create-form" className="inline-form" onSubmit={create}>
-          <Field label="Kode Supplier"><Input required value={form.supplierCode} onChange={(e) => setForm({ ...form, supplierCode: e.target.value })} /></Field>
+        <form
+          id="supplier-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
+          <Field label="Kode Supplier">
+            <Input
+              required
+              value={form.supplierCode}
+              onChange={(e) =>
+                setForm({ ...form, supplierCode: e.target.value })
+              }
+            />
+          </Field>
           <Field label={t('common.name')}>
             <Input
               required
@@ -242,15 +357,32 @@ export function SuppliersPage({
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </Field>
-          <Field label="Kontak"><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} /></Field>
+          <Field label="Kontak">
+            <Input
+              value={form.contactPerson}
+              onChange={(e) =>
+                setForm({ ...form, contactPerson: e.target.value })
+              }
+            />
+          </Field>
           <Field label={t('common.phone')}>
             <Input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
           </Field>
-          <Field label="Alamat"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
-          <Field label="Catatan"><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
+          <Field label="Alamat">
+            <Input
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
+          </Field>
+          <Field label="Catatan">
+            <Input
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
+          </Field>
           <Field label={t('common.email')}>
             <Input
               type="email"

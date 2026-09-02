@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 export const RECOVERY_RESEND_COOLDOWN_MS = 60_000;
 
@@ -15,7 +19,10 @@ export class RecoveryCooldown {
     const previous = this.requestedAt.get(normalizedEmail);
     if (previous !== undefined && current - previous < this.cooldownMs) {
       throw new HttpException(
-        { code: 'RATE_LIMIT', message: 'Please wait before requesting another recovery code.' },
+        {
+          code: 'RATE_LIMIT',
+          message: 'Please wait before requesting another recovery code.',
+        },
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
@@ -23,12 +30,16 @@ export class RecoveryCooldown {
   }
 }
 
-export function recoveryOtpException(error: { code?: string; message?: string } | null | undefined) {
+export function recoveryOtpException(
+  error: { code?: string; message?: string } | null | undefined,
+) {
   const code = error?.code?.toLowerCase() ?? '';
   const message = error?.message?.toLowerCase() ?? '';
   const expired = code === 'otp_expired' || message.includes('expired');
   return new UnauthorizedException({
     code: expired ? 'EXPIRED_OTP' : 'INVALID_OTP',
-    message: expired ? 'Recovery code is invalid or expired.' : 'Recovery code is invalid or expired.',
+    message: expired
+      ? 'Recovery code is invalid or expired.'
+      : 'Recovery code is invalid or expired.',
   });
 }

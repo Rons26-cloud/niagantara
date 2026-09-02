@@ -1,1 +1,20 @@
-import{Module}from'@nestjs/common';import{AuthGuard}from'../../common/guards/auth.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{BranchGuard}from'../../common/guards/branch.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{PurchasesController}from'./purchases.controller.js';import{PurchasesService}from'./purchases.service.js';import{PurchasesRepository}from'./purchases.repository.js';@Module({controllers:[PurchasesController],providers:[PurchasesService,PurchasesRepository,AuthGuard,TenantGuard,BranchGuard,PermissionGuard]})export class PurchasesModule{}
+import { Module } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { BranchGuard } from '../../common/guards/branch.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { PurchasesController } from './purchases.controller.js';
+import { PurchasesService } from './purchases.service.js';
+import { PurchasesRepository } from './purchases.repository.js';
+@Module({
+  controllers: [PurchasesController],
+  providers: [
+    PurchasesService,
+    PurchasesRepository,
+    AuthGuard,
+    TenantGuard,
+    BranchGuard,
+    PermissionGuard,
+  ],
+})
+export class PurchasesModule {}

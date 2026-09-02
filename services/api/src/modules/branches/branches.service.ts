@@ -89,7 +89,6 @@ export class BranchesService {
     dto: UpdateBranchDto,
   ) {
     await this.get(userId, companyId, id);
-    // Do not pass an untrusted object to a service-role client. Only mutable fields are copied.
     const values: { name?: string; status?: 'active' | 'inactive' } = {};
     if (dto.name !== undefined) values.name = dto.name;
     if (dto.status !== undefined) values.status = dto.status;

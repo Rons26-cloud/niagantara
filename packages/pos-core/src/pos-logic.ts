@@ -1,8 +1,67 @@
 export type CartProduct = { id: string; price: number; stock: number };
 export type CartLine = CartProduct & { quantity: number };
-export function addLine(cart: CartLine[], product: CartProduct): CartLine[] { if (product.stock <= 0) return cart; const hit = cart.find((line) => line.id === product.id); if (hit) return cart.map((line) => line.id === product.id ? { ...line, quantity: Math.min(line.quantity + 1, product.stock) } : line); return [...cart, { ...product, quantity: 1 }]; }
-export function setQuantity(cart: CartLine[], id: string, quantity: number): CartLine[] { if (!Number.isFinite(quantity) || quantity <= 0) return cart.filter((line) => line.id !== id); return cart.map((line) => line.id === id ? { ...line, quantity: Math.min(Math.floor(quantity), line.stock) } : line); }
-export function totals(cart: CartLine[], discount = 0, taxRate = 0) { const subtotal = cart.reduce((sum, line) => sum + line.price * line.quantity, 0); const safeDiscount = Math.min(Math.max(0, Number(discount) || 0), subtotal); const taxable = subtotal - safeDiscount; const tax = taxable * Math.min(Math.max(0, Number(taxRate) || 0), 100) / 100; return { subtotal, discount: safeDiscount, tax, total: Math.max(0, taxable + tax) }; }
-export function cashChange(total: number, received: number): number | null { if (!Number.isFinite(total) || !Number.isFinite(received) || received < total) return null; return received - total; }
-export function canUseShortcut(key: string, target: { tagName?: string }): boolean { return !['INPUT', 'TEXTAREA', 'SELECT'].includes(String(target.tagName).toUpperCase()) && ['F2', 'F4', 'F8', 'Escape', 'Enter'].includes(key); }
-export function scanGuard(previous: { code: string; at: number } | null, code: string, now: number): boolean { return code.trim().length > 0 && !(previous?.code === code && now - previous.at < 250); }
+export function addLine(cart: CartLine[], product: CartProduct): CartLine[] {
+  if (product.stock <= 0) return cart;
+  const hit = cart.find((line) => line.id === product.id);
+  if (hit)
+    return cart.map((line) =>
+      line.id === product.id
+        ? { ...line, quantity: Math.min(line.quantity + 1, product.stock) }
+        : line,
+    );
+  return [...cart, { ...product, quantity: 1 }];
+}
+export function setQuantity(
+  cart: CartLine[],
+  id: string,
+  quantity: number,
+): CartLine[] {
+  if (!Number.isFinite(quantity) || quantity <= 0)
+    return cart.filter((line) => line.id !== id);
+  return cart.map((line) =>
+    line.id === id
+      ? { ...line, quantity: Math.min(Math.floor(quantity), line.stock) }
+      : line,
+  );
+}
+export function totals(cart: CartLine[], discount = 0, taxRate = 0) {
+  const subtotal = cart.reduce(
+    (sum, line) => sum + line.price * line.quantity,
+    0,
+  );
+  const safeDiscount = Math.min(Math.max(0, Number(discount) || 0), subtotal);
+  const taxable = subtotal - safeDiscount;
+  const tax =
+    (taxable * Math.min(Math.max(0, Number(taxRate) || 0), 100)) / 100;
+  return {
+    subtotal,
+    discount: safeDiscount,
+    tax,
+    total: Math.max(0, taxable + tax),
+  };
+}
+export function cashChange(total: number, received: number): number | null {
+  if (!Number.isFinite(total) || !Number.isFinite(received) || received < total)
+    return null;
+  return received - total;
+}
+export function canUseShortcut(
+  key: string,
+  target: { tagName?: string },
+): boolean {
+  return (
+    !['INPUT', 'TEXTAREA', 'SELECT'].includes(
+      String(target.tagName).toUpperCase(),
+    ) && ['F2', 'F4', 'F8', 'Escape', 'Enter'].includes(key)
+  );
+}
+export function scanGuard(
+  previous: { code: string; at: number } | null,
+  code: string,
+  now: number,
+): boolean {
+  return (
+    code.trim().length > 0 &&
+    !(previous?.code === code && now - previous.at < 250)
+  );
+}

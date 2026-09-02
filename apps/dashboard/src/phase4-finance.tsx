@@ -59,7 +59,11 @@ export function ExpensesPage({
         setRows(a);
         setCategories(b);
       })
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -84,7 +88,12 @@ export function ExpensesPage({
       });
       setMsg(t('messages.saveSuccess'));
       setShowCreate(false);
-      setForm({ categoryId: '', amount: '0', description: '', paymentMethod: 'CASH' });
+      setForm({
+        categoryId: '',
+        amount: '0',
+        description: '',
+        paymentMethod: 'CASH',
+      });
       load();
     } catch (e) {
       setMsg(
@@ -145,9 +154,7 @@ export function ExpensesPage({
               <div className="tr" key={r.id}>
                 <span>{r.description ?? '—'}</span>
                 <span>{r.category?.name ?? r.categoryId ?? '—'}</span>
-                <span>
-                  Rp {Number(r.amount ?? 0).toLocaleString('id-ID')}
-                </span>
+                <span>Rp {Number(r.amount ?? 0).toLocaleString('id-ID')}</span>
                 <span>{r.paymentMethod ?? '—'}</span>
                 <span>{r.expense_date ?? '—'}</span>
               </div>
@@ -168,7 +175,11 @@ export function ExpensesPage({
           </Button>
         }
       >
-        <form id="expense-create-form" className="inline-form" onSubmit={create}>
+        <form
+          id="expense-create-form"
+          className="inline-form"
+          onSubmit={create}
+        >
           <Field label="Category">
             <Select
               required
@@ -196,13 +207,17 @@ export function ExpensesPage({
             <Input
               required
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </Field>
           <Field label="Payment method">
             <Select
               value={form.paymentMethod}
-              onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, paymentMethod: e.target.value })
+              }
             >
               <option value="CASH">Cash</option>
               <option value="BANK_TRANSFER">Bank Transfer</option>
@@ -241,7 +256,11 @@ export function FinancePage({
     setError(null);
     api(path, token, company)
       .then(setData)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -253,14 +272,19 @@ export function FinancePage({
     const amount = prompt('Payment amount', String(row.remaining_amount));
     if (amount) {
       try {
-        await api('/finance/' + view + '/' + row.id + '/payments', token, company, {
-          method: 'POST',
-          body: JSON.stringify({
-            amount: Number(amount),
-            paymentMethod: 'BANK_TRANSFER',
-            idempotencyKey: crypto.randomUUID(),
-          }),
-        });
+        await api(
+          '/finance/' + view + '/' + row.id + '/payments',
+          token,
+          company,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              amount: Number(amount),
+              paymentMethod: 'BANK_TRANSFER',
+              idempotencyKey: crypto.randomUUID(),
+            }),
+          },
+        );
         setMsg(t('messages.saveSuccess'));
         load();
       } catch {
@@ -313,12 +337,15 @@ export function FinancePage({
   }
 
   const items: any[] = Array.isArray(data) ? data : [];
-  const permission = view === 'payables' ? 'payable.manage' : 'receivable.manage';
+  const permission =
+    view === 'payables' ? 'payable.manage' : 'receivable.manage';
 
   return (
     <>
       <section className="panel">
-        <h2>{view === 'payables' ? t('pages.payables') : t('pages.receivables')}</h2>
+        <h2>
+          {view === 'payables' ? t('pages.payables') : t('pages.receivables')}
+        </h2>
         {items.length === 0 ? (
           <EmptyState title={t('dashboard.noData')} />
         ) : (
@@ -335,14 +362,19 @@ export function FinancePage({
                 className="tr"
                 key={r.id}
                 onClick={() => ctx.permissions.includes(permission) && pay(r)}
-                style={{ cursor: ctx.permissions.includes(permission) ? 'pointer' : 'default' }}
+                style={{
+                  cursor: ctx.permissions.includes(permission)
+                    ? 'pointer'
+                    : 'default',
+                }}
               >
                 <span>
-                  {r.description ?? r.purchase?.purchase_number ?? r.sale?.transaction_number ?? r.id}
+                  {r.description ??
+                    r.purchase?.purchase_number ??
+                    r.sale?.transaction_number ??
+                    r.id}
                 </span>
-                <span>
-                  Rp {Number(r.amount ?? 0).toLocaleString('id-ID')}
-                </span>
+                <span>Rp {Number(r.amount ?? 0).toLocaleString('id-ID')}</span>
                 <span>
                   Rp {Number(r.remaining_amount ?? 0).toLocaleString('id-ID')}
                 </span>
@@ -382,9 +414,7 @@ export function Phase4Summary({
     const active = defs.filter((x) => permissions.includes(x[1]));
     Promise.all(active.map((x) => api<any[]>(x[2], token, company)))
       .then((v) =>
-        setStats(
-          Object.fromEntries(v.map((rows, i) => [active[i][0], rows])),
-        ),
+        setStats(Object.fromEntries(v.map((rows, i) => [active[i][0], rows]))),
       )
       .catch(() => undefined);
   }, [company, token]);

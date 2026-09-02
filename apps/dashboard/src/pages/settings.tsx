@@ -51,13 +51,6 @@ type CompanyProfile = {
   created_at?: string;
 };
 
-type CompanyPlan = {
-  plan: string;
-  plan_limits?: Record<string, any>;
-  status?: string;
-  expires_at?: string;
-};
-
 export function SettingsPage({
   ctx,
   companyName,
@@ -70,9 +63,7 @@ export function SettingsPage({
   const { t, language, setLanguage: setLang } = useTranslation();
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const [company, setCompany] = useState<CompanyProfile | null>(null);
-  const [plan, setPlan] = useState<CompanyPlan | null>(null);
   const [loadingCompany, setLoadingCompany] = useState(true);
-  const [loadingPlan, setLoadingPlan] = useState(true);
   const [editingCompany, setEditingCompany] = useState(false);
   const [companyForm, setCompanyForm] = useState<Partial<CompanyProfile>>({});
   const [companyMsg, setCompanyMsg] = useState('');
@@ -81,15 +72,24 @@ export function SettingsPage({
     let active = true;
     if (!ctx.active_company) return;
     setLoadingCompany(true);
-    api<CompanyProfile>(`/companies/${ctx.active_company}`, token, ctx.active_company)
-      .then((data) => { if (active) { setCompany(data); setCompanyForm(data); } })
+    api<CompanyProfile>(
+      `/companies/${ctx.active_company}`,
+      token,
+      ctx.active_company,
+    )
+      .then((data) => {
+        if (active) {
+          setCompany(data);
+          setCompanyForm(data);
+        }
+      })
       .catch(() => {})
-      .finally(() => { if (active) setLoadingCompany(false); });
-    api<CompanyPlan>(`/companies/${ctx.active_company}/plan`, token, ctx.active_company)
-      .then((data) => { if (active) setPlan(data); })
-      .catch(() => {})
-      .finally(() => { if (active) setLoadingPlan(false); });
-    return () => { active = false; };
+      .finally(() => {
+        if (active) setLoadingCompany(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [ctx.active_company, token]);
 
   async function saveCompany(e: FormEvent) {
@@ -128,26 +128,37 @@ export function SettingsPage({
                   <Input
                     required
                     value={companyForm.name ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({ ...companyForm, name: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Nama Legal / NPWP">
                   <Input
                     value={companyForm.legal_name ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, legal_name: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        legal_name: e.target.value,
+                      })
+                    }
                   />
                 </Field>
                 <Field label="NPWP">
                   <Input
                     value={companyForm.npwp ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, npwp: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({ ...companyForm, npwp: e.target.value })
+                    }
                     placeholder="00.000.000.0-000.000"
                   />
                 </Field>
                 <Field label="Telepon">
                   <Input
                     value={companyForm.phone ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({ ...companyForm, phone: e.target.value })
+                    }
                     placeholder="+62 xxx"
                   />
                 </Field>
@@ -155,27 +166,44 @@ export function SettingsPage({
                   <Input
                     type="email"
                     value={companyForm.email ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({ ...companyForm, email: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Website">
                   <Input
                     value={companyForm.website ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, website: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        website: e.target.value,
+                      })
+                    }
                     placeholder="https://..."
                   />
                 </Field>
                 <Field label="Bidang Usaha">
                   <Input
                     value={companyForm.industry ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        industry: e.target.value,
+                      })
+                    }
                     placeholder="Retail, F&B, dll."
                   />
                 </Field>
                 <Field label="Bentuk Usaha">
                   <Select
                     value={companyForm.business_type ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, business_type: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        business_type: e.target.value,
+                      })
+                    }
                   >
                     <option value="">Pilih</option>
                     <option value="PT">PT (Perseroan Terbatas)</option>
@@ -190,7 +218,12 @@ export function SettingsPage({
                   <Input
                     type="date"
                     value={companyForm.founded_date ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, founded_date: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        founded_date: e.target.value,
+                      })
+                    }
                   />
                 </Field>
               </div>
@@ -198,7 +231,9 @@ export function SettingsPage({
                 <textarea
                   className="settings-textarea"
                   value={companyForm.address ?? ''}
-                  onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                  onChange={(e) =>
+                    setCompanyForm({ ...companyForm, address: e.target.value })
+                  }
                   rows={3}
                 />
               </Field>
@@ -206,25 +241,42 @@ export function SettingsPage({
                 <Field label="Kota">
                   <Input
                     value={companyForm.city ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, city: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({ ...companyForm, city: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Provinsi">
                   <Input
                     value={companyForm.province ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, province: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        province: e.target.value,
+                      })
+                    }
                   />
                 </Field>
                 <Field label="Kode Pos">
                   <Input
                     value={companyForm.postal_code ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, postal_code: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        postal_code: e.target.value,
+                      })
+                    }
                   />
                 </Field>
                 <Field label="Negara">
                   <Input
                     value={companyForm.country ?? 'Indonesia'}
-                    onChange={(e) => setCompanyForm({ ...companyForm, country: e.target.value })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        country: e.target.value,
+                      })
+                    }
                   />
                 </Field>
                 <Field label="Latitude">
@@ -232,7 +284,12 @@ export function SettingsPage({
                     type="number"
                     step="any"
                     value={companyForm.latitude ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, latitude: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        latitude: Number(e.target.value),
+                      })
+                    }
                   />
                 </Field>
                 <Field label="Longitude">
@@ -240,51 +297,89 @@ export function SettingsPage({
                     type="number"
                     step="any"
                     value={companyForm.longitude ?? ''}
-                    onChange={(e) => setCompanyForm({ ...companyForm, longitude: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setCompanyForm({
+                        ...companyForm,
+                        longitude: Number(e.target.value),
+                      })
+                    }
                   />
                 </Field>
               </div>
               <div className="settings-actions">
-                <Button type="submit"><Save size={14} /> Simpan</Button>
-                <Button variant="secondary" type="button" onClick={() => { setEditingCompany(false); setCompanyForm(company); }}>
+                <Button type="submit">
+                  <Save size={14} /> Simpan
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => {
+                    setEditingCompany(false);
+                    setCompanyForm(company);
+                  }}
+                >
                   Batal
                 </Button>
               </div>
-              {companyMsg && <p className="muted" role="status">{companyMsg}</p>}
+              {companyMsg && (
+                <p className="muted" role="status">
+                  {companyMsg}
+                </p>
+              )}
             </form>
           ) : (
             <>
               <dl className="def-grid">
-                <dt><Building2 size={14} /> Nama Perusahaan</dt>
+                <dt>
+                  <Building2 size={14} /> Nama Perusahaan
+                </dt>
                 <dd>{company.name}</dd>
                 {company.legal_name && (
                   <>
-                    <dt><FileText size={14} /> Nama Legal</dt>
+                    <dt>
+                      <FileText size={14} /> Nama Legal
+                    </dt>
                     <dd>{company.legal_name}</dd>
                   </>
                 )}
                 {company.npwp && (
                   <>
-                    <dt><FileText size={14} /> NPWP</dt>
+                    <dt>
+                      <FileText size={14} /> NPWP
+                    </dt>
                     <dd>{company.npwp}</dd>
                   </>
                 )}
                 {company.phone && (
                   <>
-                    <dt><Phone size={14} /> Telepon</dt>
+                    <dt>
+                      <Phone size={14} /> Telepon
+                    </dt>
                     <dd>{company.phone}</dd>
                   </>
                 )}
                 {company.email && (
                   <>
-                    <dt><Mail size={14} /> Email</dt>
+                    <dt>
+                      <Mail size={14} /> Email
+                    </dt>
                     <dd>{company.email}</dd>
                   </>
                 )}
                 {company.website && (
                   <>
-                    <dt><Globe size={14} /> Website</dt>
-                    <dd><a href={company.website} target="_blank" rel="noopener noreferrer">{company.website}</a></dd>
+                    <dt>
+                      <Globe size={14} /> Website
+                    </dt>
+                    <dd>
+                      <a
+                        href={company.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {company.website}
+                      </a>
+                    </dd>
                   </>
                 )}
                 {company.industry && (
@@ -302,25 +397,45 @@ export function SettingsPage({
                 {company.founded_date && (
                   <>
                     <dt>Tanggal Berdiri</dt>
-                    <dd>{new Date(company.founded_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</dd>
+                    <dd>
+                      {new Date(company.founded_date).toLocaleDateString(
+                        'id-ID',
+                        { year: 'numeric', month: 'long', day: 'numeric' },
+                      )}
+                    </dd>
                   </>
                 )}
                 {company.address && (
                   <>
-                    <dt><MapPin size={14} /> Alamat</dt>
-                    <dd>{company.address}{company.city ? `, ${company.city}` : ''}{company.province ? `, ${company.province}` : ''}{company.postal_code ? ` ${company.postal_code}` : ''}{company.country ? `, ${company.country}` : ''}</dd>
+                    <dt>
+                      <MapPin size={14} /> Alamat
+                    </dt>
+                    <dd>
+                      {company.address}
+                      {company.city ? `, ${company.city}` : ''}
+                      {company.province ? `, ${company.province}` : ''}
+                      {company.postal_code ? ` ${company.postal_code}` : ''}
+                      {company.country ? `, ${company.country}` : ''}
+                    </dd>
                   </>
                 )}
                 <dt>Status</dt>
-                <dd><StatusBadge status={company.status ?? 'ACTIVE'} /></dd>
+                <dd>
+                  <StatusBadge status={company.status ?? 'ACTIVE'} />
+                </dd>
                 {company.created_at && (
                   <>
                     <dt>Dibuat</dt>
-                    <dd>{new Date(company.created_at).toLocaleDateString('id-ID')}</dd>
+                    <dd>
+                      {new Date(company.created_at).toLocaleDateString('id-ID')}
+                    </dd>
                   </>
                 )}
               </dl>
-              <Button onClick={() => setEditingCompany(true)} style={{ marginTop: '1rem' }}>
+              <Button
+                onClick={() => setEditingCompany(true)}
+                style={{ marginTop: '1rem' }}
+              >
                 Edit Profil Perusahaan
               </Button>
             </>
@@ -332,11 +447,19 @@ export function SettingsPage({
 
       <Card title="Profil Pengguna">
         <dl className="def-grid">
-          <dt><User size={14} /> User ID</dt>
-          <dd><code>{ctx.user.id}</code></dd>
-          <dt><User size={14} /> Nama Lengkap</dt>
+          <dt>
+            <User size={14} /> User ID
+          </dt>
+          <dd>
+            <code>{ctx.user.id}</code>
+          </dd>
+          <dt>
+            <User size={14} /> Nama Lengkap
+          </dt>
           <dd>{ctx.profile?.full_name ?? '—'}</dd>
-          <dt><Mail size={14} /> Email</dt>
+          <dt>
+            <Mail size={14} /> Email
+          </dt>
           <dd>{ctx.profile?.email ?? '—'}</dd>
         </dl>
       </Card>
@@ -362,7 +485,10 @@ export function SettingsPage({
               role="tab"
               aria-selected={language === 'id'}
               className={language === 'id' ? 'active' : ''}
-              onClick={() => { setLang('id'); setLanguage('id'); }}
+              onClick={() => {
+                setLang('id');
+                setLanguage('id');
+              }}
             >
               Indonesia
             </button>
@@ -370,7 +496,10 @@ export function SettingsPage({
               role="tab"
               aria-selected={language === 'en'}
               className={language === 'en' ? 'active' : ''}
-              onClick={() => { setLang('en'); setLanguage('en'); }}
+              onClick={() => {
+                setLang('en');
+                setLanguage('en');
+              }}
             >
               English
             </button>
@@ -385,7 +514,11 @@ export function SettingsPage({
           <dt>Peran Anda</dt>
           <dd>
             {ctx.roles.map((r) => (
-              <span key={r} className="ng-badge ng-badge--info" style={{ marginRight: 6 }}>
+              <span
+                key={r}
+                className="ng-badge ng-badge--info"
+                style={{ marginRight: 6 }}
+              >
                 {r}
               </span>
             ))}
@@ -399,7 +532,8 @@ export function SettingsPage({
         </dl>
         <details>
           <summary>
-            <ShieldCheck size={14} /> Izin yang Diberikan ({ctx.permissions.length})
+            <ShieldCheck size={14} /> Izin yang Diberikan (
+            {ctx.permissions.length})
           </summary>
           <div className="perm-cloud">
             {ctx.permissions.map((p) => (
@@ -409,44 +543,20 @@ export function SettingsPage({
         </details>
       </Card>
 
-      <Card title="Subscription & Paket">
-        {loadingPlan ? (
-          <p className="muted">Memuat info paket...</p>
-        ) : plan ? (
-          <dl className="def-grid">
-            <dt>Paket Aktif</dt>
-            <dd><StatusBadge status={plan.plan ?? 'FREE'} /></dd>
-            {plan.status && (
-              <>
-                <dt>Status</dt>
-                <dd><StatusBadge status={plan.status} /></dd>
-              </>
-            )}
-            {plan.expires_at && (
-              <>
-                <dt>Berlaku Hingga</dt>
-                <dd>{new Date(plan.expires_at).toLocaleDateString('id-ID')}</dd>
-              </>
-            )}
-            {plan.plan_limits && (
-              <>
-                <dt>Batas Penggunaan</dt>
-                <dd>
-                  <div className="plan-limits">
-                    {Object.entries(plan.plan_limits).map(([key, value]) => (
-                      <div key={key} className="plan-limit-item">
-                        <span className="plan-limit-key">{key.replace(/_/g, ' ')}</span>
-                        <span className="plan-limit-value">{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </dd>
-              </>
-            )}
-          </dl>
-        ) : (
-          <p className="muted">Info paket tidak tersedia.</p>
-        )}
+      <Card title="Akses NIAGANTARA">
+        <dl className="def-grid">
+          <dt>Status Akses</dt>
+          <dd>
+            <StatusBadge status="GRATIS" />
+          </dd>
+          <dt>Cakupan</dt>
+          <dd>Seluruh dashboard sesuai role dan izin pengguna</dd>
+          <dt>Keterangan</dt>
+          <dd>
+            Gratis selama masa peluncuran. Tidak ada pembayaran atau upgrade
+            paket yang diperlukan.
+          </dd>
+        </dl>
       </Card>
 
       <Card title="Keamanan Sesi">

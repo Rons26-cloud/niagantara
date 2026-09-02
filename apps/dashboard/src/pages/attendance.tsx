@@ -41,7 +41,12 @@ type AttendanceRecord = {
   clock_in_at: string | null;
   clock_out_at: string | null;
   status: string;
-  employee?: { id: string; name: string; employee_code?: string; job_title?: string };
+  employee?: {
+    id: string;
+    name: string;
+    employee_code?: string;
+    job_title?: string;
+  };
   branch?: { id: string; name: string; code?: string };
 };
 
@@ -60,7 +65,9 @@ export function AttendancePage({
   const [error, setError] = useState<string | null>(null);
   const [employee, setEmployee] = useState('');
   const [msg, setMsg] = useState('');
-  const [filterDate, setFilterDate] = useState(new Date().toISOString().slice(0, 10));
+  const [filterDate, setFilterDate] = useState(
+    new Date().toISOString().slice(0, 10),
+  );
   const [showKiosk, setShowKiosk] = useState(false);
 
   const load = () => {
@@ -68,7 +75,11 @@ export function AttendancePage({
     setError(null);
     api<AttendanceRecord[]>('/attendance', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -78,7 +89,9 @@ export function AttendancePage({
 
   useEffect(() => {
     const onRealtime = (event: Event) => {
-      const resources = (event as CustomEvent<{ resources?: string[] }>).detail?.resources ?? [];
+      const resources =
+        (event as CustomEvent<{ resources?: string[] }>).detail?.resources ??
+        [];
       if (resources.includes('attendance')) load();
     };
     window.addEventListener('niagantara:realtime', onRealtime);
@@ -96,7 +109,9 @@ export function AttendancePage({
           action,
         }),
       });
-      setMsg(action === 'CLOCK_IN' ? 'Clock in berhasil.' : 'Clock out berhasil.');
+      setMsg(
+        action === 'CLOCK_IN' ? 'Clock in berhasil.' : 'Clock out berhasil.',
+      );
       setEmployee('');
       load();
     } catch {
@@ -135,9 +150,21 @@ export function AttendancePage({
   return (
     <>
       <div className="metrics">
-        <StatCard label="Hadir Hari Ini" value={String(present)} tone="success" />
-        <StatCard label="Terlambat" value={String(late)} tone={late > 0 ? 'warning' : 'default'} />
-        <StatCard label="Sedang Bekerja" value={String(stillIn)} tone={stillIn > 0 ? 'success' : 'default'} />
+        <StatCard
+          label="Hadir Hari Ini"
+          value={String(present)}
+          tone="success"
+        />
+        <StatCard
+          label="Terlambat"
+          value={String(late)}
+          tone={late > 0 ? 'warning' : 'default'}
+        />
+        <StatCard
+          label="Sedang Bekerja"
+          value={String(stillIn)}
+          tone={stillIn > 0 ? 'success' : 'default'}
+        />
         <StatCard label="Sudah Pulang" value={String(clockedOut)} />
       </div>
 
@@ -170,7 +197,11 @@ export function AttendancePage({
               <LogOut size={14} /> Clock Out
             </Button>
           </div>
-          {msg && <p className="muted" role="status">{msg}</p>}
+          {msg && (
+            <p className="muted" role="status">
+              {msg}
+            </p>
+          )}
         </section>
       )}
 
@@ -195,11 +226,18 @@ export function AttendancePage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Karyawan', 'Kode', 'Cabang', 'Tanggal', 'Clock In', 'Clock Out', 'Durasi', 'Status'].map(
-                (k) => (
-                  <span key={k}>{k}</span>
-                ),
-              )}
+              {[
+                'Karyawan',
+                'Kode',
+                'Cabang',
+                'Tanggal',
+                'Clock In',
+                'Clock Out',
+                'Durasi',
+                'Status',
+              ].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
             </div>
             {slice.map((r: any) => {
               const clockIn = r.clock_in_at ? new Date(r.clock_in_at) : null;
@@ -232,15 +270,23 @@ export function AttendancePage({
                   </span>
                   <span>
                     {clockIn
-                      ? clockIn.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                      ? clockIn.toLocaleTimeString('id-ID', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
                       : '—'}
                   </span>
                   <span>
-                    {clockOut
-                      ? clockOut.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-                      : r.clock_in_at
-                        ? <span className="att-still-in">● Masuk</span>
-                        : '—'}
+                    {clockOut ? (
+                      clockOut.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    ) : r.clock_in_at ? (
+                      <span className="att-still-in">● Masuk</span>
+                    ) : (
+                      '—'
+                    )}
                   </span>
                   <span>{duration}</span>
                   <span>
@@ -272,7 +318,9 @@ function KioskMode({
   onClocked: () => void;
 }) {
   const [employeeId, setEmployeeId] = useState('');
-  const [status, setStatus] = useState<'idle' | 'scanning' | 'confirming' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<
+    'idle' | 'scanning' | 'confirming' | 'success' | 'error'
+  >('idle');
   const [employeeName, setEmployeeName] = useState('');
   const [action, setAction] = useState<'CLOCK_IN' | 'CLOCK_OUT'>('CLOCK_IN');
   const [msg, setMsg] = useState('');
@@ -329,8 +377,16 @@ function KioskMode({
     setStatus('confirming');
     setEmployeeId(id.trim());
     try {
-      const result = await api<any>(`/employees?search=${encodeURIComponent(id.trim())}`, token, company);
-      const emp = Array.isArray(result) ? result.find((e: any) => e.employee_code === id.trim() || e.id === id.trim()) : null;
+      const result = await api<any>(
+        `/employees?search=${encodeURIComponent(id.trim())}`,
+        token,
+        company,
+      );
+      const emp = Array.isArray(result)
+        ? result.find(
+            (e: any) => e.employee_code === id.trim() || e.id === id.trim(),
+          )
+        : null;
       if (emp) {
         setEmployeeName(emp.name);
       } else {
@@ -353,7 +409,11 @@ function KioskMode({
           action,
         }),
       });
-      setMsg(action === 'CLOCK_IN' ? '✓ Clock in berhasil!' : '✓ Clock out berhasil!');
+      setMsg(
+        action === 'CLOCK_IN'
+          ? '✓ Clock in berhasil!'
+          : '✓ Clock out berhasil!',
+      );
       onClocked();
     } catch {
       setMsg('Gagal melakukan clock. Silakan coba lagi.');
@@ -395,7 +455,13 @@ function KioskMode({
           <Monitor size={20} />
           <span>{branch?.name ?? 'Cabang'}</span>
         </div>
-        <button className="kiosk-exit" onClick={() => { stopCamera(); onExit(); }}>
+        <button
+          className="kiosk-exit"
+          onClick={() => {
+            stopCamera();
+            onExit();
+          }}
+        >
           ✕ Keluar Mode Layar
         </button>
       </div>
@@ -426,7 +492,10 @@ function KioskMode({
             <Button onClick={() => startCamera()}>
               <Video size={16} /> Aktifkan Kamera
             </Button>
-            <Button onClick={() => lookupEmployee(employeeId)} disabled={!employeeId.trim()}>
+            <Button
+              onClick={() => lookupEmployee(employeeId)}
+              disabled={!employeeId.trim()}
+            >
               Cari Karyawan
             </Button>
           </div>
@@ -447,7 +516,13 @@ function KioskMode({
             <video ref={videoRef} autoPlay playsInline muted />
             <p>Posisikan barcode di depan kamera</p>
           </div>
-          <Button variant="secondary" onClick={() => { stopCamera(); setStatus('idle'); }}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              stopCamera();
+              setStatus('idle');
+            }}
+          >
             Batal
           </Button>
         </div>
@@ -478,11 +553,19 @@ function KioskMode({
               </button>
             </div>
             <div className="kiosk-confirm-actions">
-              <Button variant="secondary" onClick={() => { setStatus('idle'); setEmployeeId(''); setEmployeeName(''); }}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setStatus('idle');
+                  setEmployeeId('');
+                  setEmployeeName('');
+                }}
+              >
                 Batal
               </Button>
               <Button onClick={confirmClock}>
-                <Fingerprint size={16} /> Konfirmasi {action === 'CLOCK_IN' ? 'Clock In' : 'Clock Out'}
+                <Fingerprint size={16} /> Konfirmasi{' '}
+                {action === 'CLOCK_IN' ? 'Clock In' : 'Clock Out'}
               </Button>
             </div>
           </div>
@@ -500,7 +583,12 @@ function KioskMode({
         <div className="kiosk-error">
           <div className="kiosk-error-icon">✕</div>
           <h2>{msg}</h2>
-          <Button onClick={() => { setStatus('idle'); setMsg(''); }}>
+          <Button
+            onClick={() => {
+              setStatus('idle');
+              setMsg('');
+            }}
+          >
             Coba Lagi
           </Button>
         </div>

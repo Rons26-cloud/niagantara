@@ -13,13 +13,21 @@ const registration = {
 test('register forwards company/profile input to atomic database provisioning', async () => {
   let rpcArguments: any;
   const client = {
-    auth: { signUp: async () => ({ data: { user: { id: 'user-a' }, session: null }, error: null }) },
+    auth: {
+      signUp: async () => ({
+        data: { user: { id: 'user-a' }, session: null },
+        error: null,
+      }),
+    },
     rpc: async (_name: string, args: unknown) => {
       rpcArguments = args;
       return { data: { company: { id: 'company-a' } }, error: null };
     },
   };
-  const result = await new AuthService({ client, authClient: client } as any).register(registration);
+  const result = await new AuthService({
+    client,
+    authClient: client,
+  } as any).register(registration);
   assert.equal(rpcArguments.p_company_name, 'Company A');
   assert.equal(rpcArguments.p_full_name, 'Owner A');
   assert.equal(result.provisioningStatus, 'completed');
@@ -30,11 +38,25 @@ test('register compensates by deleting Auth user when database provisioning fail
   let deletedUserId: string | undefined;
   const client = {
     auth: {
-      signUp: async () => ({ data: { user: { id: 'user-a' }, session: null }, error: null }),
-      admin: { deleteUser: async (id: string) => { deletedUserId = id; return { error: null }; } },
+      signUp: async () => ({
+        data: { user: { id: 'user-a' }, session: null },
+        error: null,
+      }),
+      admin: {
+        deleteUser: async (id: string) => {
+          deletedUserId = id;
+          return { error: null };
+        },
+      },
     },
     rpc: async () => ({ data: null, error: new Error('database unavailable') }),
   };
-  await assert.rejects(() => new AuthService({ client, authClient: client } as any).register(registration), ServiceUnavailableException);
+  await assert.rejects(
+    () =>
+      new AuthService({ client, authClient: client } as any).register(
+        registration,
+      ),
+    ServiceUnavailableException,
+  );
   assert.equal(deletedUserId, 'user-a');
 });

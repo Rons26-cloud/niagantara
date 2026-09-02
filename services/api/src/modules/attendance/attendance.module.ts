@@ -1,1 +1,18 @@
-import{Module}from'@nestjs/common';import{AuthGuard}from'../../common/guards/auth.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{AttendanceController}from'./attendance.controller.js';import{AttendanceService}from'./attendance.service.js';import{AttendanceRepository}from'./attendance.repository.js';@Module({controllers:[AttendanceController],providers:[AttendanceService,AttendanceRepository,AuthGuard,TenantGuard,PermissionGuard]})export class AttendanceModule{}
+import { Module } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { AttendanceController } from './attendance.controller.js';
+import { AttendanceService } from './attendance.service.js';
+import { AttendanceRepository } from './attendance.repository.js';
+@Module({
+  controllers: [AttendanceController],
+  providers: [
+    AttendanceService,
+    AttendanceRepository,
+    AuthGuard,
+    TenantGuard,
+    PermissionGuard,
+  ],
+})
+export class AttendanceModule {}

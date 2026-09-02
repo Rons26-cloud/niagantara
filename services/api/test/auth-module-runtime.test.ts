@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
+import {
+  FastifyAdapter,
+  type NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { AppModule } from '../src/app.module.js';
 import { ApiExceptionFilter } from '../src/common/filters/api-exception.filter.js';
 import { SupabaseModule } from '../src/integrations/supabase/supabase.module.js';
@@ -35,14 +38,23 @@ function installTestEnvironment() {
 
 function mockRecoveryBoundary(service: AuthService) {
   const internal = service as unknown as {
-    supabase: { authClient: { auth: { resetPasswordForEmail: (email: string) => Promise<unknown> } } };
+    supabase: {
+      authClient: {
+        auth: { resetPasswordForEmail: (email: string) => Promise<unknown> };
+      };
+    };
   };
-  internal.supabase.authClient.auth.resetPasswordForEmail = async () => ({ data: {}, error: null });
+  internal.supabase.authClient.auth.resetPasswordForEmail = async () => ({
+    data: {},
+    error: null,
+  });
 }
 
 test('AuthModule DI resolves controller and service and reaches forgot-password service', async () => {
   const restore = installTestEnvironment();
-  const context = await NestFactory.createApplicationContext(AuthDiTestModule, { logger: false });
+  const context = await NestFactory.createApplicationContext(AuthDiTestModule, {
+    logger: false,
+  });
   try {
     const controller = context.get(AuthController);
     const service = context.get(AuthService);
@@ -57,7 +69,10 @@ test('AuthModule DI resolves controller and service and reaches forgot-password 
       return original(...args);
     };
 
-    const result = await controller.forgot({ email: 'owner@example.com' }, 'di-controller-test');
+    const result = await controller.forgot(
+      { email: 'owner@example.com' },
+      'di-controller-test',
+    );
     assert.equal(result.accepted, true);
     assert.equal(reached, true);
   } finally {
@@ -75,7 +90,13 @@ test('real AppModule bootstrap registers health and forgot-password routes witho
   );
   try {
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     app.useGlobalFilters(new ApiExceptionFilter());
     await app.init();
     mockRecoveryBoundary(app.get(AuthService));

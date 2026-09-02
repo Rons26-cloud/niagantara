@@ -55,7 +55,11 @@ export function StoresPage({
     setError(null);
     api<Store[]>('/stores', token, company)
       .then(setRows)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -119,9 +123,7 @@ export function StoresPage({
   if (loading) return <LoadingState label={t('common.loading')} />;
   if (error) return <ErrorState message={error} onRetry={load} />;
 
-  const planLimit = ctx.stores[0]?.planLimit;
-  const canCreate = ctx.permissions.includes('store.manage') && 
-    (!planLimit || ctx.stores.length < planLimit.maxStores);
+  const canCreate = ctx.permissions.includes('store.manage');
 
   return (
     <>
@@ -139,26 +141,6 @@ export function StoresPage({
           </Button>
         )}
       </div>
-
-      {planLimit && (
-        <Card title="Plan Limits">
-          <div className="metrics">
-            <div>
-              <span>Toko</span>
-              <strong>{ctx.stores.length} / {planLimit.maxStores}</strong>
-            </div>
-            <div>
-              <span>Cabang per Toko</span>
-              <strong>{planLimit.maxBranches}</strong>
-            </div>
-          </div>
-          {ctx.stores.length >= planLimit.maxStores && (
-            <div className="ng-alert ng-alert--warning" style={{ marginTop: 12 }}>
-              Limit toko telah tercapai. Upgrade plan untuk menambah toko baru.
-            </div>
-          )}
-        </Card>
-      )}
 
       <section className="panel">
         <div className="panel-head">
@@ -187,9 +169,11 @@ export function StoresPage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Nama', 'Status', 'Jumlah Cabang', 'Dibuat', 'Aksi'].map((k) => (
-                <span key={k}>{k}</span>
-              ))}
+              {['Nama', 'Status', 'Jumlah Cabang', 'Dibuat', 'Aksi'].map(
+                (k) => (
+                  <span key={k}>{k}</span>
+                ),
+              )}
             </div>
             {slice.map((r) => (
               <div className="tr" key={r.id}>
@@ -199,8 +183,10 @@ export function StoresPage({
                 </span>
                 <span>{r.branchCount ?? 0}</span>
                 <span>
-                  {r.createdAt ?? r.created_at
-                    ? new Date((r.createdAt ?? r.created_at)!).toLocaleDateString('id-ID')
+                  {(r.createdAt ?? r.created_at)
+                    ? new Date(
+                        (r.createdAt ?? r.created_at)!,
+                      ).toLocaleDateString('id-ID')
                     : '—'}
                 </span>
                 <span>

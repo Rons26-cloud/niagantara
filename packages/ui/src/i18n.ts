@@ -19,11 +19,15 @@ const loadedLocales: LocaleStore = {
 };
 
 export function getDefaultLanguage(): Language {
-  const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(STORAGE_KEY) as Language | null;
+  const stored =
+    typeof localStorage === 'undefined'
+      ? null
+      : (localStorage.getItem(STORAGE_KEY) as Language | null);
   if (stored && (stored === 'id' || stored === 'en')) {
     return stored;
   }
-  const browserLang = typeof navigator === 'undefined' ? '' : navigator.language.toLowerCase();
+  const browserLang =
+    typeof navigator === 'undefined' ? '' : navigator.language.toLowerCase();
   if (browserLang.startsWith('en')) {
     return 'en';
   }
@@ -31,15 +35,21 @@ export function getDefaultLanguage(): Language {
 }
 
 export function setLanguage(lang: Language): void {
-  if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY, lang);
+  if (typeof localStorage !== 'undefined')
+    localStorage.setItem(STORAGE_KEY, lang);
   if (typeof document !== 'undefined') document.documentElement.lang = lang;
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('language-change', { detail: { language: lang } }));
+    window.dispatchEvent(
+      new CustomEvent('language-change', { detail: { language: lang } }),
+    );
   }
 }
 
 export function getLanguage(): Language {
-  const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(STORAGE_KEY);
+  const stored =
+    typeof localStorage === 'undefined'
+      ? null
+      : localStorage.getItem(STORAGE_KEY);
   return stored === 'en' || stored === 'id' ? stored : getDefaultLanguage();
 }
 
@@ -60,7 +70,9 @@ export function t(key: string, lang: Language = getLanguage()): string {
 import { useState, useEffect, useCallback } from 'react';
 
 export function useTranslation(lang?: Language) {
-  const [language, setLanguageState] = useState<Language>(lang ?? getLanguage());
+  const [language, setLanguageState] = useState<Language>(
+    lang ?? getLanguage(),
+  );
 
   useEffect(() => {
     if (lang) setLanguageState(lang);
@@ -70,9 +82,15 @@ export function useTranslation(lang?: Language) {
       if (newLang === 'id' || newLang === 'en') setLanguageState(newLang);
     };
 
-    window.addEventListener('language-change', handleLanguageChange as EventListener);
+    window.addEventListener(
+      'language-change',
+      handleLanguageChange as EventListener,
+    );
     return () => {
-      window.removeEventListener('language-change', handleLanguageChange as EventListener);
+      window.removeEventListener(
+        'language-change',
+        handleLanguageChange as EventListener,
+      );
     };
   }, [lang]);
 

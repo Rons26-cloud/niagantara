@@ -1,1 +1,42 @@
-import{Body,Controller,Get,Headers,Post,Query,Req,UseGuards}from'@nestjs/common';import{RequirePermission}from'../../common/decorators/permission.decorator.js';import{AuthGuard}from'../../common/guards/auth.guard.js';import{TenantGuard}from'../../common/guards/tenant.guard.js';import{PermissionGuard}from'../../common/guards/permission.guard.js';import{AttendanceService}from'./attendance.service.js';import type{ClockInput}from'./dto/attendance.dto.js';@Controller('attendance')@UseGuards(AuthGuard,TenantGuard,PermissionGuard)export class AttendanceController{constructor(private readonly s:AttendanceService){}private scope(r:any,permission:string){return r.authz.companyPermissions.includes(permission)?undefined:r.headers['x-branch-id']?[r.headers['x-branch-id']]:[]}@Get()@RequirePermission('attendance.read')list(@Req()r:any,@Headers('x-company-id')c:string,@Query('branchId')b?:string){return this.s.list(c,b,this.scope(r,'attendance.read'))}@Post('clock')@RequirePermission('attendance.clock')clock(@Req()r:any,@Headers('x-company-id')c:string,@Body()d:ClockInput){return this.s.clock(c,r.user.id,d,this.scope(r,'attendance.clock'))}}
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { RequirePermission } from '../../common/decorators/permission.decorator.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { PermissionGuard } from '../../common/guards/permission.guard.js';
+import { AttendanceService } from './attendance.service.js';
+import type { ClockInput } from './dto/attendance.dto.js';
+@Controller('attendance')
+@UseGuards(AuthGuard, TenantGuard, PermissionGuard)
+export class AttendanceController {
+  constructor(private readonly s: AttendanceService) {}
+  private scope(r: any, permission: string) {
+    return r.authz.companyPermissions.includes(permission)
+      ? undefined
+      : r.headers['x-branch-id']
+        ? [r.headers['x-branch-id']]
+        : [];
+  }
+  @Get() @RequirePermission('attendance.read') list(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Query('branchId') b?: string,
+  ) {
+    return this.s.list(c, b, this.scope(r, 'attendance.read'));
+  }
+  @Post('clock') @RequirePermission('attendance.clock') clock(
+    @Req() r: any,
+    @Headers('x-company-id') c: string,
+    @Body() d: ClockInput,
+  ) {
+    return this.s.clock(c, r.user.id, d, this.scope(r, 'attendance.clock'));
+  }
+}

@@ -7,7 +7,6 @@ NIAGANTARA is a Nusantara business dashboard platform for businesses across Indo
 - [Home](https://niagantara-web.pages.dev/)
 - [Features](https://niagantara-web.pages.dev/fitur)
 - [Solutions](https://niagantara-web.pages.dev/solusi)
-- [Pricing](https://niagantara-web.pages.dev/harga)
 - [About](https://niagantara-web.pages.dev/tentang)
 - [FAQ](https://niagantara-web.pages.dev/faq)
 - [Contact](https://niagantara-web.pages.dev/kontak)

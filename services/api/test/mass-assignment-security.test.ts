@@ -15,10 +15,13 @@ const pipe = new ValidationPipe({
 
 function rejectsWithValidationMessage(expected: RegExp) {
   return (error: unknown) => {
-    const response = (error as { getResponse?: () => unknown }).getResponse?.() as
-      | { message?: string[] }
-      | undefined;
-    return Array.isArray(response?.message) && response.message.some((message) => expected.test(message));
+    const response = (
+      error as { getResponse?: () => unknown }
+    ).getResponse?.() as { message?: string[] } | undefined;
+    return (
+      Array.isArray(response?.message) &&
+      response.message.some((message) => expected.test(message))
+    );
   };
 }
 
@@ -57,13 +60,22 @@ test('purchase mutation cannot use one branch permission against another branch 
   let mutated = false;
   const service = new PurchasesService({
     get: async () => ({ data: null, error: null }),
-    receive: async () => { mutated = true; return { data: 'receipt', error: null }; },
+    receive: async () => {
+      mutated = true;
+      return { data: 'receipt', error: null };
+    },
   } as never);
   await assert.rejects(
-    service.receive('user', 'company', 'authorized-branch', 'foreign-purchase', {
-      idempotencyKey: 'safe-key',
-      items: [{ purchaseItemId: 'item', quantity: 1 }],
-    }),
+    service.receive(
+      'user',
+      'company',
+      'authorized-branch',
+      'foreign-purchase',
+      {
+        idempotencyKey: 'safe-key',
+        items: [{ purchaseItemId: 'item', quantity: 1 }],
+      },
+    ),
     /Purchase not found/,
   );
   assert.equal(mutated, false);
@@ -73,7 +85,10 @@ test('shift close checks the authorized branch before calling its privileged RPC
   let mutated = false;
   const service = new ShiftsService({
     get: async () => ({ data: null, error: null }),
-    close: async () => { mutated = true; return { data: {}, error: null }; },
+    close: async () => {
+      mutated = true;
+      return { data: {}, error: null };
+    },
   } as never);
   await assert.rejects(
     service.close('company', 'user', 'authorized-branch', 'foreign-shift', 100),
@@ -84,12 +99,23 @@ test('shift close checks the authorized branch before calling its privileged RPC
 
 test('warehouse update cannot target a warehouse outside the authorized branch', async () => {
   let mutated = false;
-  const service = new WarehousesService({
-    get: async () => ({ data: { id: 'warehouse', branch_id: 'branch-b' }, error: null }),
-    update: async () => { mutated = true; return { data: {}, error: null }; },
-  } as never, {} as never);
+  const service = new WarehousesService(
+    {
+      get: async () => ({
+        data: { id: 'warehouse', branch_id: 'branch-b' },
+        error: null,
+      }),
+      update: async () => {
+        mutated = true;
+        return { data: {}, error: null };
+      },
+    } as never,
+    {} as never,
+  );
   await assert.rejects(
-    service.update('user', 'company', 'warehouse', { name: 'tampered' }, ['branch-a']),
+    service.update('user', 'company', 'warehouse', { name: 'tampered' }, [
+      'branch-a',
+    ]),
     /outside your scope/,
   );
   assert.equal(mutated, false);

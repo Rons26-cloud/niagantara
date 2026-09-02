@@ -7,21 +7,72 @@ export interface SeoMeta {
   ogTitle: string;
   ogDescription: string;
   robots: string;
+  keywords?: string;
   schema?: object[];
 }
 
 const home: SeoMeta = {
-  title: 'NIAGANTARA — Platform Dashboard Bisnis Nusantara',
+  title: 'Dashboard Bisnis Gratis untuk UMKM | NIAGANTARA',
   description:
     'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan, mengelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan dalam satu sistem terintegrasi.',
-  ogTitle: 'NIAGANTARA — Platform Dashboard Bisnis Nusantara',
+  ogTitle: 'Dashboard Bisnis Gratis untuk UMKM | NIAGANTARA',
   ogDescription:
     'Kelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan bisnis dari satu dashboard terintegrasi.',
   robots: 'index, follow',
+  keywords:
+    'dashboard bisnis gratis, aplikasi kasir gratis, POS Indonesia, software stok barang, aplikasi UMKM, laporan penjualan, manajemen toko, dashboard keuangan bisnis, aplikasi multi cabang',
   schema: [
-    { '@context': 'https://schema.org', '@type': 'Organization', name: 'NIAGANTARA', alternateName: 'Platform Dashboard Bisnis Nusantara', url: SITE_URL, logo: `${SITE_URL}/logo.png`, description: 'Platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan di Indonesia.', email: 'hello@niagantara.com', contactPoint: { '@type': 'ContactPoint', email: 'support@niagantara.com', contactType: 'customer support', availableLanguage: ['id', 'en'] } },
-    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'NIAGANTARA', alternateName: 'Platform Dashboard Bisnis Nusantara', url: SITE_URL, inLanguage: 'id-ID', description: 'Platform dashboard bisnis Nusantara untuk membantu UMKM hingga perusahaan mengelola operasional di Indonesia.' },
-    { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'NIAGANTARA', applicationCategory: 'BusinessApplication', operatingSystem: 'Web', url: `${SITE_URL}/demo`, description: 'Dashboard bisnis untuk POS, stok, penjualan, keuangan, laporan, dan manajemen cabang.', featureList: ['POS dan kasir', 'Manajemen stok', 'Laporan keuangan', 'Manajemen multi-cabang', 'Integrasi Google Sheets'] },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'NIAGANTARA',
+      alternateName: 'Platform Dashboard Bisnis Nusantara',
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      description:
+        'Platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan di Indonesia.',
+      email: 'hello@niagantara.com',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        email: 'support@niagantara.com',
+        contactType: 'customer support',
+        availableLanguage: ['id', 'en'],
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'NIAGANTARA',
+      alternateName: 'Platform Dashboard Bisnis Nusantara',
+      url: SITE_URL,
+      inLanguage: 'id-ID',
+      description:
+        'Platform dashboard bisnis Nusantara untuk membantu UMKM hingga perusahaan mengelola operasional di Indonesia.',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'NIAGANTARA',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: `${SITE_URL}/demo`,
+      description:
+        'Dashboard bisnis untuk POS, stok, penjualan, keuangan, laporan, dan manajemen cabang.',
+      featureList: [
+        'POS dan kasir',
+        'Manajemen stok',
+        'Laporan keuangan',
+        'Manajemen multi-cabang',
+        'Integrasi Google Sheets',
+      ],
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'IDR',
+        availability: 'https://schema.org/InStock',
+        description: 'Akses gratis selama masa peluncuran NIAGANTARA.',
+      },
+    },
   ],
 };
 
@@ -87,39 +138,6 @@ const solutions: SeoMeta = {
           position: 2,
           name: 'Solusi',
           item: `${SITE_URL}/solusi`,
-        },
-      ],
-    },
-  ],
-};
-
-const pricing: SeoMeta = {
-  title: 'Harga NIAGANTARA — Paket Bisnis untuk UMKM',
-  description:
-    'Pelajari paket NIAGANTARA untuk kebutuhan bisnis Anda. Tersedia paket Free, Business, dan Enterprise dengan fitur yang dapat disesuaikan.',
-  ogTitle: 'Harga NIAGANTARA — Paket Bisnis untuk UMKM',
-  ogDescription:
-    'Paket harga NIAGANTARA: Free, Business, dan Enterprise untuk kebutuhan bisnis UMKM dan multi-cabang.',
-  robots: 'index, follow',
-  schema: [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'Harga NIAGANTARA',
-      description: 'Paket harga NIAGANTARA: Free, Business, dan Enterprise.',
-      url: `${SITE_URL}/harga`,
-      isPartOf: { '@type': 'WebSite', name: 'NIAGANTARA', url: SITE_URL },
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Beranda', item: SITE_URL },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Harga',
-          item: `${SITE_URL}/harga`,
         },
       ],
     },
@@ -312,7 +330,6 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/': home,
   '/fitur': features,
   '/solusi': solutions,
-  '/harga': pricing,
   '/tentang': about,
   '/faq': faq,
   '/kontak': contact,
@@ -348,6 +365,65 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/demo/help': demoPage,
 };
 
-export function getSeo(path: string): SeoMeta {
-  return SEO_DATA[path] ?? notFound;
+const ENGLISH_SEO: Record<string, Pick<SeoMeta, 'title' | 'description' | 'ogTitle' | 'ogDescription'>> = {
+  '/': {
+    title: 'Free Business Dashboard for SMEs | NIAGANTARA',
+    description: 'Manage POS, sales, inventory, finance, branches, customers, and reports with NIAGANTARA’s integrated business dashboard.',
+    ogTitle: 'Free Business Dashboard for SMEs | NIAGANTARA',
+    ogDescription: 'Connect POS, inventory, finance, branches, and reporting in one business platform.',
+  },
+  '/fitur': {
+    title: 'NIAGANTARA Features — POS, Inventory, Finance & Reports',
+    description: 'Explore NIAGANTARA features for POS, inventory, finance, sales reporting, Google Sheets, and multi-branch management.',
+    ogTitle: 'NIAGANTARA Business Platform Features',
+    ogDescription: 'Connected tools for POS, inventory, finance, reports, and business operations.',
+  },
+  '/solusi': {
+    title: 'NIAGANTARA Solutions for SMEs & Multi-branch Businesses',
+    description: 'Business management solutions for stores, inventory across branches, Google Sheets, and real-time sales monitoring.',
+    ogTitle: 'Business Solutions for SMEs & Multiple Branches',
+    ogDescription: 'Manage stores, stock, reporting, and integrations from one platform.',
+  },
+  '/tentang': {
+    title: 'About NIAGANTARA — Indonesian Business Management Platform',
+    description: 'Learn about NIAGANTARA, a business management platform for Indonesian SMEs, stores, branches, and finance.',
+    ogTitle: 'About NIAGANTARA',
+    ogDescription: 'A connected business management platform built for Indonesian SMEs.',
+  },
+  '/faq': {
+    title: 'Frequently Asked Questions | NIAGANTARA',
+    description: 'Answers about NIAGANTARA features, Google Sheets integration, data security, POS, and business support.',
+    ogTitle: 'NIAGANTARA Frequently Asked Questions',
+    ogDescription: 'Find answers about features, integrations, security, and support.',
+  },
+  '/kontak': {
+    title: 'Contact NIAGANTARA — Information & Support',
+    description: 'Contact NIAGANTARA for product information, technical support, or business partnerships.',
+    ogTitle: 'Contact NIAGANTARA',
+    ogDescription: 'Get product information and business support from NIAGANTARA.',
+  },
+  '/privacy': {
+    title: 'Privacy Policy | NIAGANTARA',
+    description: 'How NIAGANTARA collects, uses, stores, and protects personal data.',
+    ogTitle: 'NIAGANTARA Privacy Policy',
+    ogDescription: 'Learn how NIAGANTARA protects personal data.',
+  },
+  '/terms': {
+    title: 'Terms & Conditions | NIAGANTARA',
+    description: 'Terms and conditions for using the NIAGANTARA platform.',
+    ogTitle: 'NIAGANTARA Terms & Conditions',
+    ogDescription: 'Terms for using NIAGANTARA services.',
+  },
+  '/security': {
+    title: 'Security Reporting | NIAGANTARA',
+    description: 'Report security vulnerabilities responsibly and learn about NIAGANTARA’s security process.',
+    ogTitle: 'NIAGANTARA Security Reporting',
+    ogDescription: 'Responsible disclosure and security reporting for NIAGANTARA.',
+  },
+};
+
+export function getSeo(path: string, language: 'id' | 'en' = 'id'): SeoMeta {
+  const base = SEO_DATA[path] ?? notFound;
+  const english = language === 'en' ? ENGLISH_SEO[path] : undefined;
+  return english ? { ...base, ...english } : base;
 }

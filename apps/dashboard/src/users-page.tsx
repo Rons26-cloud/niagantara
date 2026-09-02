@@ -60,7 +60,11 @@ export function UsersPage({
     setError(null);
     api<User[]>('/users', token, company)
       .then(setUsers)
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -108,8 +112,7 @@ export function UsersPage({
   }
 
   if (loading) return <LoadingState label={t('common.loading')} />;
-  if (error)
-    return <ErrorState message={error} onRetry={load} />;
+  if (error) return <ErrorState message={error} onRetry={load} />;
 
   return (
     <>
@@ -144,9 +147,11 @@ export function UsersPage({
         <section className="panel">
           <div className="table">
             <div className="tr head">
-              {['Nama', 'Email', 'Role', 'Status', 'Terakhir aktif'].map((k) => (
-                <span key={k}>{k}</span>
-              ))}
+              {['Nama', 'Email', 'Role', 'Status', 'Terakhir aktif'].map(
+                (k) => (
+                  <span key={k}>{k}</span>
+                ),
+              )}
             </div>
             {slice.map((u) => (
               <button
@@ -184,7 +189,10 @@ export function UsersPage({
         }
       >
         <form id="create-user-form" className="inline-form" onSubmit={create}>
-          <Field label="Email" error={status.includes('save') ? status : undefined}>
+          <Field
+            label="Email"
+            error={status.includes('save') ? status : undefined}
+          >
             <Input
               required
               type="email"

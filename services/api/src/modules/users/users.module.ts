@@ -10,6 +10,12 @@ import { UsersService } from './users.service.js';
 @Module({
   imports: [AuditModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, AuthGuard, TenantGuard, PermissionGuard],
+  providers: [
+    UsersService,
+    UsersRepository,
+    AuthGuard,
+    TenantGuard,
+    PermissionGuard,
+  ],
 })
 export class UsersModule {}

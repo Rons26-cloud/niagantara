@@ -10,6 +10,12 @@ import { BranchesService } from './branches.service.js';
 @Module({
   imports: [AuditModule],
   controllers: [BranchesController],
-  providers: [BranchesService, AuthGuard, TenantGuard, BranchGuard, PermissionGuard],
+  providers: [
+    BranchesService,
+    AuthGuard,
+    TenantGuard,
+    BranchGuard,
+    PermissionGuard,
+  ],
 })
 export class BranchesModule {}

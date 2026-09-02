@@ -37,9 +37,9 @@ export function PosApp() {
   const { user, accessToken, setSession, clearSession } = useAuth();
   const { t } = useTranslation();
   const [ctx, setCtx] = useState<any>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'denied' | 'expired' | 'error' | 'noctx'>(
-    'loading',
-  );
+  const [status, setStatus] = useState<
+    'loading' | 'ready' | 'denied' | 'expired' | 'error' | 'noctx'
+  >('loading');
   const [branchId, setBranchId] = useState(
     () => sessionStorage.getItem(BRANCH_KEY) ?? '',
   );
@@ -55,7 +55,9 @@ export function PosApp() {
       .then((me) => {
         if (!alive) return;
         if (!me.active_company || !me.accessible_branches?.length) {
-          setStatus(me.permissions?.includes('pos.access') ? 'noctx' : 'denied');
+          setStatus(
+            me.permissions?.includes('pos.access') ? 'noctx' : 'denied',
+          );
           return;
         }
         setCtx(me);
@@ -63,7 +65,13 @@ export function PosApp() {
       })
       .catch((e) => {
         if (!alive) return;
-        setStatus(e instanceof ApiError && e.status === 403 ? 'denied' : e instanceof ApiError && e.status === 401 ? 'expired' : 'error');
+        setStatus(
+          e instanceof ApiError && e.status === 403
+            ? 'denied'
+            : e instanceof ApiError && e.status === 401
+              ? 'expired'
+              : 'error',
+        );
       });
     return () => {
       alive = false;
@@ -76,7 +84,8 @@ export function PosApp() {
     ctx?.accessible_branches?.find((b: any) => b.id === branchId) ??
     ctx?.accessible_branches?.[0];
   const store =
-    ctx?.stores?.find((s: any) => s.id === branch?.store_id) ?? ctx?.stores?.[0];
+    ctx?.stores?.find((s: any) => s.id === branch?.store_id) ??
+    ctx?.stores?.[0];
 
   const userInitials = String(user?.email ?? 'P')
     .split('@')[0]
@@ -95,7 +104,9 @@ export function PosApp() {
   };
 
   return (
-    <div className={`pos-shell${sidebarCollapsed ? ' pos-sidebar-collapsed' : ''}`}>
+    <div
+      className={`pos-shell${sidebarCollapsed ? ' pos-sidebar-collapsed' : ''}`}
+    >
       <aside className="pos-sidebar">
         <div className="pos-sidebar-brand">
           <BrandLogo compact href="#" className="pos-sidebar-full" />
@@ -112,7 +123,19 @@ export function PosApp() {
 
         {status === 'ready' && ctx && (
           <div className="pos-sidebar-branch">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <select
               value={branch?.id ?? ''}
               onChange={(e) => {
@@ -164,16 +187,41 @@ export function PosApp() {
               location.reload();
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" x2="9" y1="12" y2="12" />
+            </svg>
             <span>{t('auth.logout')}</span>
           </button>
         </div>
       </aside>
 
       <main className="pos-main">
-        {status === 'loading' && <LoadingState label={t('dashboard.loadingContext')} />}
-        {status === 'denied' && <ErrorState message={t('dashboard.permissionDenied')} />}
-        {status === 'expired' && <ErrorState message="Sesi POS berakhir. Silakan masuk kembali." onRetry={() => { clearSession(); location.reload(); }} />}
+        {status === 'loading' && (
+          <LoadingState label={t('dashboard.loadingContext')} />
+        )}
+        {status === 'denied' && (
+          <ErrorState message={t('dashboard.permissionDenied')} />
+        )}
+        {status === 'expired' && (
+          <ErrorState
+            message="Sesi POS berakhir. Silakan masuk kembali."
+            onRetry={() => {
+              clearSession();
+              location.reload();
+            }}
+          />
+        )}
         {status === 'noctx' && (
           <ErrorState
             message={
@@ -182,9 +230,15 @@ export function PosApp() {
           />
         )}
         {status === 'error' && (
-          <ErrorState message={t('dashboard.loadError')} onRetry={() => location.reload()} />
+          <ErrorState
+            message={t('dashboard.loadError')}
+            onRetry={() => location.reload()}
+          />
         )}
-        {status === 'ready' && ctx && branch && activePage === 'pos' &&
+        {status === 'ready' &&
+          ctx &&
+          branch &&
+          activePage === 'pos' &&
           (ctx.permissions.includes('pos.access') ? (
             <PosPage
               company={ctx.active_company}
@@ -200,7 +254,11 @@ export function PosApp() {
             <ErrorState message={t('dashboard.permissionDenied')} />
           ))}
         {status === 'ready' && activePage === 'history' && (
-          <PosHistory company={ctx.active_company} token={accessToken!} branchId={branch.id} />
+          <PosHistory
+            company={ctx.active_company}
+            token={accessToken!}
+            branchId={branch.id}
+          />
         )}
         {status === 'ready' && activePage === 'settings' && (
           <div className="pos-gap-page">
@@ -214,7 +272,11 @@ export function PosApp() {
 }
 
 async function api2<T>(path: string, token: string): Promise<T> {
-  const base = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://niagantara-production.up.railway.app/api/v1' : '/api/v1');
+  const base =
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD
+      ? 'https://niagantara-production.up.railway.app/api/v1'
+      : '/api/v1');
   const res = await fetch(`${base}${path}`, {
     headers: { authorization: `Bearer ${token}` },
   });

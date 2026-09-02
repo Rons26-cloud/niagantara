@@ -37,14 +37,29 @@ export async function verifyRecovery(email: string, otp: string) {
   return request('verify-recovery', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email: email.trim().toLowerCase(), otp: otp.trim() }),
-  }) as Promise<{ recoverySession: true; accessToken: string; refreshToken: string }>;
+    body: JSON.stringify({
+      email: email.trim().toLowerCase(),
+      otp: otp.trim(),
+    }),
+  }) as Promise<{
+    recoverySession: true;
+    accessToken: string;
+    refreshToken: string;
+  }>;
 }
 
-export async function saveNewPassword(accessToken: string, refreshToken: string, password: string, confirmPassword: string) {
+export async function saveNewPassword(
+  accessToken: string,
+  refreshToken: string,
+  password: string,
+  confirmPassword: string,
+) {
   return request('reset-password', {
     method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${accessToken}` },
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({ password, confirmPassword, refreshToken }),
   });
 }

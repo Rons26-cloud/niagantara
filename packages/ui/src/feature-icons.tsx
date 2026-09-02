@@ -12,9 +12,11 @@ import {
   Table2,
 } from 'lucide-react';
 
-export type NavIcon = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
-
-/* ─── Website Feature Icons (homepage only) ─── */
+export type NavIcon = ComponentType<{
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+}>;
 
 export const FEATURE_ICONS: NavIcon[] = [
   MonitorSmartphone,
@@ -28,8 +30,6 @@ export const FEATURE_ICONS: NavIcon[] = [
   BarChart3,
   Table2,
 ];
-
-/* ─── Sidebar Item ─── */
 
 export function SidebarIcon({
   icon: Icon,

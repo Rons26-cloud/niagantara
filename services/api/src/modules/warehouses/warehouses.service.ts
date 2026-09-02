@@ -15,7 +15,10 @@ export class WarehousesService {
   ) {}
   async list(c: string, b?: string, allowedBranches?: string[]) {
     if (b && allowedBranches && !allowedBranches.includes(b))
-      throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'Warehouse branch is outside your scope.' });
+      throw new ForbiddenException({
+        code: 'BRANCH_ACCESS_DENIED',
+        message: 'Warehouse branch is outside your scope.',
+      });
     if (allowedBranches?.length === 0) return [];
     const { data, error } = await this.repo.list(c, b, allowedBranches);
     if (error) throw error;
@@ -50,12 +53,25 @@ export class WarehousesService {
     });
     return data;
   }
-  async update(u: string, c: string, id: string, d: Partial<WarehouseInput>, allowedBranches?: string[]) {
+  async update(
+    u: string,
+    c: string,
+    id: string,
+    d: Partial<WarehouseInput>,
+    allowedBranches?: string[],
+  ) {
     const { data: existing, error: existingError } = await this.repo.get(c, id);
     if (existingError) throw existingError;
-    if (!existing) throw new NotFoundException({ code: 'RESOURCE_NOT_FOUND', message: 'Warehouse not found.' });
+    if (!existing)
+      throw new NotFoundException({
+        code: 'RESOURCE_NOT_FOUND',
+        message: 'Warehouse not found.',
+      });
     if (allowedBranches && !allowedBranches.includes(existing.branch_id))
-      throw new ForbiddenException({ code: 'BRANCH_ACCESS_DENIED', message: 'Warehouse branch is outside your scope.' });
+      throw new ForbiddenException({
+        code: 'BRANCH_ACCESS_DENIED',
+        message: 'Warehouse branch is outside your scope.',
+      });
     const { data, error } = await this.repo.update(c, id, d);
     if (error) throw error;
     if (!data)

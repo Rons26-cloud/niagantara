@@ -15,7 +15,12 @@ export class WarehousesRepository {
     return q;
   }
   get(c: string, id: string) {
-    return this.db.client.from('warehouses').select('id,branch_id').eq('company_id', c).eq('id', id).maybeSingle();
+    return this.db.client
+      .from('warehouses')
+      .select('id,branch_id')
+      .eq('company_id', c)
+      .eq('id', id)
+      .maybeSingle();
   }
   relations(c: string, d: WarehouseInput) {
     return Promise.all([

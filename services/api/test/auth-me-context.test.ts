@@ -16,7 +16,10 @@ function queryResult(data: unknown) {
     },
     maybeSingle: async () => ({ data: rows[0] ?? null, error: null }),
     then: (resolve: (value: unknown) => void) =>
-      resolve({ data: Array.isArray(data) ? rows : rows[0] ?? null, error: null }),
+      resolve({
+        data: Array.isArray(data) ? rows : (rows[0] ?? null),
+        error: null,
+      }),
   };
   return query;
 }
@@ -24,7 +27,9 @@ function queryResult(data: unknown) {
 test('auth/me returns owner permissions and accessible active branches', async () => {
   const tables: Record<string, unknown> = {
     profiles: { id: 'u1', status: 'active' },
-    company_members: [{ company_id: 'c1', user_id: 'u1', role_key: 'owner', status: 'active' }],
+    company_members: [
+      { company_id: 'c1', user_id: 'u1', role_key: 'owner', status: 'active' },
+    ],
     branch_members: [],
     roles: [{ id: 'r1', scope: 'company', role_key: 'owner' }],
     role_permissions: [
@@ -36,9 +41,30 @@ test('auth/me returns owner permissions and accessible active branches', async (
       { id: 's2', company_id: 'c2', name: 'Foreign' },
     ],
     branches: [
-      { id: 'b1', company_id: 'c1', store_id: 's1', name: 'Main', code: 'MAIN', status: 'active' },
-      { id: 'b2', company_id: 'c2', store_id: 's2', name: 'Foreign', code: 'FOREIGN', status: 'active' },
-      { id: 'b3', company_id: 'c1', store_id: 's1', name: 'Inactive', code: 'INACTIVE', status: 'inactive' },
+      {
+        id: 'b1',
+        company_id: 'c1',
+        store_id: 's1',
+        name: 'Main',
+        code: 'MAIN',
+        status: 'active',
+      },
+      {
+        id: 'b2',
+        company_id: 'c2',
+        store_id: 's2',
+        name: 'Foreign',
+        code: 'FOREIGN',
+        status: 'active',
+      },
+      {
+        id: 'b3',
+        company_id: 'c1',
+        store_id: 's1',
+        name: 'Inactive',
+        code: 'INACTIVE',
+        status: 'inactive',
+      },
     ],
   };
   const client = { from: (table: string) => queryResult(tables[table]) };
@@ -47,19 +73,38 @@ test('auth/me returns owner permissions and accessible active branches', async (
   assert.deepEqual(result.permissions, ['branch.manage', 'company.read']);
   assert.equal(result.accessible_branches.length, 1);
   assert.equal(result.stores.length, 1);
-  assert.equal((result.accessible_branches[0] as { company_id: string }).company_id, 'c1');
+  assert.equal(
+    (result.accessible_branches[0] as { company_id: string }).company_id,
+    'c1',
+  );
   assert.equal(result.active_company, 'c1');
 });
 
 test('branch-scoped employee receives no company-wide branches without an explicit assignment', async () => {
   const tables: Record<string, unknown> = {
     profiles: { id: 'u2', status: 'active' },
-    company_members: [{ company_id: 'c1', user_id: 'u2', role_key: 'employee', status: 'active' }],
+    company_members: [
+      {
+        company_id: 'c1',
+        user_id: 'u2',
+        role_key: 'employee',
+        status: 'active',
+      },
+    ],
     branch_members: [],
     roles: [{ id: 'r2', scope: 'company', role_key: 'employee' }],
     role_permissions: [],
     stores: [{ id: 's1', company_id: 'c1', name: 'Main' }],
-    branches: [{ id: 'b1', company_id: 'c1', store_id: 's1', name: 'Main', code: 'MAIN', status: 'active' }],
+    branches: [
+      {
+        id: 'b1',
+        company_id: 'c1',
+        store_id: 's1',
+        name: 'Main',
+        code: 'MAIN',
+        status: 'active',
+      },
+    ],
   };
   const client = { from: (table: string) => queryResult(tables[table]) };
   const result = await new AuthService({ client } as any).me('u2');

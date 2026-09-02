@@ -23,20 +23,59 @@ type Ctx = {
   accessible_branches: any[];
 };
 
-function StockLevelBar({ quantity, minimum }: { quantity: number; minimum: number }) {
+function StockLevelBar({
+  quantity,
+  minimum,
+}: {
+  quantity: number;
+  minimum: number;
+}) {
   const max = Math.max(quantity, minimum * 3, 10);
   const pct = Math.min((quantity / max) * 100, 100);
-  const color = quantity <= 0
-    ? 'var(--color-danger, #ef4444)'
-    : quantity <= minimum
-      ? 'var(--color-warning, #f59e0b)'
-      : 'var(--color-success, #22c55e)';
+  const color =
+    quantity <= 0
+      ? 'var(--color-danger, #ef4444)'
+      : quantity <= minimum
+        ? 'var(--color-warning, #f59e0b)'
+        : 'var(--color-success, #22c55e)';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 120 }}>
-      <div style={{ flex: 1, height: 8, borderRadius: 4, background: 'var(--bg-secondary, #f3f4f6)', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 0.3s ease' }} />
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        minWidth: 120,
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          height: 8,
+          borderRadius: 4,
+          background: 'var(--bg-secondary, #f3f4f6)',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            background: color,
+            borderRadius: 4,
+            transition: 'width 0.3s ease',
+          }}
+        />
       </div>
-      <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', minWidth: 24, textAlign: 'right' }}>{quantity}</span>
+      <span
+        style={{
+          color: 'var(--text-secondary)',
+          fontSize: '0.8rem',
+          minWidth: 24,
+          textAlign: 'right',
+        }}
+      >
+        {quantity}
+      </span>
     </div>
   );
 }
@@ -81,11 +120,21 @@ export function InventoryPage({
     setLoading(true);
     setError(null);
     Promise.all([
-      api<any[]>(`/inventory?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}${categoryFilter ? `&categoryId=${encodeURIComponent(categoryFilter)}` : ''}${statusFilter !== 'ALL' ? `&status=${statusFilter}` : ''}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ''}`, token, company),
-      api<any[]>(`/inventory/movements?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}`, token, company),
+      api<any[]>(
+        `/inventory?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}${categoryFilter ? `&categoryId=${encodeURIComponent(categoryFilter)}` : ''}${statusFilter !== 'ALL' ? `&status=${statusFilter}` : ''}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ''}`,
+        token,
+        company,
+      ),
+      api<any[]>(
+        `/inventory/movements?limit=100${branchFilter ? `&branchId=${encodeURIComponent(branchFilter)}` : ''}`,
+        token,
+        company,
+      ),
       api<any[]>('/warehouses', token, company).catch(() => []),
       api<any[]>('/categories?limit=100', token, company).catch(() => []),
-      api<any[]>('/products?status=active&limit=100', token, company).catch(() => []),
+      api<any[]>('/products?status=active&limit=100', token, company).catch(
+        () => [],
+      ),
     ])
       .then(([a, b, w, c, p]) => {
         setRows(a);
@@ -94,7 +143,11 @@ export function InventoryPage({
         setCategories(c);
         setProducts(p);
       })
-      .catch((e) => setError(e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error'))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? `${e.status} · ${e.code}` : 'network error',
+        ),
+      )
       .finally(() => setLoading(false));
   };
 
@@ -125,15 +178,31 @@ export function InventoryPage({
   }
 
   const totalSKU = rows.length;
-  const totalStock = rows.reduce((n: number, r: any) => n + Number(r.quantity ?? 0), 0);
-  const lowStock = rows.filter((r: any) => Number(r.quantity) > 0 && Number(r.quantity) <= Number(r.minimum_stock)).length;
+  const totalStock = rows.reduce(
+    (n: number, r: any) => n + Number(r.quantity ?? 0),
+    0,
+  );
+  const lowStock = rows.filter(
+    (r: any) =>
+      Number(r.quantity) > 0 && Number(r.quantity) <= Number(r.minimum_stock),
+  ).length;
   const outOfStock = rows.filter((r: any) => Number(r.quantity) <= 0).length;
 
   const filteredMoves = useMemo(() => {
     return moves.filter((m: any) => {
       if (moveFilterType && m.movement_type !== moveFilterType) return false;
-      if (moveFilterFrom && m.created_at && new Date(m.created_at) < new Date(moveFilterFrom)) return false;
-      if (moveFilterTo && m.created_at && new Date(m.created_at) > new Date(moveFilterTo + 'T23:59:59')) return false;
+      if (
+        moveFilterFrom &&
+        m.created_at &&
+        new Date(m.created_at) < new Date(moveFilterFrom)
+      )
+        return false;
+      if (
+        moveFilterTo &&
+        m.created_at &&
+        new Date(m.created_at) > new Date(moveFilterTo + 'T23:59:59')
+      )
+        return false;
       return true;
     });
   }, [moves, moveFilterType, moveFilterFrom, moveFilterTo]);
@@ -148,7 +217,9 @@ export function InventoryPage({
       quantity: r.quantity,
       minimum_stock: r.minimum_stock,
     }));
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -165,33 +236,60 @@ export function InventoryPage({
       <div className="metrics">
         <StatCard label="Total SKU" value={String(totalSKU)} />
         <StatCard label="Total Stok" value={String(totalStock)} />
-        <StatCard label="Stok Rendah" value={String(lowStock)} tone={lowStock > 0 ? 'warning' : 'default'} />
-        <StatCard label="Stok Habis" value={String(outOfStock)} tone={outOfStock > 0 ? 'danger' : 'default'} />
+        <StatCard
+          label="Stok Rendah"
+          value={String(lowStock)}
+          tone={lowStock > 0 ? 'warning' : 'default'}
+        />
+        <StatCard
+          label="Stok Habis"
+          value={String(outOfStock)}
+          tone={outOfStock > 0 ? 'danger' : 'default'}
+        />
       </div>
 
       <div className="ng-filterbar">
         <Field label={t('common.search')}>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nama produk atau SKU" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Nama produk atau SKU"
+          />
         </Field>
-        <Button variant="ghost" onClick={load}><Search size={14} /> Cari</Button>
+        <Button variant="ghost" onClick={load}>
+          <Search size={14} /> Cari
+        </Button>
         <Field label="Cabang">
-          <Select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
+          <Select
+            value={branchFilter}
+            onChange={(e) => setBranchFilter(e.target.value)}
+          >
             <option value="">Semua cabang berizin</option>
             {ctx.accessible_branches.map((b: any) => (
-              <option key={b.id} value={b.id}>{b.name}</option>
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
             ))}
           </Select>
         </Field>
         <Field label="Kategori">
-          <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+          <Select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
             <option value="">Semua kategori</option>
             {categories.map((category: any) => (
-              <option key={category.id} value={category.id}>{category.name}</option>
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
             ))}
           </Select>
         </Field>
         <Field label="Status">
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <Select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
             <option value="ALL">Semua</option>
             <option value="IN_STOCK">Aman</option>
             <option value="LOW_STOCK">Stok rendah</option>
@@ -226,39 +324,72 @@ export function InventoryPage({
         ) : (
           <div className="table">
             <div className="tr head">
-              {['Produk', 'SKU', 'Lokasi', 'Tersedia', 'Level', 'Minimum', 'Status', 'Gerakan Terakhir'].map(
-                (k) => (
-                  <span key={k}>{k}</span>
-                ),
-              )}
+              {[
+                'Produk',
+                'SKU',
+                'Lokasi',
+                'Tersedia',
+                'Level',
+                'Minimum',
+                'Status',
+                'Gerakan Terakhir',
+              ].map((k) => (
+                <span key={k}>{k}</span>
+              ))}
             </div>
             {slice.map((r: any, i: number) => {
               const qty = Number(r.quantity);
               const min = Number(r.minimum_stock);
               return (
                 <div className="tr" key={r.id ?? i}>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{r.product?.name ?? r.product_id ?? '—'}</span>
-                  <span><code>{r.product?.sku ?? '—'}</code></span>
-                  <span style={{ color: 'var(--text-secondary)' }}>{r.warehouse?.name ?? r.branch?.name ?? '—'}</span>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{qty}</span>
+                  <span
+                    style={{ color: 'var(--text-primary)', fontWeight: 500 }}
+                  >
+                    {r.product?.name ?? r.product_id ?? '—'}
+                  </span>
+                  <span>
+                    <code>{r.product?.sku ?? '—'}</code>
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    {r.warehouse?.name ?? r.branch?.name ?? '—'}
+                  </span>
+                  <span
+                    style={{ color: 'var(--text-primary)', fontWeight: 600 }}
+                  >
+                    {qty}
+                  </span>
                   <span>
                     <StockLevelBar quantity={qty} minimum={min} />
                   </span>
                   <span style={{ color: 'var(--text-muted)' }}>{min}</span>
                   <span>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      background: qty <= 0 ? 'rgba(239,68,68,0.1)' : qty <= min ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)',
-                      color: qty <= 0 ? 'var(--color-danger, #ef4444)' : qty <= min ? 'var(--color-warning, #f59e0b)' : 'var(--color-success, #22c55e)',
-                    }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '2px 8px',
+                        borderRadius: 4,
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        background:
+                          qty <= 0
+                            ? 'rgba(239,68,68,0.1)'
+                            : qty <= min
+                              ? 'rgba(245,158,11,0.1)'
+                              : 'rgba(34,197,94,0.1)',
+                        color:
+                          qty <= 0
+                            ? 'var(--color-danger, #ef4444)'
+                            : qty <= min
+                              ? 'var(--color-warning, #f59e0b)'
+                              : 'var(--color-success, #22c55e)',
+                      }}
+                    >
                       {qty <= 0 ? 'HABIS' : qty <= min ? 'RENDAH' : 'AMAN'}
                     </span>
                   </span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  <span
+                    style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}
+                  >
                     {r.last_movement_at
                       ? new Date(r.last_movement_at).toLocaleDateString('id-ID')
                       : '—'}
@@ -271,20 +402,24 @@ export function InventoryPage({
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
 
-      {ctx.permissions.includes('inventory.transfer') && warehouses.length > 1 && (
-        <TransferForm
-          company={company}
-          token={token}
-          warehouses={warehouses}
-          onDone={load}
-        />
-      )}
+      {ctx.permissions.includes('inventory.transfer') &&
+        warehouses.length > 1 && (
+          <TransferForm
+            company={company}
+            token={token}
+            warehouses={warehouses}
+            onDone={load}
+          />
+        )}
 
       <section className="panel">
         <div className="panel-head">
           <h2>{t('inventory.movementHistory')}</h2>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <Select value={moveFilterType} onChange={(e) => setMoveFilterType(e.target.value)}>
+            <Select
+              value={moveFilterType}
+              onChange={(e) => setMoveFilterType(e.target.value)}
+            >
               <option value="">Semua Tipe</option>
               <option value="ADJUSTMENT">Adjustment</option>
               <option value="TRANSFER">Transfer</option>
@@ -310,32 +445,65 @@ export function InventoryPage({
         {filteredMoves.length ? (
           <div className="table">
             <div className="tr head">
-              {['Tipe', 'Produk', 'Jumlah', 'Alasan', 'Aktor', 'Cabang', 'Referensi', 'Tanggal'].map((k) => (
+              {[
+                'Tipe',
+                'Produk',
+                'Jumlah',
+                'Alasan',
+                'Aktor',
+                'Cabang',
+                'Referensi',
+                'Tanggal',
+              ].map((k) => (
                 <span key={k}>{k}</span>
               ))}
             </div>
             {filteredMoves.slice(0, 50).map((m: any, i: number) => (
               <div className="tr" key={m.id ?? i}>
                 <span>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    background: m.movement_type === 'SALE' ? 'rgba(239,68,68,0.1)' : m.movement_type === 'PURCHASE' ? 'rgba(34,197,94,0.1)' : 'rgba(59,130,246,0.1)',
-                    color: m.movement_type === 'SALE' ? 'var(--color-danger, #ef4444)' : m.movement_type === 'PURCHASE' ? 'var(--color-success, #22c55e)' : 'var(--color-primary, #3b82f6)',
-                  }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      background:
+                        m.movement_type === 'SALE'
+                          ? 'rgba(239,68,68,0.1)'
+                          : m.movement_type === 'PURCHASE'
+                            ? 'rgba(34,197,94,0.1)'
+                            : 'rgba(59,130,246,0.1)',
+                      color:
+                        m.movement_type === 'SALE'
+                          ? 'var(--color-danger, #ef4444)'
+                          : m.movement_type === 'PURCHASE'
+                            ? 'var(--color-success, #22c55e)'
+                            : 'var(--color-primary, #3b82f6)',
+                    }}
+                  >
                     {m.movement_type ?? m.type ?? '—'}
                   </span>
                 </span>
                 <span>{m.product?.name ?? '—'}</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{m.quantity}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{m.notes ?? '—'}</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                  {m.quantity}
+                </span>
+                <span
+                  style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}
+                >
+                  {m.notes ?? '—'}
+                </span>
                 <span>{m.actor?.full_name ?? m.actor_user_id ?? '—'}</span>
                 <span>{m.branch?.name ?? '—'}</span>
-                <span>{m.reference_type ? `${m.reference_type} · ${m.reference_id ?? '—'}` : '—'}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                <span>
+                  {m.reference_type
+                    ? `${m.reference_type} · ${m.reference_id ?? '—'}`
+                    : '—'}
+                </span>
+                <span
+                  style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}
+                >
                   {m.created_at
                     ? new Date(m.created_at).toLocaleString('id-ID')
                     : '—'}
@@ -366,19 +534,27 @@ export function InventoryPage({
               onChange={(e) => setForm({ ...form, branchId: e.target.value })}
             >
               {ctx.accessible_branches.map((b: any) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
               ))}
             </Select>
           </Field>
           <Field label="Warehouse">
             <Select
               value={form.warehouseId}
-              onChange={(e) => setForm({ ...form, warehouseId: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, warehouseId: e.target.value })
+              }
             >
               <option value="">—</option>
-              {warehouses.filter((w: any) => w.branch_id === form.branchId).map((w: any) => (
-                <option key={w.id} value={w.id}>{w.name}</option>
-              ))}
+              {warehouses
+                .filter((w: any) => w.branch_id === form.branchId)
+                .map((w: any) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
             </Select>
           </Field>
           <Field label="Produk">
@@ -389,7 +565,9 @@ export function InventoryPage({
             >
               <option value="">Pilih produk</option>
               {products.map((product: any) => (
-                <option key={product.id} value={product.id}>{product.name} · {product.sku}</option>
+                <option key={product.id} value={product.id}>
+                  {product.name} · {product.sku}
+                </option>
               ))}
             </Select>
           </Field>
@@ -398,14 +576,18 @@ export function InventoryPage({
               type="number"
               required
               value={form.quantityDelta}
-              onChange={(e) => setForm({ ...form, quantityDelta: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, quantityDelta: e.target.value })
+              }
             />
           </Field>
           <Field label={t('inventory.minimumStock')}>
             <Input
               type="number"
               value={form.minimumStock}
-              onChange={(e) => setForm({ ...form, minimumStock: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, minimumStock: e.target.value })
+              }
             />
           </Field>
           <Field label="Alasan">
@@ -422,12 +604,14 @@ export function InventoryPage({
             </Select>
           </Field>
           <Field label="Catatan">
-            <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+            <Input
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
           </Field>
           {msg && <p style={{ color: 'var(--text-muted)' }}>{msg}</p>}
         </form>
       </Modal>
-
     </>
   );
 }

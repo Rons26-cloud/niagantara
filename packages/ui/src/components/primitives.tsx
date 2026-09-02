@@ -57,9 +57,7 @@ export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input className="ng-input" {...props} />;
 }
 
-export function Textarea(
-  props: TextareaHTMLAttributes<HTMLTextAreaElement>,
-) {
+export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <textarea className="ng-input" rows={3} {...props} />;
 }
 
@@ -120,8 +118,20 @@ export function SearchInput({
       }}
     >
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <circle
+          cx="11"
+          cy="11"
+          r="7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <path
+          d="m20 20-3.5-3.5"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </svg>
       <input
         type="search"
@@ -218,7 +228,9 @@ export function StatCard({
   onRetry?: () => void;
 }) {
   return (
-    <article className={`ng-stat${tone && tone !== 'default' ? ` ng-stat--${tone}` : ''}`}>
+    <article
+      className={`ng-stat${tone && tone !== 'default' ? ` ng-stat--${tone}` : ''}`}
+    >
       <span className="ng-stat__label">{label}</span>
       {loading ? (
         <Skeleton height={28} />
@@ -249,7 +261,10 @@ export function Badge({
   return <span className={`ng-badge ng-badge--${tone}`}>{children}</span>;
 }
 
-const STATUS_TONES: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
+const STATUS_TONES: Record<
+  string,
+  'success' | 'warning' | 'danger' | 'info' | 'neutral'
+> = {
   PAID: 'success',
   OPEN: 'success',
   ACTIVE: 'success',
@@ -288,7 +303,13 @@ export function Alert({
   );
 }
 
-export function Skeleton({ height = 16, width }: { height?: number; width?: number | string }) {
+export function Skeleton({
+  height = 16,
+  width,
+}: {
+  height?: number;
+  width?: number | string;
+}) {
   return (
     <span
       className="ng-skeleton"
@@ -341,7 +362,9 @@ export function EmptyState({
 }) {
   return (
     <div className="ng-empty">
-      <span className="ng-empty__icon" aria-hidden="true">{icon ?? <Circle size={28} />}</span>
+      <span className="ng-empty__icon" aria-hidden="true">
+        {icon ?? <Circle size={28} />}
+      </span>
       <h3>{title}</h3>
       {description && <p>{description}</p>}
       {action}
@@ -525,17 +548,27 @@ export function usePaged<T>(rows: T[], pageSize = 25) {
 let toastId = 0;
 const TOAST_EVENT = 'ng-toast';
 
-export function toast(message: string, tone: 'info' | 'success' | 'danger' = 'info') {
-  window.dispatchEvent(new CustomEvent(TOAST_EVENT, { detail: { id: ++toastId, message, tone } }));
+export function toast(
+  message: string,
+  tone: 'info' | 'success' | 'danger' = 'info',
+) {
+  window.dispatchEvent(
+    new CustomEvent(TOAST_EVENT, { detail: { id: ++toastId, message, tone } }),
+  );
 }
 
 export function ToastViewport() {
-  const [toasts, setToasts] = useState<{ id: number; message: string; tone: string }[]>([]);
+  const [toasts, setToasts] = useState<
+    { id: number; message: string; tone: string }[]
+  >([]);
   useEffect(() => {
     const onToast = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       setToasts((prev) => [...prev.slice(-3), detail]);
-      setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== detail.id)), 4000);
+      setTimeout(
+        () => setToasts((prev) => prev.filter((x) => x.id !== detail.id)),
+        4000,
+      );
     };
     window.addEventListener(TOAST_EVENT, onToast);
     return () => window.removeEventListener(TOAST_EVENT, onToast);
