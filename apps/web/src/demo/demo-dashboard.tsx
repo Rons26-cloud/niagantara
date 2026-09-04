@@ -27,6 +27,7 @@ export function DemoDashboard() {
   const today = new Date().toISOString().slice(0, 10);
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(today);
+  const [activeChartIndex, setActiveChartIndex] = useState<number | null>(null);
   const {
     dashboardMetrics,
     products,
@@ -63,6 +64,29 @@ export function DemoDashboard() {
     value: Math.round(baseWeek[i] * factor.sales),
   }));
   const maxSales = Math.max(...salesChartData.map((d) => d.value));
+  const chartWidth = 720;
+  const chartHeight = 248;
+  const chartPadding = { top: 18, right: 18, bottom: 34, left: 58 };
+  const chartPlotWidth = chartWidth - chartPadding.left - chartPadding.right;
+  const chartPlotHeight = chartHeight - chartPadding.top - chartPadding.bottom;
+  const chartPoints = salesChartData.map((item, index) => ({
+    ...item,
+    x: chartPadding.left + (index / (salesChartData.length - 1)) * chartPlotWidth,
+    y: chartPadding.top + chartPlotHeight - (item.value / maxSales) * chartPlotHeight,
+  }));
+  const chartLinePath = chartPoints.reduce((path, point, index) => {
+    if (index === 0) return `M ${point.x} ${point.y}`;
+    const previous = chartPoints[index - 1];
+    const controlOffset = (point.x - previous.x) / 3;
+    return `${path} C ${previous.x + controlOffset} ${previous.y}, ${point.x - controlOffset} ${point.y}, ${point.x} ${point.y}`;
+  }, '');
+  const chartAreaPath = `${chartLinePath} L ${chartPadding.left + chartPlotWidth} ${chartPadding.top + chartPlotHeight} L ${chartPadding.left} ${chartPadding.top + chartPlotHeight} Z`;
+  const compactCurrency = (value: number) => {
+    if (value >= 1_000_000) return `Rp${(value / 1_000_000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+    return `Rp${Math.round(value / 1_000).toLocaleString('id-ID')} rb`;
+  };
+  const fullCurrency = (value: number) => `Rp ${Math.round(value).toLocaleString('id-ID')}`;
+  const activeChartPoint = activeChartIndex == null ? null : chartPoints[activeChartIndex];
 
   const categoryDistribution = [
     { category: language === 'en' ? 'Groceries' : 'Sembako', value: 45 },
@@ -190,7 +214,7 @@ export function DemoDashboard() {
 
       <div className="demo-metrics-grid demo-finance-metrics">
         <StatCard
-          label={t('website.finance.revenue')}
+          label={language === 'en' ? 'Revenue' : 'Pendapatan'}
           value={formatCurrency(dashboardMetrics.todaySales * factor.sales)}
         />
         <StatCard
@@ -203,8 +227,8 @@ export function DemoDashboard() {
           note="period purchases"
         />
         <StatCard
-          label={t('dashboard.todayProfit')}
-          value={formatCurrency(dashboardMetrics.todayProfit * factor.profit)}
+          label={language === 'en' ? 'Operating cash result' : 'Hasil kas operasional'}
+          value={formatCurrency((dashboardMetrics.todaySales - 1825000) * factor.sales)}
           tone="success"
         />
       </div>
@@ -212,21 +236,25 @@ export function DemoDashboard() {
       <div className="demo-charts-grid">
         <Card title={t('demo.salesChart')}>
           <div className="demo-chart-container">
-            <div
-              className="demo-bar-chart"
-              role="img"
-              aria-label={t('demo.salesChart')}
-            >
-              {salesChartData.map((item) => (
-                <div key={item.day} className="demo-bar-group">
-                  <div
-                    className="demo-bar"
-                    style={{ height: `${(item.value / maxSales) * 100}%` }}
-                    title={formatCurrency(item.value)}
-                  />
-                  <span className="demo-bar-label">{item.day}</span>
-                </div>
-              ))}
+            <div className="demo-line-chart-wrap">
+              <svg className="demo-line-chart" viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none" role="img" aria-label={t('demo.salesChart')}>
+                <defs>
+                  <linearGradient id="demo-revenue-area-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--accent-primary, #2563eb)" stopOpacity="0.16" />
+                    <stop offset="100%" stopColor="var(--accent-primary, #2563eb)" stopOpacity="0.01" />
+                  </linearGradient>
+                </defs>
+                {[0, 1, 2, 3].map((step) => {
+                  const value = (maxSales * step) / 3;
+                  const y = chartPadding.top + chartPlotHeight - (step / 3) * chartPlotHeight;
+                  return <g key={step}><line className="demo-line-chart__grid" x1={chartPadding.left} x2={chartPadding.left + chartPlotWidth} y1={y} y2={y} /><text className="demo-line-chart__axis" x={chartPadding.left - 10} y={y + 4} textAnchor="end">{compactCurrency(value)}</text></g>;
+                })}
+                <path className="demo-line-chart__area" d={chartAreaPath} />
+                <path className="demo-line-chart__line" d={chartLinePath} />
+                {chartPoints.map((point, index) => <circle key={`${point.day}-${index}`} className={`demo-line-chart__point${activeChartIndex === index ? ' is-active' : ''}`} cx={point.x} cy={point.y} r={activeChartIndex === index ? 4.5 : 3} tabIndex={0} role="button" aria-label={`${point.day}: ${fullCurrency(point.value)}`} onMouseEnter={() => setActiveChartIndex(index)} onMouseLeave={() => setActiveChartIndex(null)} onFocus={() => setActiveChartIndex(index)} onBlur={() => setActiveChartIndex(null)} />)}
+                {chartPoints.map((point) => <text key={`label-${point.day}`} className="demo-line-chart__label" x={point.x} y={chartHeight - 10} textAnchor="middle">{point.day}</text>)}
+              </svg>
+              {activeChartPoint && <div className="demo-line-chart__tooltip" style={{ left: `${(activeChartPoint.x / chartWidth) * 100}%` }} role="status"><b>{activeChartPoint.day}</b><span>{language === 'en' ? 'Revenue' : 'Pendapatan'}</span><strong>{fullCurrency(activeChartPoint.value)}</strong></div>}
             </div>
           </div>
         </Card>

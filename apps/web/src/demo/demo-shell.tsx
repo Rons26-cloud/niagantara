@@ -8,13 +8,14 @@ import {
   SidebarIcon,
   USER_NAV_ICONS,
 } from '@niagantara/ui';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, Building2, ShieldCheck, MapPin, CircleHelp, Settings } from 'lucide-react';
 import { useDemoStore } from './demo-store';
 import { Link, navigate } from '../router';
 
 const navItems = [
   ['dashboard', 'Dashboard'],
   ['pos', 'POS / Kasir'],
+  ['pos-cashiers', 'Kelola Kasir POS'],
   ['sales', 'Sales'],
   ['shifts', 'Cashier Shift'],
   ['products', 'Products'],
@@ -49,7 +50,7 @@ const PAGE_KEYS: Partial<Record<NavId, string>> = {
 };
 
 const NAV_GROUPS: [string, NavId[]][] = [
-  ['main', ['dashboard', 'pos']],
+  ['main', ['dashboard', 'pos', 'pos-cashiers']],
   ['catalog', ['products', 'categories', 'barcode', 'inventory']],
   ['sales', ['sales', 'shifts', 'customers']],
   ['purchasing', ['purchases', 'suppliers']],
@@ -95,6 +96,7 @@ export function DemoShell({
   } = useDemoStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [navSearch, setNavSearch] = useState('');
   const notifRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -292,18 +294,35 @@ export function DemoShell({
           <BrandLogo className="demo-sidebar-brand-full" />
           <BrandMark size={32} className="demo-sidebar-brand-collapsed" />
         </div>
+        <div className="demo-workspace-card">
+          <span className="demo-workspace-icon" aria-hidden="true"><Building2 size={16} /></span>
+          <span className="demo-workspace-copy"><small>{t('context.company')}</small><b title={company}>{company}</b></span>
+          <ShieldCheck size={15} aria-label="Workspace aman" />
+        </div>
+        <label className="demo-nav-search">
+          <span className="sr-only">Cari menu</span>
+          <Search size={14} aria-hidden="true" />
+          <input value={navSearch} onChange={(event) => setNavSearch(event.target.value)} placeholder="Cari menu" />
+        </label>
         <nav>
-          {NAV_GROUPS.map(([group, ids]) => (
+          {NAV_GROUPS.map(([group, ids]) => {
+            const visibleIds = ids.filter((id) => {
+              const item = navItems.find(([navId]) => navId === id);
+              return item && `${id} ${item[1]}`.toLowerCase().includes(navSearch.trim().toLowerCase());
+            });
+            if (!visibleIds.length) return null;
+            return (
             <div className="demo-nav-group" key={group}>
               <span className="demo-nav-group-label">
                 {t(`dashboard.navGroups.${group}`)}
               </span>
-              {ids.map((id) => {
+              {visibleIds.map((id) => {
                 const item = navItems.find(([navId]) => navId === id);
                 return item ? sidebarItem(item[0], item[1]) : null;
               })}
             </div>
-          ))}
+            );
+          })}
           <div className="demo-nav-group">
             {(['settings', 'help'] as NavId[]).map((id) => {
               const item = navItems.find(([navId]) => navId === id);
@@ -329,7 +348,7 @@ export function DemoShell({
       <main className="demo-workspace">
         <header className="demo-topbar">
           <div>
-            <p className="eyebrow">OWNER DASHBOARD</p>
+            <p className="eyebrow"><span>OWNER WORKSPACE</span>{selectedBranchData && <span className="demo-header-location"><MapPin size={12} aria-hidden="true" /> {selectedBranchData.name}</span>}</p>
             <h1>{title}</h1>
           </div>
 
@@ -431,6 +450,12 @@ export function DemoShell({
                 <small>{user.role}</small>
               </span>
             </span>
+            <button className="demo-icon-btn" type="button" aria-label="Bantuan" onClick={() => navigate('/demo/help')}>
+              <CircleHelp size={17} aria-hidden="true" />
+            </button>
+            <button className="demo-icon-btn" type="button" aria-label="Pengaturan" onClick={() => navigate('/demo/settings')}>
+              <Settings size={17} aria-hidden="true" />
+            </button>
           </div>
         </header>
         {children}
