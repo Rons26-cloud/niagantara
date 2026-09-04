@@ -51,6 +51,7 @@ export function WarehousesPage({
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editRow, setEditRow] = useState<Warehouse | null>(null);
+  const [detailRow, setDetailRow] = useState<Warehouse | null>(null);
   const [msg, setMsg] = useState('');
   const [form, setForm] = useState({
     name: '',
@@ -245,6 +246,9 @@ export function WarehousesPage({
                 </span>
                 <span>{r.productCount ?? 0}</span>
                 <span>
+                  <Button variant="ghost" onClick={() => setDetailRow(r)}>
+                    Detail
+                  </Button>
                   {ctx.permissions.includes('warehouse.manage') && (
                     <Button variant="ghost" onClick={() => openEdit(r)}>
                       {t('common.edit')}
@@ -257,6 +261,10 @@ export function WarehousesPage({
         )}
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
+
+      <Modal open={!!detailRow} onClose={() => setDetailRow(null)} title={`Detail Gudang · ${detailRow?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}>
+        {detailRow && <div className="def-grid"><dt>Nama</dt><dd>{detailRow.name}</dd><dt>Kode</dt><dd>{detailRow.code ?? '—'}</dd><dt>Toko</dt><dd>{ctx.stores.find((store) => store.id === (detailRow.storeId ?? detailRow.store_id))?.name ?? '—'}</dd><dt>Cabang</dt><dd>{ctx.accessible_branches.find((branch) => branch.id === (detailRow.branchId ?? detailRow.branch_id))?.name ?? '—'}</dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? 'ACTIVE'} /></dd><dt>Produk</dt><dd>{detailRow.productCount ?? 0}</dd><dt>Total stok</dt><dd>{detailRow.stockSummary?.totalStock ?? 0}</dd><dt>Stok menipis</dt><dd>{detailRow.stockSummary?.lowStock ?? 0}</dd></div>}
+      </Modal>
 
       <Modal
         open={showCreate}

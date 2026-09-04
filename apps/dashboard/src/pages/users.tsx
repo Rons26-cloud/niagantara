@@ -39,6 +39,18 @@ type CompanyUser = {
   profile?: { full_name?: string; email?: string; avatar_url?: string };
   branches?: BranchMembership[];
 };
+
+function safeImageUrl(value: unknown): string | null {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const url = new URL(value.trim(), window.location.origin);
+    return url.protocol === 'https:' || url.protocol === 'http:'
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
 const companyRoles = ['owner', 'company_admin', 'finance', 'accountant', 'hr'];
 const branchRoles = [
   'manager',
@@ -621,6 +633,7 @@ export function UsersPage({
               const roleColor =
                 roleColorMap[row.role_key] ?? 'var(--text-muted, #6B7280)';
               const userName = row.profile?.full_name ?? 'Tanpa nama';
+              const avatarUrl = safeImageUrl(row.profile?.avatar_url);
               return (
                 <div className="tr" key={row.id}>
                   <span>
@@ -655,9 +668,9 @@ export function UsersPage({
                           border: `1.5px solid color-mix(in srgb, ${roleColor} 25%, transparent)`,
                         }}
                       >
-                        {row.profile?.avatar_url ? (
+                        {avatarUrl ? (
                           <img
-                            src={row.profile.avatar_url}
+                            src={avatarUrl}
                             alt=""
                             style={{
                               width: '100%',

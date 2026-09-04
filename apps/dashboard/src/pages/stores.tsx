@@ -47,6 +47,7 @@ export function StoresPage({
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editRow, setEditRow] = useState<Store | null>(null);
+  const [detailRow, setDetailRow] = useState<Store | null>(null);
   const [msg, setMsg] = useState('');
   const [form, setForm] = useState({ name: '' });
 
@@ -190,6 +191,9 @@ export function StoresPage({
                     : '—'}
                 </span>
                 <span>
+                  <Button variant="ghost" onClick={() => setDetailRow(r)}>
+                    Detail
+                  </Button>
                   {ctx.permissions.includes('store.manage') && (
                     <Button variant="ghost" onClick={() => openEdit(r)}>
                       {t('common.edit')}
@@ -202,6 +206,10 @@ export function StoresPage({
         )}
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
+
+      <Modal open={!!detailRow} onClose={() => setDetailRow(null)} title={`Detail Toko · ${detailRow?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}>
+        {detailRow && <div className="def-grid"><dt>Nama Toko</dt><dd>{detailRow.name}</dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? 'ACTIVE'} /></dd><dt>Jumlah Cabang</dt><dd>{detailRow.branchCount ?? 0}</dd><dt>Batas Toko</dt><dd>{detailRow.planLimit?.maxStores ?? '—'}</dd><dt>Batas Cabang</dt><dd>{detailRow.planLimit?.maxBranches ?? '—'}</dd><dt>Dibuat</dt><dd>{(detailRow.createdAt ?? detailRow.created_at) ? new Date((detailRow.createdAt ?? detailRow.created_at)!).toLocaleDateString('id-ID') : '—'}</dd></div>}
+      </Modal>
 
       <Modal
         open={showCreate}

@@ -48,6 +48,7 @@ import { FinancePage as FinancePageNew } from './pages/finance';
 import { AttendancePage as AttendancePageNew } from './pages/attendance';
 import { UsersPage as UsersPageNew } from './pages/users';
 import { SettingsPage as SettingsPageNew } from './pages/settings';
+import { PosCashiersPage } from './pages/pos-cashiers';
 import { HelpPage as HelpPageNew } from './pages/help';
 import { RealtimeProvider, useRealtime } from './realtime';
 
@@ -57,6 +58,7 @@ const nav = [
   ['dashboard', 'Beranda'],
   ['command-center', 'Command Center'],
   ['pos', 'POS / Kasir'],
+  ['pos-cashiers', 'Kelola Kasir POS'],
   ['products', 'Produk'],
   ['categories', 'Kategori'],
   ['barcode', 'Barcode'],
@@ -82,7 +84,7 @@ const nav = [
 ] as const;
 
 const NAV_GROUPS: [string, string[]][] = [
-  ['main', ['dashboard', 'command-center', 'pos']],
+  ['main', ['dashboard', 'command-center', 'pos', 'pos-cashiers']],
   ['catalog', ['products', 'categories', 'barcode', 'inventory']],
   ['sales', ['sales', 'shifts', 'customers']],
   ['purchasing', ['purchases', 'suppliers']],
@@ -99,6 +101,7 @@ const navPermission: Record<string, string | undefined> = {
   barcode: 'barcode.read',
   inventory: 'inventory.read',
   pos: 'pos.access',
+  'pos-cashiers': 'user.manage',
   sales: 'sale.read',
   shifts: 'shift.read',
   purchases: 'purchase.read',
@@ -670,6 +673,8 @@ function Page({
     );
   if (page === 'pos')
     return <Pos company={c} token={token} userId={userId} ctx={ctx} />;
+  if (page === 'pos-cashiers')
+    return <PosCashiersPage company={c} token={token} ctx={ctx} />;
   if (page === 'sales')
     return <SalesPage company={c} token={token} ctx={ctx} />;
   if (page === 'shifts')

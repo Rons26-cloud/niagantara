@@ -146,6 +146,7 @@ export function CategoriesPage({
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editRow, setEditRow] = useState<Category | null>(null);
+  const [detailRow, setDetailRow] = useState<Category | null>(null);
   const [msg, setMsg] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'count' | 'date'>('name');
   const [showImport, setShowImport] = useState(false);
@@ -433,6 +434,9 @@ export function CategoriesPage({
                   />
                 </span>
                 <span>
+                  <Button variant="ghost" onClick={() => setDetailRow(r)}>
+                    Detail
+                  </Button>
                   {ctx.permissions.includes('category.manage') && (
                     <Button variant="ghost" onClick={() => openEdit(r)}>
                       {t('common.edit')}
@@ -445,6 +449,15 @@ export function CategoriesPage({
         )}
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
+
+      <Modal
+        open={!!detailRow}
+        onClose={() => setDetailRow(null)}
+        title={`Detail Kategori · ${detailRow?.name ?? ''}`}
+        footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}
+      >
+        {detailRow && <div className="def-grid"><dt>Nama</dt><dd>{detailRow.name}</dd><dt>Deskripsi</dt><dd>{detailRow.description || 'Belum ada deskripsi'}</dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? 'ACTIVE'} /></dd><dt>Jumlah Produk</dt><dd>{detailRow.product_count ?? 0} produk</dd><dt>Warna Label</dt><dd><span style={{ display: 'inline-flex', alignItems: 'center', gap: '.45rem' }}><i style={{ width: 14, height: 14, borderRadius: '50%', background: detailRow.color ?? '#3b82f6' }} />{detailRow.color ?? '—'}</span></dd></div>}
+      </Modal>
 
       <Modal
         open={showCreate}

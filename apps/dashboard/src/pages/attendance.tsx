@@ -69,6 +69,7 @@ export function AttendancePage({
     new Date().toISOString().slice(0, 10),
   );
   const [showKiosk, setShowKiosk] = useState(false);
+  const [detailRow, setDetailRow] = useState<AttendanceRecord | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -235,6 +236,7 @@ export function AttendancePage({
                 'Clock Out',
                 'Durasi',
                 'Status',
+                'Aksi',
               ].map((k) => (
                 <span key={k}>{k}</span>
               ))}
@@ -292,6 +294,9 @@ export function AttendancePage({
                   <span>
                     <StatusBadge status={r.status ?? '—'} />
                   </span>
+                  <span>
+                    <Button variant="ghost" onClick={() => setDetailRow(r)}>Detail</Button>
+                  </span>
                 </div>
               );
             })}
@@ -300,6 +305,9 @@ export function AttendancePage({
 
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
       </section>
+      <Modal open={!!detailRow} onClose={() => setDetailRow(null)} title={`Detail Absensi · ${detailRow?.employee?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}>
+        {detailRow && <div className="def-grid"><dt>Karyawan</dt><dd>{detailRow.employee?.name ?? detailRow.employee_id}</dd><dt>Kode Karyawan</dt><dd>{detailRow.employee?.employee_code ?? '—'}</dd><dt>Jabatan</dt><dd>{detailRow.employee?.job_title ?? '—'}</dd><dt>Cabang</dt><dd>{detailRow.branch?.name ?? '—'}</dd><dt>Clock In</dt><dd>{detailRow.clock_in_at ? new Date(detailRow.clock_in_at).toLocaleString('id-ID') : '—'}</dd><dt>Clock Out</dt><dd>{detailRow.clock_out_at ? new Date(detailRow.clock_out_at).toLocaleString('id-ID') : 'Belum clock out'}</dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? '—'} /></dd></div>}
+      </Modal>
     </>
   );
 }

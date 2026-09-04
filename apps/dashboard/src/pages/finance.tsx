@@ -543,6 +543,7 @@ function PayablesTab({
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
   const [payRow, setPayRow] = useState<any | null>(null);
+  const [detailRow, setDetailRow] = useState<any | null>(null);
   const [payAmount, setPayAmount] = useState('');
   const [payMethod, setPayMethod] = useState('BANK_TRANSFER');
   const [paying, setPaying] = useState(false);
@@ -746,6 +747,7 @@ function PayablesTab({
                 </span>
                 <span>{r.due_date ?? '—'}</span>
                 <span>
+                  <Button variant="ghost" onClick={() => setDetailRow(r)}>Detail</Button>
                   {ctx.permissions.includes('payable.manage') &&
                     r.status !== 'PAID' && (
                       <Button
@@ -766,6 +768,15 @@ function PayablesTab({
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
         {msg && <p className="muted">{msg}</p>}
       </section>
+
+      <Modal
+        open={!!detailRow}
+        onClose={() => setDetailRow(null)}
+        title="Detail Hutang"
+        footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}
+      >
+        {detailRow && <div className="def-grid"><dt>Deskripsi</dt><dd>{detailRow.description ?? detailRow.purchase?.purchase_number ?? detailRow.id}</dd><dt>Jumlah Awal</dt><dd>{fmtRp(Number(detailRow.original_amount ?? 0))}</dd><dt>Sudah Dibayar</dt><dd>{fmtRp(Number(detailRow.paid_amount ?? 0))}</dd><dt>Sisa</dt><dd><b>{fmtRp(Number(detailRow.remaining_amount ?? 0))}</b></dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? 'PENDING'} /></dd><dt>Jatuh Tempo</dt><dd>{detailRow.due_date ?? '—'}</dd></div>}
+      </Modal>
 
       <Modal
         open={!!payRow}
@@ -859,6 +870,7 @@ function ReceivablesTab({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
+  const [detailRow, setDetailRow] = useState<any | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -977,6 +989,7 @@ function ReceivablesTab({
                 </span>
                 <span>{r.due_date ?? '—'}</span>
                 <span>
+                  <Button variant="ghost" onClick={() => setDetailRow(r)}>Detail</Button>
                   {ctx.permissions.includes('receivable.manage') &&
                     r.status !== 'PAID' && (
                       <Button variant="ghost" onClick={() => collect(r)}>
@@ -991,6 +1004,9 @@ function ReceivablesTab({
         <Pagination page={page} pageCount={pageCount} onPage={setPage} />
         {msg && <p className="muted">{msg}</p>}
       </section>
+      <Modal open={!!detailRow} onClose={() => setDetailRow(null)} title="Detail Piutang" footer={<Button variant="ghost" onClick={() => setDetailRow(null)}>Tutup</Button>}>
+        {detailRow && <div className="def-grid"><dt>Deskripsi</dt><dd>{detailRow.description ?? detailRow.sale?.transaction_number ?? detailRow.id}</dd><dt>Jumlah Awal</dt><dd>{fmtRp(Number(detailRow.original_amount ?? 0))}</dd><dt>Sudah Diterima</dt><dd>{fmtRp(Number(detailRow.paid_amount ?? 0))}</dd><dt>Sisa</dt><dd><b>{fmtRp(Number(detailRow.remaining_amount ?? 0))}</b></dd><dt>Status</dt><dd><StatusBadge status={detailRow.status ?? 'PENDING'} /></dd><dt>Jatuh Tempo</dt><dd>{detailRow.due_date ?? '—'}</dd></div>}
+      </Modal>
     </>
   );
 }
