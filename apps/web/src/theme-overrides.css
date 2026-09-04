@@ -1136,6 +1136,213 @@ footer {
   }
 }
 
+.owner-dashboard-shot img {
+  aspect-ratio: 1402 / 1122;
+  object-fit: cover;
+}
+
+@media (max-width: 820px) {
+  html body .navbar .navbar-brand {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    place-items: center;
+    gap: 0;
+    padding: 0;
+  }
+  html body .navbar .navbar-brand .navbar-mark {
+    display: block;
+    width: 22px;
+    height: 24px;
+    max-width: none;
+    margin: 0;
+    object-fit: contain;
+    transform: translate(-0.5px, -0.5px);
+  }
+  html body .navbar .menu span,
+  html body .navbar .menu[aria-expanded='true'] span {
+    opacity: 1;
+  }
+  html body .navbar .menu[aria-expanded='true'] span:first-child {
+    transform: rotate(45deg);
+  }
+  html body .navbar .menu[aria-expanded='true'] span:last-child {
+    transform: rotate(-45deg);
+  }
+  .hero-scale .owner-dashboard-shot img {
+    width: 148%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: auto;
+    transform: translate(-27%, -2%);
+  }
+}
+
+@media (max-width: 380px) {
+  html body .navbar .menu {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+.mobile-app-preview {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: min(390px, 72%);
+  margin: -26px auto 0;
+  color: var(--text-secondary);
+  text-align: center;
+  text-decoration: none;
+}
+.mobile-app-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 32px 34px rgba(15, 23, 42, 0.24));
+  transition: transform 0.25s ease;
+}
+.mobile-app-preview:hover img {
+  transform: translateY(-5px);
+}
+.mobile-app-preview span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.home-page .mobile .flexible-device {
+  display: none;
+}
+
+.branches .hierarchy {
+  max-width: 540px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.branches .hierarchy-card {
+  border-radius: 11px;
+  box-shadow: none;
+}
+.branches .hierarchy > p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 16px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.branches .orbit {
+  filter: saturate(0.82);
+}
+
+@media (max-width: 820px) {
+  .nav-inner {
+    height: 58px;
+    padding-inline: 2px;
+  }
+  .navbar-brand {
+    display: grid;
+    flex: 0 0 38px;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .navbar-brand .navbar-mark {
+    width: 24px;
+    height: 27px;
+  }
+  .nav-actions {
+    gap: 8px;
+  }
+  .nav-actions .theme-switcher {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    border-radius: 50%;
+  }
+  .menu {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    box-shadow: none;
+  }
+  .menu span {
+    position: absolute;
+    width: 16px;
+    height: 1.5px;
+    margin: 0;
+  }
+  .menu span:first-child {
+    transform: translateY(-3px);
+  }
+  .menu span:last-child {
+    transform: translateY(3px);
+  }
+  .menu[aria-expanded='true'] span:first-child {
+    transform: rotate(45deg);
+  }
+  .menu[aria-expanded='true'] span:last-child {
+    transform: rotate(-45deg);
+  }
+  .drawer {
+    width: min(86vw, 340px);
+    padding: 18px;
+  }
+  .home-page .mobile-grid {
+    gap: 28px;
+    min-height: 0;
+  }
+  .home-page .devices {
+    height: auto;
+    min-height: 480px;
+  }
+  .mobile-app-preview {
+    width: min(310px, 78vw);
+    margin-top: -8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-page .section {
+    padding-block: 64px;
+  }
+  .home-page .mobile-grid h2,
+  .branches h2 {
+    font-size: clamp(28px, 9vw, 38px);
+    line-height: 1.08;
+  }
+  .home-page .mobile-features {
+    margin-top: 22px;
+  }
+  .home-page .mobile-features li,
+  .home-page .capability-strip li {
+    padding: 10px 11px;
+  }
+  .home-page .devices {
+    min-height: 430px;
+  }
+  .branches .orbit {
+    margin-top: 16px;
+    transform: scale(0.9);
+  }
+}
+
 .lazy-section-placeholder {
   min-height: 400px;
 }

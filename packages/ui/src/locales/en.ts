@@ -357,7 +357,7 @@ export const en = {
       },
     },
     branches: {
-      kicker: 'BUILT TO GROW',
+      kicker: 'ONE VIEW ACROSS EVERY BRANCH',
       title: 'Manage Multiple Branches<br /><span>from One Place</span>',
       text: 'Build a tidy business structure. Monitor each location’s performance without mixing data between tenants or branches.',
       mainBranch: 'Main Branch',

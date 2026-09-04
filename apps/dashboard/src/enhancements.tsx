@@ -87,7 +87,6 @@ export function useResource<T>(
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, tick]);
   return { data, loading, error, reload };
 }

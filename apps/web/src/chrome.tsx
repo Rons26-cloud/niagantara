@@ -115,7 +115,6 @@ export function Navbar() {
             height={157}
             loading="eager"
           />
-          <span className="brand-word">NIAGANTARA</span>
         </Link>
         <nav aria-label={t('nav.primary')}>
           {items.map(([to, label]) => (
@@ -151,7 +150,6 @@ export function Navbar() {
         >
           <span />
           <span />
-          <span />
         </button>
       </div>
 
@@ -175,7 +173,7 @@ export function Navbar() {
               height={157}
               loading="eager"
             />
-            <strong className="drawer-title">NIAGANTARA</strong>
+            <strong className="drawer-title">Menu</strong>
             <button
               type="button"
               ref={closeButtonRef}
@@ -263,7 +261,9 @@ export function Footer() {
           <h4>{f.companyHeading}</h4>
           <Link to="/tentang">{f.about}</Link>
           <Link to="/kontak">{f.contact}</Link>
-          <a href="mailto:support@niagantara.com">{en ? 'Support' : 'Dukungan'}</a>
+          <a href="mailto:support@niagantara.com">
+            {en ? 'Support' : 'Dukungan'}
+          </a>
         </nav>
 
         <nav className="fcol flegal" aria-label="Legal">

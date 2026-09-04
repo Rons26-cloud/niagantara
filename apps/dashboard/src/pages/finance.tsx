@@ -623,6 +623,8 @@ function PayablesTab({
     URL.revokeObjectURL(url);
   }
 
+  const { page, pageCount, setPage, slice } = usePaged(data);
+
   if (loading) return <LoadingState label="Memuat hutang..." />;
   if (error) {
     return (
@@ -650,8 +652,6 @@ function PayablesTab({
   const totalPaid = data.reduce((n, r) => n + Number(r.paid_amount ?? 0), 0);
   const pending = data.filter((r) => r.status === 'PENDING').length;
   const overdue = data.filter((r) => r.status === 'OVERDUE').length;
-
-  const { page, pageCount, setPage, slice } = usePaged(data);
 
   return (
     <>
@@ -901,6 +901,8 @@ function ReceivablesTab({
     }
   }
 
+  const { page, pageCount, setPage, slice } = usePaged(data);
+
   if (loading) return <LoadingState label="Memuat piutang..." />;
   if (error) return <ErrorState message={error} onRetry={load} />;
 
@@ -914,8 +916,6 @@ function ReceivablesTab({
   );
   const pending = data.filter((r) => r.status === 'PENDING').length;
   const overdue = data.filter((r) => r.status === 'OVERDUE').length;
-
-  const { page, pageCount, setPage, slice } = usePaged(data);
 
   return (
     <>

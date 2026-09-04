@@ -75,10 +75,15 @@ export function HeroSection() {
       <div className="container hero-grid">
         <div className="hero-copy">
           <div className="eyebrow">
-            <i /> {en ? 'INTEGRATED BUSINESS OPERATIONS PLATFORM' : 'PLATFORM OPERASIONAL BISNIS TERINTEGRASI'}
+            <i />{' '}
+            {en
+              ? 'INTEGRATED BUSINESS OPERATIONS PLATFORM'
+              : 'PLATFORM OPERASIONAL BISNIS TERINTEGRASI'}
           </div>
           <h1>
-            {en ? 'Manage Your Business More Easily ' : 'Kelola Bisnis Lebih Mudah '}
+            {en
+              ? 'Manage Your Business More Easily '
+              : 'Kelola Bisnis Lebih Mudah '}
             <span>{en ? 'with NIAGANTARA' : 'bersama NIAGANTARA'}</span>
           </h1>
           <p>
@@ -87,7 +92,9 @@ export function HeroSection() {
               : 'Satukan kasir, stok, pembelian, supplier, cabang, tim, dan pemantauan operasional dalam satu platform yang terhubung.'}
           </p>
           <div className="actions">
-            <Button to="/kontak">{en ? 'Get Started' : 'Mulai Sekarang'}</Button>
+            <Button to="/kontak">
+              {en ? 'Get Started' : 'Mulai Sekarang'}
+            </Button>
             <Button secondary to="/demo">
               {en ? 'Explore Platform' : 'Lihat Platform'} <small>▶</small>
             </Button>
@@ -119,17 +126,21 @@ export function HeroSection() {
           <div className="hero-scale">
             <Link
               to="/demo"
-              className="hero-hero-shot"
+              className="hero-hero-shot owner-dashboard-shot"
               ariaLabel={en ? 'Open NIAGANTARA demo' : 'Buka demo NIAGANTARA'}
             >
               <img
-                src="/phone/niagantara-hero.png"
-                alt={en ? 'NIAGANTARA dashboard preview — open demo' : 'Pratinjau dashboard NIAGANTARA — klik untuk membuka demo'}
+                src="/phone/screen.png"
+                alt={
+                  en
+                    ? 'NIAGANTARA dashboard preview — open demo'
+                    : 'Pratinjau dashboard NIAGANTARA — klik untuk membuka demo'
+                }
                 loading="eager"
                 decoding="async"
               />
               <span className="hero-shot-badge">
-                <PlayCircle size={14} aria-hidden="true" /> {en ? 'View Demo' : 'Lihat Demo'}
+                <PlayCircle size={14} aria-hidden="true" /> Owner Dashboard
               </span>
             </Link>
           </div>
@@ -160,54 +171,91 @@ export function LogoStrip() {
 export function FeaturesSection({ heading = true }: { heading?: boolean }) {
   const { language } = useTranslation();
   const en = language === 'en';
-  const features = en ? [
-    ['POS / Checkout', 'Fast transactions with product search, barcodes, payments, shifts, and receipts.'],
-    ['Owner Dashboard', 'Monitor metrics, branches, stock, shifts, integrations, and operational activity.'],
-    ['Inventory', 'Manage stock, minimum levels, adjustments, transfers, and movement ledgers.'],
-    ['Purchasing', 'Manage purchases, goods receiving, statuses, and stock updates.'],
-    ['Suppliers', 'Store supplier data and connect it with purchasing workflows.'],
-    ['Multi-branch', 'Use company, store, and branch contexts based on access rights.'],
-    ['Team & Access', 'Manage users, roles, permissions, and branch assignments.'],
-    ['Integrations', 'Connect operational data with Google Sheets securely.'],
-  ] : [
-    [
-      'POS / Kasir',
-      'Transaksi cepat dengan pencarian produk, barcode, pembayaran, shift, dan struk.',
-    ],
-    [
-      'Dashboard Owner',
-      'Pantau metrik, cabang, stok, shift, integrasi, dan aktivitas operasional.',
-    ],
-    [
-      'Inventory',
-      'Kelola stok, minimum stok, penyesuaian, transfer, dan ledger pergerakan.',
-    ],
-    [
-      'Purchasing',
-      'Kelola pembelian, penerimaan barang, status, dan pembaruan stok.',
-    ],
-    ['Supplier', 'Simpan data supplier dan hubungkan dengan proses pembelian.'],
-    [
-      'Multi Cabang',
-      'Gunakan konteks perusahaan, toko, dan cabang sesuai hak akses.',
-    ],
-    [
-      'Tim & Hak Akses',
-      'Atur pengguna, peran, permission, dan penempatan cabang.',
-    ],
-    [
-      'Integrasi',
-      'Hubungkan data operasional dengan Google Sheets secara terkontrol.',
-    ],
-  ];
+  const features = en
+    ? [
+        [
+          'POS / Checkout',
+          'Fast transactions with product search, barcodes, payments, shifts, and receipts.',
+        ],
+        [
+          'Owner Dashboard',
+          'Monitor metrics, branches, stock, shifts, integrations, and operational activity.',
+        ],
+        [
+          'Inventory',
+          'Manage stock, minimum levels, adjustments, transfers, and movement ledgers.',
+        ],
+        [
+          'Purchasing',
+          'Manage purchases, goods receiving, statuses, and stock updates.',
+        ],
+        [
+          'Suppliers',
+          'Store supplier data and connect it with purchasing workflows.',
+        ],
+        [
+          'Multi-branch',
+          'Use company, store, and branch contexts based on access rights.',
+        ],
+        [
+          'Team & Access',
+          'Manage users, roles, permissions, and branch assignments.',
+        ],
+        [
+          'Integrations',
+          'Connect operational data with Google Sheets securely.',
+        ],
+      ]
+    : [
+        [
+          'POS / Kasir',
+          'Transaksi cepat dengan pencarian produk, barcode, pembayaran, shift, dan struk.',
+        ],
+        [
+          'Dashboard Owner',
+          'Pantau metrik, cabang, stok, shift, integrasi, dan aktivitas operasional.',
+        ],
+        [
+          'Inventory',
+          'Kelola stok, minimum stok, penyesuaian, transfer, dan ledger pergerakan.',
+        ],
+        [
+          'Purchasing',
+          'Kelola pembelian, penerimaan barang, status, dan pembaruan stok.',
+        ],
+        [
+          'Supplier',
+          'Simpan data supplier dan hubungkan dengan proses pembelian.',
+        ],
+        [
+          'Multi Cabang',
+          'Gunakan konteks perusahaan, toko, dan cabang sesuai hak akses.',
+        ],
+        [
+          'Tim & Hak Akses',
+          'Atur pengguna, peran, permission, dan penempatan cabang.',
+        ],
+        [
+          'Integrasi',
+          'Hubungkan data operasional dengan Google Sheets secara terkontrol.',
+        ],
+      ];
   return (
     <section id="fitur" className="section features">
       <div className="container">
         {heading && (
           <Heading
             kicker={en ? 'PLATFORM CAPABILITIES' : 'KAPABILITAS PLATFORM'}
-            title={en ? 'One Platform for <span>Business Operations</span>' : 'Satu Platform untuk <span>Operasional Bisnis</span>'}
-            text={en ? 'Connected modules for the daily work of owners, supervisors, warehouse teams, purchasing teams, and cashiers.' : 'Modul yang saling terhubung untuk pekerjaan harian owner, supervisor, tim gudang, purchasing, dan kasir.'}
+            title={
+              en
+                ? 'One Platform for <span>Business Operations</span>'
+                : 'Satu Platform untuk <span>Operasional Bisnis</span>'
+            }
+            text={
+              en
+                ? 'Connected modules for the daily work of owners, supervisors, warehouse teams, purchasing teams, and cashiers.'
+                : 'Modul yang saling terhubung untuk pekerjaan harian owner, supervisor, tim gudang, purchasing, dan kasir.'
+            }
           />
         )}
         <div className="feature-grid">
@@ -219,7 +267,8 @@ export function FeaturesSection({ heading = true }: { heading?: boolean }) {
               <h3>{title}</h3>
               <p>{text}</p>
               <Link to="/fitur">
-                {en ? 'Explore feature' : 'Pelajari fitur'} <span aria-hidden="true">↗</span>
+                {en ? 'Explore feature' : 'Pelajari fitur'}{' '}
+                <span aria-hidden="true">↗</span>
               </Link>
             </article>
           ))}
@@ -627,6 +676,22 @@ export function MobileSection() {
           aria-label="NIAGANTARA mobile dashboard preview"
         >
           <div className="device-glow" aria-hidden="true" />
+          <Link
+            className="mobile-app-preview"
+            to="/demo"
+            ariaLabel="Buka demo aplikasi mobile NIAGANTARA"
+          >
+            <img
+              src="/phone/mobile-app-showcase-v2.png"
+              alt="Tampilan aplikasi mobile NIAGANTARA pada perangkat Android"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>
+              <Smartphone size={15} aria-hidden="true" /> Tampilan aplikasi
+              mobile
+            </span>
+          </Link>
           <div className="flexible-device">
             <Link className="flexible-device-top" to="/demo">
               <strong>NIAGANTARA</strong>
@@ -717,8 +782,12 @@ export function FreeAccessSection() {
           </div>
           <ul className="pricing-trust">
             {[
-              lang === 'id' ? 'Dashboard bisnis lengkap' : 'Complete business dashboard',
-              lang === 'id' ? 'POS, stok, laporan, dan operasional' : 'POS, inventory, reports, and operations',
+              lang === 'id'
+                ? 'Dashboard bisnis lengkap'
+                : 'Complete business dashboard',
+              lang === 'id'
+                ? 'POS, stok, laporan, dan operasional'
+                : 'POS, inventory, reports, and operations',
               lang === 'id' ? 'Tanpa kartu kredit' : 'No credit card required',
             ].map((item) => (
               <li key={item}>
@@ -729,15 +798,24 @@ export function FreeAccessSection() {
           </ul>
         </div>
         <div className="free-access-card">
-          <span className="plan-badge">{lang === 'id' ? 'AKSES PENUH' : 'FULL ACCESS'}</span>
+          <span className="plan-badge">
+            {lang === 'id' ? 'AKSES PENUH' : 'FULL ACCESS'}
+          </span>
           <small className="plan-name">NIAGANTARA FREE</small>
-          <h3>{lang === 'id' ? 'Mulai kelola bisnis hari ini' : 'Start managing your business today'}</h3>
+          <h3>
+            {lang === 'id'
+              ? 'Mulai kelola bisnis hari ini'
+              : 'Start managing your business today'}
+          </h3>
           <p className="plan-summary">
             {lang === 'id'
               ? 'Daftar, siapkan toko dan cabang, lalu gunakan dashboard sesuai hak akses tim Anda.'
               : 'Register, set up stores and branches, then use the dashboard based on your team permissions.'}
           </p>
-          <a className="plan-cta primary" href="https://niagantara-app.pages.dev">
+          <a
+            className="plan-cta primary"
+            href="https://niagantara-app.pages.dev"
+          >
             {lang === 'id' ? 'Buat Akun Gratis' : 'Create Free Account'}
           </a>
           <small className="free-access-note">
@@ -1018,10 +1096,18 @@ export function CtaSection() {
   return (
     <section id="kontak" className="cta">
       <div className="container">
-        <Kicker>{en ? 'NIAGANTARA FOR YOUR BUSINESS' : 'NIAGANTARA UNTUK BISNIS ANDA'}</Kicker>
-        <h2>{en ? 'Ready to Unify Your Business Operations?' : 'Siap Menyatukan Operasional Bisnis Anda?'}</h2>
+        <Kicker>
+          {en ? 'NIAGANTARA FOR YOUR BUSINESS' : 'NIAGANTARA UNTUK BISNIS ANDA'}
+        </Kicker>
+        <h2>
+          {en
+            ? 'Ready to Unify Your Business Operations?'
+            : 'Siap Menyatukan Operasional Bisnis Anda?'}
+        </h2>
         <p>
-          {en ? 'Manage transactions, inventory, purchasing, branches, and teams in one NIAGANTARA ecosystem.' : 'Kelola transaksi, stok, pembelian, cabang dan tim dalam satu ekosistem NIAGANTARA.'}
+          {en
+            ? 'Manage transactions, inventory, purchasing, branches, and teams in one NIAGANTARA ecosystem.'
+            : 'Kelola transaksi, stok, pembelian, cabang dan tim dalam satu ekosistem NIAGANTARA.'}
         </p>
         <div className="actions">
           <a className="button" href="mailto:support@niagantara.com">

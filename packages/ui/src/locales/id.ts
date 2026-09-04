@@ -404,7 +404,7 @@ export const id = {
       },
     },
     branches: {
-      kicker: 'DIBUAT UNTUK BERTUMBUH',
+      kicker: 'SATU KENDALI UNTUK SETIAP CABANG',
       title: 'Kelola Banyak Cabang<br /><span>dari Satu Tempat</span>',
       text: 'Bangun struktur bisnis yang rapi. Pantau performa setiap lokasi tanpa mencampur data antar tenant atau cabang.',
       mainBranch: 'Cabang Utama',
