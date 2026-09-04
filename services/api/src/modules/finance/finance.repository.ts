@@ -69,13 +69,13 @@ export class FinanceRepository {
       .eq('status', 'RECORDED')
       .order('expense_date', { ascending: false })
       .limit(5000);
-    let payables = this.db.client
+    const payables = this.db.client
       .from('payables')
       .select('id,company_id,supplier_id,purchase_id,original_amount,paid_amount,remaining_amount,due_date,status,created_at,supplier:suppliers(id,name),purchase:purchases(id,purchase_number,branch_id,purchase_date)')
       .eq('company_id', c)
       .neq('status', 'CANCELLED')
       .limit(5000);
-    let receivables = this.db.client
+    const receivables = this.db.client
       .from('receivables')
       .select('id,company_id,customer_id,sale_id,original_amount,paid_amount,remaining_amount,due_date,status,created_at,customer:customers(id,name),sale:sales(id,transaction_number,branch_id,created_at)')
       .eq('company_id', c)
