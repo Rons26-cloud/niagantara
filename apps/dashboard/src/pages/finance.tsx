@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ApiError, api } from '../api';
+import { useEffect, useMemo, useState } from 'react';
+import { ApiError, api, apiDownload } from '../api';
 import {
   Button,
   EmptyState,
@@ -37,8 +37,14 @@ function fmtRp(n: number) {
   return `Rp ${Math.round(n).toLocaleString('id-ID')}`;
 }
 
+function dateText(value: unknown) {
+  return value ? new Date(String(value)).toLocaleDateString('id-ID') : '—';
+}
+
 type ReportTab =
   | 'overview'
+  | 'revenue'
+  | 'expenses'
   | 'profit-loss'
   | 'cashflow'
   | 'payables'
@@ -70,6 +76,9 @@ export function FinancePage({
     return d.toISOString().slice(0, 10);
   });
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
+  const [downloadOpen, setDownloadOpen] = useState(false);
+  const [downloading, setDownloading] = useState<'pdf' | 'xlsx' | null>(null);
+  const [downloadMessage, setDownloadMessage] = useState('');
 
   useEffect(() => {
     if (view === 'payables') setReportTab('payables');
@@ -77,10 +86,36 @@ export function FinancePage({
     else setReportTab('overview');
   }, [view]);
 
+  async function downloadReport(format: 'pdf' | 'xlsx') {
+    if (downloading) return;
+    setDownloading(format);
+    setDownloadMessage('Menyiapkan laporan...');
+    try {
+      const query = `from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+      const result = await apiDownload(`/finance/reports/export/${format}?${query}`, token, company);
+      const url = URL.createObjectURL(result.blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = result.filename ?? `niagantara-laporan-keuangan.${format}`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      setDownloadMessage('Laporan berhasil diunduh.');
+    } catch (error) {
+      setDownloadMessage(error instanceof Error && error.message.includes('REPORT_TOO_LARGE')
+        ? 'Laporan terlalu besar. Persempit periode atau cabang.'
+        : 'Gagal membuat laporan. Coba lagi.');
+    } finally {
+      setDownloading(null);
+      setDownloadOpen(false);
+    }
+  }
+
   const tabs: { id: ReportTab; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Ringkasan', icon: <BarChart3 size={14} /> },
     { id: 'profit-loss', label: 'Laba Rugi', icon: <TrendingUp size={14} /> },
     { id: 'cashflow', label: 'Arus Kas', icon: <Wallet size={14} /> },
+    { id: 'revenue', label: 'Pendapatan', icon: <TrendingUp size={14} /> },
+    { id: 'expenses', label: 'Pengeluaran', icon: <TrendingDown size={14} /> },
     { id: 'payables', label: 'Hutang', icon: <HandCoins size={14} /> },
     {
       id: 'receivables',
@@ -107,6 +142,18 @@ export function FinancePage({
             onChange={(e) => setTo(e.target.value)}
           />
         </Field>
+        <div className="finance-download">
+          <Button variant="secondary" onClick={() => setDownloadOpen((open) => !open)} disabled={!!downloading}>
+            <Download size={14} /> {downloading ? 'Menyiapkan...' : 'Download'}
+          </Button>
+          {downloadOpen && (
+            <div className="finance-download__menu" role="menu">
+              <button type="button" role="menuitem" onClick={() => void downloadReport('pdf')}><FileText size={14} /> Download PDF</button>
+              <button type="button" role="menuitem" onClick={() => void downloadReport('xlsx')}><Download size={14} /> Download Excel (.xlsx)</button>
+            </div>
+          )}
+        </div>
+        {downloadMessage && <span className="finance-download__message" role="status">{downloadMessage}</span>}
       </div>
 
       <div className="finance-tabs">
@@ -129,6 +176,12 @@ export function FinancePage({
       )}
       {reportTab === 'cashflow' && (
         <CashflowTab company={company} token={token} from={from} to={to} />
+      )}
+      {reportTab === 'revenue' && (
+        <RevenueDetailTab company={company} token={token} from={from} to={to} />
+      )}
+      {reportTab === 'expenses' && (
+        <ExpenseDetailTab company={company} token={token} from={from} to={to} />
       )}
       {reportTab === 'payables' && (
         <PayablesTab company={company} token={token} ctx={ctx} />
@@ -178,7 +231,8 @@ function OverviewTab({
   const purchases = Number(data?.purchases ?? 0);
   const refunds = Number(data?.refunds ?? 0);
   const cashReceived = Number(data?.cashReceived ?? 0);
-  const netProfit = Number(data?.operatingCashResult ?? 0);
+  const netCashflow = Number(data?.operatingCashResult ?? 0);
+  const profitSupported = data?.profitLoss?.supported === true;
 
   return (
     <>
@@ -212,9 +266,19 @@ function OverviewTab({
           tone="success"
         />
         <StatCard
-          label="Laba Bersih Operasional"
-          value={fmtRp(netProfit)}
-          tone={netProfit >= 0 ? 'success' : 'danger'}
+          label="Arus Kas Bersih"
+          value={fmtRp(netCashflow)}
+          tone={netCashflow >= 0 ? 'success' : 'danger'}
+        />
+        <StatCard
+          label="Piutang Berjalan"
+          value={fmtRp(Number(data?.receivables?.outstanding ?? 0))}
+          tone="warning"
+        />
+        <StatCard
+          label="Utang Berjalan"
+          value={fmtRp(Number(data?.payables?.outstanding ?? 0))}
+          tone="danger"
         />
       </div>
 
@@ -242,7 +306,9 @@ function OverviewTab({
           <div className="finance-detail-item">
             <span className="finance-detail-label">Margin Laba Bersih</span>
             <span className="finance-detail-value finance-detail-value--bold">
-              {revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0}%
+              {profitSupported && revenue > 0
+                ? `${Math.round((Number(data?.profitLoss?.netIncome ?? 0) / revenue) * 100)}%`
+                : 'Belum tersedia'}
             </span>
           </div>
           <div className="finance-detail-item">
@@ -284,45 +350,23 @@ function ProfitLossTab({
   from: string;
   to: string;
 }) {
-  const [salesData, setSalesData] = useState<any[]>([]);
-  const [expenseData, setExpenseData] = useState<any[]>([]);
+  const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([
-      api<any[]>(`/sales?from=${from}&to=${to}`, token, company).catch(
-        () => [],
-      ),
-      api<any[]>(`/expenses?from=${from}&to=${to}`, token, company).catch(
-        () => [],
-      ),
-    ])
-      .then(([sales, expenses]) => {
-        setSalesData(sales);
-        setExpenseData(expenses);
-      })
+    api(`/finance/reports?from=${from}&to=${to}`, token, company)
+      .then(setReport)
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [company, token, from, to]);
 
   if (loading) return <LoadingState label="Memuat laba rugi..." />;
 
-  const totalRevenue = salesData
-    .filter((s: any) => ['PAID', 'PARTIALLY_REFUNDED'].includes(s.status))
-    .reduce(
-      (n: number, s: any) =>
-        n + Number(s.grand_total) - Number(s.refunded_total ?? 0),
-      0,
-    );
-  const totalRefunds = salesData
-    .filter((s: any) => ['REFUNDED', 'PARTIALLY_REFUNDED'].includes(s.status))
-    .reduce((n: number, s: any) => n + Number(s.refunded_total ?? 0), 0);
-  const totalExpenses = expenseData.reduce(
-    (n: number, e: any) => n + Number(e.amount ?? 0),
-    0,
-  );
-  const netIncome = totalRevenue - totalExpenses;
+  const expenseData = Array.isArray(report?.expenseRows) ? report.expenseRows : [];
+  const totalRevenue = Number(report?.revenue ?? 0);
+  const totalRefunds = Number(report?.refunds ?? 0);
+  const totalExpenses = Number(report?.expenses ?? 0);
 
   const expenseByCategory = new Map<string, number>();
   for (const e of expenseData) {
@@ -349,8 +393,8 @@ function ProfitLossTab({
         />
         <StatCard
           label="Laba Bersih"
-          value={fmtRp(netIncome)}
-          tone={netIncome >= 0 ? 'success' : 'danger'}
+          value="Belum tersedia"
+          note="Membutuhkan data HPP/COGS lengkap"
         />
       </div>
 
@@ -396,17 +440,52 @@ function ProfitLossTab({
           <div className="pl-section pl-section--net">
             <div className="pl-row pl-row--net">
               <span>Laba / Rugi Bersih</span>
-              <span
-                className={`pl-amount ${netIncome >= 0 ? 'pl-amount--positive' : 'pl-amount--negative'}`}
-              >
-                {fmtRp(netIncome)}
-              </span>
+              <span className="pl-amount">Belum tersedia — membutuhkan data HPP/COGS.</span>
             </div>
           </div>
         </div>
       </section>
     </>
   );
+}
+
+function RevenueDetailTab({ company, token, from, to }: { company: string; token: string; from: string; to: string }) {
+  const [report, setReport] = useState<any>(null);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('ALL');
+  const [method, setMethod] = useState('ALL');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    api(`/finance/reports?from=${from}&to=${to}`, token, company).then(setReport).catch(() => setReport(null)).finally(() => setLoading(false));
+  }, [company, token, from, to]);
+  const rows = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return (Array.isArray(report?.revenueRows) ? report.revenueRows : []).filter((row: any) => {
+      const payment = Array.isArray(row.payment) ? row.payment[0] : row.payment;
+      return (status === 'ALL' || row.status === status) && (method === 'ALL' || payment?.method === method) && (!query || `${row.transaction_number ?? ''} ${row.customer?.name ?? ''}`.toLowerCase().includes(query));
+    });
+  }, [report, search, status, method]);
+  const { page, pageCount, setPage, slice } = usePaged(rows);
+  if (loading) return <LoadingState label="Memuat pendapatan..." />;
+  return <section className="panel finance-detail-report"><div className="panel-head"><h2>Detail Pendapatan</h2></div><div className="finance-report-filters"><Input placeholder="Cari transaksi/customer" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} /><Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}><option value="ALL">Semua status</option><option value="PAID">PAID</option><option value="PARTIALLY_REFUNDED">PARTIALLY_REFUNDED</option><option value="REFUNDED">REFUNDED</option></Select><Select value={method} onChange={(e) => { setMethod(e.target.value); setPage(1); }}><option value="ALL">Semua metode</option><option value="CASH">CASH</option><option value="QRIS">QRIS</option><option value="BANK_TRANSFER">BANK_TRANSFER</option><option value="E_WALLET">E_WALLET</option></Select></div>{rows.length ? <><div className="table finance-report-table"><div className="tr head"><span>Tanggal</span><span>Transaksi</span><span>Cabang</span><span>Customer</span><span>Metode</span><span>Net Sales</span><span>Status</span></div>{slice.map((row: any) => { const payment = Array.isArray(row.payment) ? row.payment[0] : row.payment; return <div className="tr" key={row.id}><span>{dateText(row.created_at)}</span><span>{row.transaction_number ?? row.id}</span><span>{row.branch_id ?? '—'}</span><span>{row.customer?.name ?? 'Umum'}</span><span>{payment?.method ?? '—'}</span><span>{fmtRp(Number(row.grand_total ?? 0) - Number(row.refunded_total ?? 0))}</span><span><StatusBadge status={row.status ?? '—'} /></span></div>; })}</div><Pagination page={page} pageCount={pageCount} onPage={setPage} /></> : <EmptyState title="Belum ada pendapatan" />}</section>;
+}
+
+function ExpenseDetailTab({ company, token, from, to }: { company: string; token: string; from: string; to: string }) {
+  const [report, setReport] = useState<any>(null);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('ALL');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    api(`/finance/reports?from=${from}&to=${to}`, token, company).then(setReport).catch(() => setReport(null)).finally(() => setLoading(false));
+  }, [company, token, from, to]);
+  const allRows = Array.isArray(report?.expenseRows) ? report.expenseRows : [];
+	  const categories: string[] = [...new Set(allRows.map((row: any) => String(row.category?.name ?? 'Lainnya')))] as string[];
+  const rows = useMemo(() => { const query = search.trim().toLowerCase(); return allRows.filter((row: any) => (category === 'ALL' || (row.category?.name ?? 'Lainnya') === category) && (!query || `${row.description ?? ''} ${row.reference ?? ''}`.toLowerCase().includes(query))); }, [allRows, search, category]);
+  const { page, pageCount, setPage, slice } = usePaged(rows);
+  if (loading) return <LoadingState label="Memuat pengeluaran..." />;
+  return <section className="panel finance-detail-report"><div className="panel-head"><h2>Detail Pengeluaran</h2><b>{fmtRp(Number(report?.summary?.recordedExpenses ?? report?.expenses ?? 0))}</b></div><div className="finance-report-filters"><Input placeholder="Cari deskripsi/referensi" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} /><Select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}><option value="ALL">Semua kategori</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</Select></div>{rows.length ? <><div className="table finance-report-table"><div className="tr head"><span>Tanggal</span><span>ID</span><span>Kategori</span><span>Deskripsi</span><span>Cabang</span><span>Metode</span><span>Jumlah</span></div>{slice.map((row: any) => <div className="tr" key={row.id}><span>{dateText(row.expense_date)}</span><span>{row.id}</span><span>{row.category?.name ?? 'Lainnya'}</span><span>{row.description ?? '—'}</span><span>{row.branch?.name ?? row.branch_id ?? '—'}</span><span>{row.payment_method ?? '—'}</span><span>{fmtRp(row.amount)}</span></div>)}</div><Pagination page={page} pageCount={pageCount} onPage={setPage} /></> : <EmptyState title="Belum ada pengeluaran" />}</section>;
 }
 
 function CashflowTab({
@@ -449,9 +528,8 @@ function CashflowTab({
   );
 
   const cashInflow = Number(data?.cashReceived ?? 0);
-  const cashOutflow =
-    Number(data?.expenses ?? 0) + Number(data?.purchases ?? 0);
-  const netCashflow = cashInflow - cashOutflow;
+  const cashOutflow = Number(data?.cashOutflow ?? 0);
+  const netCashflow = Number(data?.cashFlow?.net ?? data?.operatingCashResult ?? 0);
 
   const paymentMethods = new Map<string, { count: number; total: number }>();
   for (const s of paidSales) {

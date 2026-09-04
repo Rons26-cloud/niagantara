@@ -5,7 +5,9 @@ import { PermissionGuard } from '../../common/guards/permission.guard.js';
 import { FinanceController } from './finance.controller.js';
 import { FinanceService } from './finance.service.js';
 import { FinanceRepository } from './finance.repository.js';
+import { AuditModule } from '../audit/audit.module.js';
 @Module({
+  imports: [AuditModule],
   controllers: [FinanceController],
   providers: [
     FinanceService,

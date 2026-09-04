@@ -64,6 +64,32 @@ export async function api<T>(
   }
   return body as T;
 }
+
+export async function apiDownload(
+  path: string,
+  token: string,
+  companyId?: string,
+): Promise<{ blob: Blob; filename?: string }> {
+  const storedBranch =
+    typeof sessionStorage !== 'undefined'
+      ? sessionStorage.getItem('niagantara.active-branch')
+      : null;
+  const response = await fetch(`${apiBase}${path}`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+      ...(companyId ? { 'x-company-id': companyId } : {}),
+      ...(storedBranch ? { 'x-branch-id': storedBranch } : {}),
+    },
+  });
+  if (!response.ok) {
+    if (response.status === 401) unauthorizedHandler?.();
+    const body = await response.json().catch(() => ({}));
+    throw new ApiError(response.status, body.code ?? 'DOWNLOAD_FAILED');
+  }
+  const disposition = response.headers.get('content-disposition') ?? '';
+  const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1];
+  return { blob: await response.blob(), filename };
+}
 export async function login(email: string, password: string) {
   const response = await fetch(`${apiBase}/auth/login`, {
     method: 'POST',
