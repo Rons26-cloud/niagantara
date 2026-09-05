@@ -98,6 +98,7 @@ Future<void> showExpenseEntrySheet(BuildContext context) async {
   try {
     categories = await api.get('/expenses/categories') as List<dynamic>;
   } on Failure {
+    categories = [];
   }
 
   if (!context.mounted) return;

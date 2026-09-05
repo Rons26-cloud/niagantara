@@ -54,6 +54,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       if (!mounted) return;
       setState(() => _categories = rows);
     } on Failure {
+      _categories = [];
     }
   }
 

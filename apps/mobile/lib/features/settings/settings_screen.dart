@@ -80,6 +80,7 @@ class SettingsScreen extends StatelessWidget {
               try {
                 await context.read<AppController>().logout();
               } on Failure {
+                return;
               }
             },
             icon: const Icon(Icons.logout_rounded, size: 18),
