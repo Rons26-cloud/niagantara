@@ -62,6 +62,7 @@ class PosCartMath {
 
   List<CartLine> get lines => List.unmodifiable(_lines);
   bool get isEmpty => _lines.isEmpty;
+  bool get isNotEmpty => _lines.isNotEmpty;
   int get itemCount =>
       _lines.fold(0, (n, l) => n + l.quantity.round());
 

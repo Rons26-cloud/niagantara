@@ -63,9 +63,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = l(context);
+    final strings = l(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.resetTitle)),
+      appBar: AppBar(title: Text(strings.resetTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -79,9 +79,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   obscureText: _obscure,
                   validator: (v) => v != null && Validators.isStrongPassword(v)
                       ? null
-                      : l.passwordTooShort,
+                      : strings.passwordTooShort,
                   decoration: InputDecoration(
-                    labelText: l.newPassword,
+                    labelText: strings.newPassword,
                     suffixIcon: IconButton(
                       icon: Icon(_obscure
                           ? Icons.visibility_outlined
@@ -95,8 +95,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   controller: _confirm,
                   obscureText: _obscure,
                   validator: (v) =>
-                      v == _password.text ? null : l.passwordMismatch,
-                  decoration: InputDecoration(labelText: l.confirmPassword),
+                      v == _password.text ? null : strings.passwordMismatch,
+                  decoration: InputDecoration(labelText: strings.confirmPassword),
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
@@ -105,7 +105,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ? const SizedBox(
                           width: 20, height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(l.resetPassword),
+                      : Text(strings.resetPassword),
                 ),
               ],
             ),

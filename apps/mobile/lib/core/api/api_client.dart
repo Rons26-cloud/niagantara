@@ -49,36 +49,36 @@ class ApiClient {
 
   /// Escape hatch for endpoints that must run without tenant context
   /// (e.g. /auth/login). Returns the raw response body decoded JSON.
-  Future<dynamic> get(
+  Future<T> get<T>(
     String path, {
     Map<String, dynamic>? query,
     bool withTenantHeaders = true,
   }) =>
-      _request('GET', path, query: query, withTenantHeaders: withTenantHeaders);
+      _request<T>('GET', path, query: query, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> post(
+  Future<T> post<T>(
     String path, {
     Object? body,
     bool withTenantHeaders = true,
   }) =>
-      _request('POST', path,
+      _request<T>('POST', path,
           body: body, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> patch(
+  Future<T> patch<T>(
     String path, {
     Object? body,
     bool withTenantHeaders = true,
   }) =>
-      _request('PATCH', path,
+      _request<T>('PATCH', path,
           body: body, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> delete(
+  Future<T> delete<T>(
     String path, {
     bool withTenantHeaders = true,
   }) =>
-      _request('DELETE', path, withTenantHeaders: withTenantHeaders);
+      _request<T>('DELETE', path, withTenantHeaders: withTenantHeaders);
 
-  Future<dynamic> _request(
+  Future<T> _request<T>(
     String method,
     String path, {
     Map<String, dynamic>? query,
@@ -95,7 +95,7 @@ class ApiClient {
         queryParameters: query,
         data: body,
       );
-      return response.data;
+      return response.data as T;
     } on DioException catch (e) {
       final failure = mapToFailure(e);
       if (failure.isUnauthorized && !path.startsWith('/auth/')) {

@@ -28,7 +28,9 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _generation = 0;
 
-  Future<void> _reload() => setState(() => _generation++);
+  Future<void> _reload() async {
+    setState(() => _generation++);
+  }
 
   @override
   Widget build(BuildContext context) {

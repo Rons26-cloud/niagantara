@@ -56,9 +56,9 @@ class _VerifyRecoveryScreenState extends State<VerifyRecoveryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = l(context);
+    final strings = l(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.verifyTitle)),
+      appBar: AppBar(title: Text(strings.verifyTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -68,7 +68,7 @@ class _VerifyRecoveryScreenState extends State<VerifyRecoveryScreen> {
               Icon(Icons.mark_email_read_outlined,
                   size: 46, color: Theme.of(context).colorScheme.primary),
               const SizedBox(height: 14),
-              Text(l.verifySubtitle,
+              Text(strings.verifySubtitle,
                   textAlign: TextAlign.center,
                   style:
                       TextStyle(fontSize: 13, color: Theme.of(context).hintColor)),
@@ -86,7 +86,7 @@ class _VerifyRecoveryScreenState extends State<VerifyRecoveryScreen> {
                 style: const TextStyle(
                     fontSize: 22, letterSpacing: 10, fontWeight: FontWeight.w800),
                 decoration: InputDecoration(
-                  labelText: l.otpLabel,
+                  labelText: strings.otpLabel,
                   counterText: '',
                 ),
               ),
@@ -97,7 +97,7 @@ class _VerifyRecoveryScreenState extends State<VerifyRecoveryScreen> {
                     ? const SizedBox(
                         width: 20, height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2))
-                    : Text(l.verify),
+                    : Text(strings.verify),
               ),
             ],
           ),

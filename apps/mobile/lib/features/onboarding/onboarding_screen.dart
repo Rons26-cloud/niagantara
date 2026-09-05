@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app/localization.dart';
 import '../../core/api/error_mapper.dart';
 import '../../core/auth/app_controller.dart';
+import '../../core/errors/failure.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 import '../../app/router.dart' as routes;

@@ -45,9 +45,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = l(context);
+    final strings = l(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.forgotTitle)),
+      appBar: AppBar(title: Text(strings.forgotTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -59,7 +59,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Icon(Icons.lock_reset_rounded,
                     size: 46, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 14),
-                Text(l.forgotSubtitle,
+                Text(strings.forgotSubtitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 13, color: Theme.of(context).hintColor)),
@@ -68,8 +68,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) =>
-                      v != null && Validators.isValidEmail(v) ? null : l.invalidEmail,
-                  decoration: InputDecoration(labelText: l.email),
+                      v != null && Validators.isValidEmail(v) ? null : strings.invalidEmail,
+                  decoration: InputDecoration(labelText: strings.email),
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
@@ -78,7 +78,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ? const SizedBox(
                           width: 20, height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(l.sendCode),
+                      : Text(strings.sendCode),
                 ),
               ],
             ),

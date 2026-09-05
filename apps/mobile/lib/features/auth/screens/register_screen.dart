@@ -58,9 +58,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = l(context);
+    final strings = l(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.createAccount)),
+      appBar: AppBar(title: Text(strings.createAccount)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -71,34 +71,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l.registerTitle,
+                  Text(strings.registerTitle,
                       style: const TextStyle(
                           fontSize: 19, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 4),
-                  Text(l.registerSubtitle,
+                  Text(strings.registerSubtitle,
                       style:
                           TextStyle(fontSize: 12.5, color: Theme.of(context).hintColor)),
                   const SizedBox(height: 22),
                   TextFormField(
                     controller: _fullName,
                     textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(labelText: l.fullName),
+                    decoration: InputDecoration(labelText: strings.fullName),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
                     controller: _company,
                     textCapitalization: TextCapitalization.words,
                     validator: (v) =>
-                        Validators.isNotBlank(v) ? null : l.requiredField,
-                    decoration: InputDecoration(labelText: l.companyName),
+                        Validators.isNotBlank(v) ? null : strings.requiredField,
+                    decoration: InputDecoration(labelText: strings.companyName),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) =>
-                        v != null && Validators.isValidEmail(v) ? null : l.invalidEmail,
-                    decoration: InputDecoration(labelText: l.email),
+                        v != null && Validators.isValidEmail(v) ? null : strings.invalidEmail,
+                    decoration: InputDecoration(labelText: strings.email),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
@@ -107,10 +107,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (v) =>
                         v != null && Validators.isStrongPassword(v)
                             ? null
-                            : l.passwordTooShort,
+                            : strings.passwordTooShort,
                     decoration: InputDecoration(
-                      labelText: l.newPassword,
-                      helperText: '${l.passwordTooShort} · Aa1!xxxx',
+                      labelText: strings.newPassword,
+                      helperText: '${strings.passwordTooShort} · Aa1!xxxx',
                       suffixIcon: IconButton(
                         icon: Icon(_obscure
                             ? Icons.visibility_outlined
@@ -126,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ? const SizedBox(
                             width: 20, height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2))
-                        : Text(l.register),
+                        : Text(strings.register),
                   ),
                 ],
               ),

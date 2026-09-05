@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:niagantara_mobile/core/api/error_mapper.dart';
+import 'package:niagantara_mobile/core/errors/failure.dart';
 
 void main() {
   group('mapToFailure (pure error → Failure mapping)', () {
@@ -14,7 +16,7 @@ void main() {
     });
 
     test('Failure passes through unchanged', () {
-      const original = Failure(FailureKind.notFound, 'missing');
+      const original = Failure(FailureKind.notFound, code: 'missing');
       final f = mapToFailure(original);
       expect(identical(f, original), isTrue);
     });

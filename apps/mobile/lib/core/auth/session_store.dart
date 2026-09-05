@@ -10,7 +10,7 @@ class SessionStore {
       : _storage = storage ??
             const FlutterSecureStorage(
               aOptions: AndroidOptions(encryptedSharedPreferences: true),
-              iOptions: IOSOptions(accessibility: KeychainAccessibility.after_first_unlock),
+              iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
             );
 
   static const _kAccess = 'niagantara.access_token';

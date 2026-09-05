@@ -10,6 +10,8 @@ import '../../core/utils/formatters.dart';
 import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
+import '../../shared/widgets/ng_cards.dart';
+import '../../shared/widgets/state_views.dart';
 import 'cart_totals.dart';
 
 /// Point of Sale. Real endpoints only:
@@ -55,7 +57,7 @@ class _PosScreenState extends State<PosScreen> {
 
   String get _branchId {
     final id = _app.activeBranch?.id;
-    if (id == null) throw const Failure(FailureKind.server, 'NO_BRANCH');
+    if (id == null) throw const Failure(FailureKind.server, code: 'NO_BRANCH');
     return id;
   }
 
@@ -265,7 +267,11 @@ class _PosScreenState extends State<PosScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     if (_productError != null) {
-      return ErrorView(failure: _productError!, onRetry: _loadProducts);
+      return ErrorView(
+        failure: _productError!,
+        retryLabel: l(context).retry,
+        onRetry: _loadProducts,
+      );
     }
     if (_products.isEmpty) {
       return EmptyView(message: l(context).emptyProducts);

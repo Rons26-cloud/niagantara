@@ -22,7 +22,9 @@ class ShiftsScreen extends StatefulWidget {
 class _ShiftsScreenState extends State<ShiftsScreen> {
   int _generation = 0;
 
-  Future<void> _reload() => setState(() => _generation++);
+  Future<void> _reload() async {
+    setState(() => _generation++);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -5,6 +5,7 @@ import '../../app/localization.dart';
 import '../../core/auth/app_controller.dart';
 import '../../shared/components/async_gate.dart';
 import '../../shared/constants/design.dart';
+import '../../shared/widgets/ng_cards.dart';
 import '../../shell/home_shell.dart' show openQuickActions;
 
 /// Account — identity, active branch switcher, theme/language shortcuts.

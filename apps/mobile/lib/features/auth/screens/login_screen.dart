@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = l(context);
+    final strings = l(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -63,13 +63,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset('assets/branding/niagantara-logo.png', width: 210),
                     const SizedBox(height: 36),
-                    Text(l.loginTitle,
+                    Text(strings.loginTitle,
                         style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -0.5)),
                     const SizedBox(height: 6),
-                    Text(l.loginSubtitle,
+                    Text(strings.loginSubtitle,
                         style: TextStyle(
                             fontSize: 13, color: Theme.of(context).hintColor)),
                     const SizedBox(height: 26),
@@ -78,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       autofillHints: const [AutofillHints.email],
                       validator: (v) =>
-                          v != null && Validators.isValidEmail(v) ? null : l.invalidEmail,
-                      decoration: InputDecoration(labelText: l.email),
+                          v != null && Validators.isValidEmail(v) ? null : strings.invalidEmail,
+                      decoration: InputDecoration(labelText: strings.email),
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
@@ -87,9 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: _obscure,
                       autofillHints: const [AutofillHints.password],
                       validator: (v) =>
-                          Validators.isNotBlank(v) ? null : l.requiredField,
+                          Validators.isNotBlank(v) ? null : strings.requiredField,
                       decoration: InputDecoration(
-                        labelText: l.password,
+                        labelText: strings.password,
                         suffixIcon: IconButton(
                           icon: Icon(_obscure
                               ? Icons.visibility_outlined
@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pushNamed(context, '/forgot-password'),
-                        child: Text(l.forgotPassword),
+                        child: Text(strings.forgotPassword),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -113,19 +113,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2))
-                          : Text(l.signIn),
+                          : Text(strings.signIn),
                     ),
                     const SizedBox(height: 18),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l.noAccountYet,
+                        Text(strings.noAccountYet,
                             style: TextStyle(
                                 fontSize: 12.5,
                                 color: Theme.of(context).hintColor)),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context, '/register'),
-                          child: Text(l.createAccount),
+                          child: Text(strings.createAccount),
                         ),
                       ],
                     ),
