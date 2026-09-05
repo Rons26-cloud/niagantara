@@ -2409,6 +2409,19 @@ footer {
   background: var(--surface-elevated);
 }
 
+/* Keep the hero dashboard flush with its artwork in light mode. */
+[data-theme='light'] .home-page .owner-dashboard-shot {
+  border-color: transparent;
+  background: transparent;
+}
+[data-theme='light'] .home-page .owner-dashboard-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
 @media (max-width: 520px) {
   .container {
     width: calc(100% - 32px);
