@@ -8,6 +8,11 @@ import {
   Boxes,
   TrendingUp,
   Search,
+  ScanLine,
+  ShoppingCart,
+  Minus,
+  Plus,
+  Wifi,
 } from 'lucide-react';
 
 type W = ReturnType<typeof useTranslation>['translations']['website'];
@@ -223,7 +228,10 @@ export function Dashboard({ w, small = false }: { w: W; small?: boolean }) {
 }
 
 export function PosPreview({ w }: { w: W }) {
-  const d = w.demoLabels;
+  const en = String((w as any).mobileSection?.kicker ?? '').startsWith('FLEX');
+  const products = en
+    ? [['D', 'Chicken Dimsum', 'Rp 28,000', '84'], ['T', 'Iced Tea', 'Rp 12,000', '120'], ['K', 'Arabica Coffee', 'Rp 24,000', '42'], ['R', 'Sourdough Bread', 'Rp 32,000', '18'], ['L', 'Citrus Latte', 'Rp 26,000', '36'], ['N', 'Nasi Goreng', 'Rp 30,000', '9']]
+    : [['D', 'Dimsum Ayam', 'Rp 28.000', '84'], ['T', 'Es Teh', 'Rp 12.000', '120'], ['K', 'Kopi Arabika', 'Rp 24.000', '42'], ['R', 'Roti Sourdough', 'Rp 32.000', '18'], ['L', 'Latte Citrus', 'Rp 26.000', '36'], ['N', 'Nasi Goreng', 'Rp 30.000', '9']];
   return (
     <div className="pos-preview" aria-hidden="true">
       <div className="pos-head">
@@ -235,62 +243,64 @@ export function PosPreview({ w }: { w: W }) {
           height={157}
           loading="lazy"
         />
-        <span>{String((w as any).mobileSection?.kicker ?? '').startsWith('FLEX') ? 'Central Store⌄' : 'Toko Pusat⌄'}</span>
-        <i>A</i>
+        <span className="pos-branch">{en ? 'Central Store⌄' : 'Toko Pusat⌄'}</span>
+        <span className="pos-head-status"><Wifi size={11} /> Online</span>
+        <span className="pos-shift-status">{en ? 'Shift active' : 'Shift aktif'}</span>
+        <i className="pos-avatar">A</i>
       </div>
       <div className="pos-body">
         <div className="pos-products">
           <div className="pos-tabs">
-            <b>{d.allProducts}</b>
-            <span>{d.drinks}</span>
-            <span>{d.foods}</span>
+            <b>{en ? 'All products' : 'Semua produk'}</b>
+            <span>{en ? 'Drinks' : 'Minuman'}</span>
+            <span>{en ? 'Food' : 'Makanan'}</span>
           </div>
-          <div className="search">
-            <Search size={14} aria-hidden="true" /> {d.searchOrScan}
+          <div className="pos-search-row">
+            <div className="search"><Search size={14} aria-hidden="true" /><span>{en ? 'Barcode, SKU, or product name...' : 'Barcode, SKU, atau nama produk...'}</span></div>
+            <span className="pos-scan"><ScanLine size={13} /> Scan</span>
           </div>
-          <div className="product-grid">
-            {[
-              ['K', 'Kopi Arabika', 'Rp 42.000', 'blue-bg'],
-              ['O', 'Oat Latte', 'Rp 35.000', 'purple-bg'],
-              ['T', 'Teh Melati', 'Rp 18.000', 'cyan-bg'],
-              ['R', 'Roti Sourdough', 'Rp 28.000', 'orange-bg'],
-            ].map(([letter, name, price, color]) => (
-              <div key={name}>
-                <i className={`product-image ${color}`}>{letter}</i>
+          <p className="pos-barcode-ready"><i /> {en ? 'Ready to search or scan a barcode' : 'Siap mencari produk atau memindai barcode'}</p>
+          <div className="pos-preview-grid">
+            {products.map(([letter, name, price, stock], index) => (
+              <div className={`pos-preview-product${index === 0 ? ' selected' : ''}`} key={name}>
+                <i className={`product-image ${['blue-bg', 'cyan-bg', 'purple-bg', 'orange-bg'][index % 4]}`}>{letter}</i>
                 <b>{name}</b>
                 <small>{price}</small>
+                <em className={Number(stock) < 12 ? 'low' : ''}>{en ? `Stock: ${stock}` : `Stok: ${stock}`}</em>
               </div>
             ))}
           </div>
         </div>
         <div className="cart">
-          <div className="card-title">
-            <b>{d.order} #2481</b>
-            <small>{d.remove}</small>
+          <div className="pos-cart-title">
+            <b><ShoppingCart size={14} /> {en ? 'Cart' : 'Keranjang'} (3)</b>
+            <small>#2481</small>
           </div>
-          <p>
+          <p className="pos-cart-line">
             <i className="product blue-bg">K</i>
             <span>
-              <b>Kopi Arabika</b>
-              <small>1 × Rp 42.000</small>
+              <b>{en ? 'Arabica Coffee' : 'Kopi Arabika'}</b>
+              <small>1 × Rp {en ? '24,000' : '24.000'}</small>
             </span>
-            <strong>Rp 42.000</strong>
+            <strong>Rp {en ? '24,000' : '24.000'}</strong>
+            <span className="pos-qty"><Minus size={10} /> 1 <Plus size={10} /></span>
           </p>
-          <p>
+          <p className="pos-cart-line">
             <i className="product cyan-bg">T</i>
             <span>
-              <b>Teh Melati</b>
-              <small>2 × Rp 18.000</small>
+              <b>{en ? 'Iced Tea' : 'Es Teh'}</b>
+              <small>2 × Rp {en ? '12,000' : '12.000'}</small>
             </span>
-            <strong>Rp 36.000</strong>
+            <strong>Rp {en ? '24,000' : '24.000'}</strong>
+            <span className="pos-qty"><Minus size={10} /> 2 <Plus size={10} /></span>
           </p>
+          <div className="pos-cart-customer">+ {en ? 'Add customer (optional)' : 'Pilih pelanggan (opsional)'}</div>
           <div className="cart-total">
-            <span>{d.subtotal}</span>
-            <b>Rp 78.000</b>
+            <span>Subtotal</span>
+            <b>Rp {en ? '48,000' : '48.000'}</b>
           </div>
-          <button>
-            {d.pay} Rp 78.000 <span>→</span>
-          </button>
+          <div className="pos-total-row"><span>Total</span><b>Rp {en ? '48,000' : '48.000'}</b></div>
+          <div className="pos-pay-btn">{en ? 'Pay now' : 'Bayar sekarang'} <span>→</span></div>
         </div>
       </div>
     </div>

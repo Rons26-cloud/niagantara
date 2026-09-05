@@ -12,10 +12,10 @@ export interface SeoMeta {
 }
 
 const home: SeoMeta = {
-  title: 'Dashboard Bisnis Gratis untuk UMKM | NIAGANTARA',
+  title: 'NIAGANTARA — Platform Bisnis, POS & Dashboard untuk UMKM',
   description:
     'NIAGANTARA adalah platform dashboard bisnis Nusantara untuk UMKM hingga perusahaan, mengelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan dalam satu sistem terintegrasi.',
-  ogTitle: 'Dashboard Bisnis Gratis untuk UMKM | NIAGANTARA',
+  ogTitle: 'NIAGANTARA — Platform Bisnis, POS & Dashboard untuk UMKM',
   ogDescription:
     'Kelola POS, penjualan, stok, keuangan, cabang, pelanggan, dan laporan bisnis dari satu dashboard terintegrasi.',
   robots: 'index, follow',
@@ -367,9 +367,9 @@ export const SEO_DATA: Record<string, SeoMeta> = {
 
 const ENGLISH_SEO: Record<string, Pick<SeoMeta, 'title' | 'description' | 'ogTitle' | 'ogDescription'>> = {
   '/': {
-    title: 'Free Business Dashboard for SMEs | NIAGANTARA',
+    title: 'NIAGANTARA — Business Platform, POS & Dashboard for SMEs',
     description: 'Manage POS, sales, inventory, finance, branches, customers, and reports with NIAGANTARA’s integrated business dashboard.',
-    ogTitle: 'Free Business Dashboard for SMEs | NIAGANTARA',
+    ogTitle: 'NIAGANTARA — Business Platform, POS & Dashboard for SMEs',
     ogDescription: 'Connect POS, inventory, finance, branches, and reporting in one business platform.',
   },
   '/fitur': {

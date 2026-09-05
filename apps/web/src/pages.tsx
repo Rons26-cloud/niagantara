@@ -5,6 +5,7 @@ import {
   Button,
   Kicker,
   Heading,
+  renderSafeTitle,
   ThemeImage,
   LazySection,
 } from './chrome';
@@ -77,8 +78,8 @@ export function HeroSection() {
           <div className="eyebrow">
             <i />{' '}
             {en
-              ? 'INTEGRATED BUSINESS OPERATIONS PLATFORM'
-              : 'PLATFORM OPERASIONAL BISNIS TERINTEGRASI'}
+              ? 'BUSINESS CONTROL PLATFORM'
+              : 'PLATFORM KENDALI BISNIS'}
           </div>
           <h1>
             {en
@@ -88,8 +89,8 @@ export function HeroSection() {
           </h1>
           <p>
             {en
-              ? 'Connect POS, inventory, purchasing, suppliers, branches, teams, and operational monitoring in one platform.'
-              : 'Satukan kasir, stok, pembelian, supplier, cabang, tim, dan pemantauan operasional dalam satu platform yang terhubung.'}
+              ? 'NIAGANTARA connects POS, inventory, purchasing, suppliers, branches, teams, and operational monitoring in one platform.'
+              : 'NIAGANTARA adalah platform bisnis terintegrasi untuk mengelola kasir, stok, pembelian, supplier, cabang, tim, dan operasional.'}
           </p>
           <div className="actions">
             <Button to="/kontak">
@@ -127,7 +128,11 @@ export function HeroSection() {
             <Link
               to="/demo"
               className="hero-hero-shot owner-dashboard-shot"
-              ariaLabel={en ? 'Open NIAGANTARA demo' : 'Buka demo NIAGANTARA'}
+              ariaLabel={
+                en
+                  ? 'Open the NIAGANTARA Owner Dashboard demo'
+                  : 'Buka demo Dashboard Owner NIAGANTARA'
+              }
             >
               <img
                 src="/phone/screen.png"
@@ -140,7 +145,8 @@ export function HeroSection() {
                 decoding="async"
               />
               <span className="hero-shot-badge">
-                <PlayCircle size={14} aria-hidden="true" /> Owner Dashboard
+                <PlayCircle size={14} aria-hidden="true" />{' '}
+                {en ? 'View Owner Dashboard' : 'Lihat Dashboard Owner'}
               </span>
             </Link>
           </div>
@@ -311,19 +317,21 @@ export function PosSolutionSection() {
   const w = useW();
   const s = w.solutions.pos;
   return (
-    <section id="solusi" className="section solution">
+    <section id="solusi" className="section solution pos-showcase-section">
       <div className="container split">
         <div>
           <Kicker>{s.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: s.title }} />
+          <h2>{renderSafeTitle(s.title)}</h2>
           <p>{s.text}</p>
           <ul>
             {s.bullets.map((b) => (
               <li key={b}>✓ {b}</li>
             ))}
           </ul>
-          <Button to="/kontak">{s.cta}</Button>
-          <MoreLink to="/solusi" />
+          <div className="solution-actions">
+            <Button to="/kontak">{s.cta}</Button>
+            <MoreLink to="/solusi" />
+          </div>
         </div>
         <PosPreview w={w} />
       </div>
@@ -340,7 +348,7 @@ export function InventorySolutionSection() {
         <InventoryPreview w={w} />
         <div>
           <Kicker>{s.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: s.title }} />
+          <h2>{renderSafeTitle(s.title)}</h2>
           <p>{s.text}</p>
           <div className="pills">
             {s.pills.map((p) => (
@@ -363,7 +371,7 @@ export function BranchesSection() {
       <div className="container branch-grid">
         <div>
           <Kicker>{w.branches.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: w.branches.title }} />
+          <h2>{renderSafeTitle(w.branches.title)}</h2>
           <p>{w.branches.text}</p>
           <div className="hierarchy">
             <div className="hierarchy-card company">
@@ -498,7 +506,7 @@ export function SheetsSection() {
       <div className="container sheets-grid">
         <div>
           <Kicker>{w.sheets.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: w.sheets.title }} />
+          <h2>{renderSafeTitle(w.sheets.title)}</h2>
           <p>{w.sheets.text}</p>
           <Link className="text-link" to="/faq">
             {w.sheets.link} <span aria-hidden="true">→</span>
@@ -554,7 +562,7 @@ export function SecuritySection() {
       <div className="container security-panel">
         <div>
           <Kicker>{w.security.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: w.security.title }} />
+          <h2>{renderSafeTitle(w.security.title)}</h2>
           <p>{w.security.text}</p>
           <MoreLink to="/tentang" />
         </div>
@@ -623,10 +631,9 @@ export function MobileSection() {
       <div className="container mobile-grid">
         <div>
           <Kicker>{w.mobileSection.kicker}</Kicker>
-          <h2
-            id="mobile-showcase-title"
-            dangerouslySetInnerHTML={{ __html: w.mobileSection.title }}
-          />
+          <h2 id="mobile-showcase-title">
+            {renderSafeTitle(w.mobileSection.title)}
+          </h2>
           <p>{w.mobileSection.text}</p>
           <ul className="mobile-features">
             {w.mobileSection.bullets.map((b, i) => {
@@ -1045,7 +1052,7 @@ export function FaqSection() {
       <div className="container faq-grid">
         <div>
           <Kicker>{w.faq.kicker}</Kicker>
-          <h2 dangerouslySetInnerHTML={{ __html: w.faq.title }} />
+          <h2>{renderSafeTitle(w.faq.title)}</h2>
           <p>{w.faq.text}</p>
           <a className="text-link" href="mailto:support@niagantara.com">
             {w.faq.contactLink} <span aria-hidden="true">→</span>

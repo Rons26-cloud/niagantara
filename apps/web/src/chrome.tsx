@@ -330,10 +330,32 @@ export function Heading({
   return (
     <div className="heading">
       <Kicker>{kicker}</Kicker>
-      <h2 dangerouslySetInnerHTML={{ __html: title }} />
+      <h2>{renderSafeTitle(title)}</h2>
       {text && <p>{text}</p>}
     </div>
   );
+}
+
+/** Render the tiny, controlled formatting vocabulary used by locale titles.
+ * All text remains React-escaped; arbitrary HTML is never interpreted.
+ */
+export function renderSafeTitle(title: string): ReactNode[] {
+  const parts = title.split(/(<br\s*\/?\s*>|<span>|<\/span>)/gi);
+  let highlighted = false;
+  return parts.flatMap((part, index) => {
+    if (/^<br\s*\/?\s*>$/i.test(part))
+      return [<br key={`br-${index}`} />];
+    if (part.toLowerCase() === '<span>') {
+      highlighted = true;
+      return [];
+    }
+    if (part.toLowerCase() === '</span>') {
+      highlighted = false;
+      return [];
+    }
+    if (!part) return [];
+    return [highlighted ? <span key={`text-${index}`}>{part}</span> : part];
+  });
 }
 
 export function LazySection({
