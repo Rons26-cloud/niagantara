@@ -25,16 +25,17 @@ class SalesDetailScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l(context).salesDetailTitle)),
       body: AsyncGate<Map<String, dynamic>>(
         future: () => api.get('/sales/$saleId'),
-        builder: (context, sale) => _Detail(sale: sale),
+        builder: (context, sale) => _Detail(sale: sale, saleId: saleId),
       ),
     );
   }
 }
 
 class _Detail extends StatelessWidget {
-  const _Detail({required this.sale});
+  const _Detail({required this.sale, required this.saleId});
 
   final Map<String, dynamic> sale;
+  final String saleId;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +166,7 @@ class _Detail extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: Text(s.refundSale),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('${s.itemsCount(items.length)}',
+          Text(s.itemsCount(items.length),
               style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 8),
           TextField(controller: reason,

@@ -89,7 +89,10 @@ class _TransferFormScreenState extends State<TransferFormScreen> {
   }
 
   @override
-  void dispose() => _qty.dispose();
+  void dispose() {
+    _qty.dispose();
+    super.dispose();
+  }
 
   Future<void> _load() async {
     try {
@@ -161,7 +164,7 @@ class _TransferFormScreenState extends State<TransferFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: _source,
+                      initialValue: _source,
                       decoration: InputDecoration(labelText: s.sourceWarehouse),
                       items: [
                         for (final w in _warehouses)
@@ -173,7 +176,7 @@ class _TransferFormScreenState extends State<TransferFormScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _destination,
+                      initialValue: _destination,
                       decoration:
                           InputDecoration(labelText: s.destinationWarehouse),
                       items: [
@@ -186,7 +189,7 @@ class _TransferFormScreenState extends State<TransferFormScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _productId,
+                      initialValue: _productId,
                       isExpanded: true,
                       decoration: InputDecoration(labelText: s.productName),
                       items: [

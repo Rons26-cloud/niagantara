@@ -14,7 +14,7 @@ void main() {
   group('lineBreakdown', () {
     test('no discount', () {
       final math = PosCartMath(lines: [
-        CartLine(productId: 'p1', name: 'A', unitPrice: 15000, quantity: 2),
+        const CartLine(productId: 'p1', name: 'A', unitPrice: 15000, quantity: 2),
       ]);
       final b = math.lineBreakdown(math.lines.first);
       expect(b.gross, 30000);
@@ -24,7 +24,7 @@ void main() {
 
     test('PERCENT discount clamped and rounded like SQL', () {
       final math = PosCartMath(lines: [
-        CartLine(
+        const CartLine(
             productId: 'p1',
             name: 'A',
             unitPrice: 9999,
@@ -41,7 +41,7 @@ void main() {
 
     test('PERCENT above 100 clamps to 100', () {
       final math = PosCartMath(lines: [
-        CartLine(
+        const CartLine(
             productId: 'p1',
             name: 'A',
             unitPrice: 100,
@@ -54,7 +54,7 @@ void main() {
 
     test('FIXED discount cannot exceed gross', () {
       final math = PosCartMath(lines: [
-        CartLine(
+        const CartLine(
             productId: 'p1',
             name: 'A',
             unitPrice: 5000,
@@ -69,10 +69,10 @@ void main() {
   group('totals (checkout_sale mirror)', () {
     test('subtotal → item discounts → txn PERCENT → tax → grand', () {
       final math = PosCartMath(lines: [
-        CartLine(productId: 'a', name: 'A', unitPrice: 20000, quantity: 2),
-        CartLine(
+        const CartLine(productId: 'a', name: 'A', unitPrice: 20000, quantity: 2),
+        const CartLine(
             productId: 'b', name: 'B', unitPrice: 10000, quantity: 1),
-        CartLine(
+        const CartLine(
             productId: 'c',
             name: 'C',
             unitPrice: 8000,
@@ -96,7 +96,7 @@ void main() {
 
     test('FIXED transaction discount capped at after-item amount', () {
       final math = PosCartMath(lines: [
-        CartLine(productId: 'a', name: 'A', unitPrice: 10000, quantity: 1),
+        const CartLine(productId: 'a', name: 'A', unitPrice: 10000, quantity: 1),
       ]);
       final t = math.totals(
           transactionDiscountType: discountFixed,

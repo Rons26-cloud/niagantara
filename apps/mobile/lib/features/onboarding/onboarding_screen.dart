@@ -222,7 +222,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           fillColor: Colors.white.withValues(alpha: 0.06),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.white24),
+            borderSide: const BorderSide(color: Colors.white24),
           ),
         ),
       ),
@@ -302,7 +302,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return _card(Column(children: [
           _title(s.stepPos),
           const SizedBox(height: 6),
-          Icon(Icons.point_of_sale_rounded, color: NgColors.cyan, size: 44),
+          const Icon(Icons.point_of_sale_rounded, color: NgColors.cyan, size: 44),
           const SizedBox(height: 14),
           _button(l(context).qaOpenPos, () async {
             await _app.prefs.setOnboarded(true);
@@ -316,7 +316,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return _card(Column(children: [
           _title(s.stepSheets),
           const SizedBox(height: 6),
-          Icon(Icons.table_view_rounded, color: NgColors.cyan, size: 40),
+          const Icon(Icons.table_view_rounded, color: NgColors.cyan, size: 40),
           const SizedBox(height: 10),
           Text(s.sheetsConnectNote,
               textAlign: TextAlign.center,

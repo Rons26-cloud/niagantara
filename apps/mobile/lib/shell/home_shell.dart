@@ -8,7 +8,6 @@ import '../features/dashboard/dashboard_screen.dart';
 import '../features/expenses/expenses_screen.dart';
 import '../features/notifications/notifications_screen.dart';
 import '../features/products/product_form_screen.dart';
-import '../features/inventory/inventory_screen.dart';
 import '../features/inventory/transfers_screen.dart' show TransferFormScreen;
 import '../features/sales/sales_screen.dart';
 import '../app/router.dart';
@@ -111,8 +110,7 @@ class _HomeShellState extends State<HomeShell> {
                                 ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).hintColor,
                           ),
-                          child: (destinations[i].icon ??
-                              destinations[i].selectedIcon!),
+                          child: destinations[i].icon,
                         ),
                         const SizedBox(height: 2),
                         Text(

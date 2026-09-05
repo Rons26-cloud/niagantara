@@ -90,7 +90,7 @@ class _ShiftsScreenState extends State<ShiftsScreen> {
         color: open ? NgColors.success : Theme.of(context).hintColor,
       ),
       title: Text(
-        '${Fmt.dateTime(Fmt.parseDate(shift['opened_at']))}',
+        Fmt.dateTime(Fmt.parseDate(shift['opened_at'])),
         style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
       ),
       subtitle: open

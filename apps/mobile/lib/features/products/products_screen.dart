@@ -8,7 +8,6 @@ import '../../core/utils/formatters.dart';
 import '../../shared/components/paginated_list_view.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
-import 'product_form_screen.dart';
 
 /// Master product catalog — paginated GET /products.
 /// Cursor pagination follows the API contract: `lt` = created_at of the

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../auth/session_store.dart';
 import '../config/app_config.dart';
+import '../errors/failure.dart';
 import 'error_mapper.dart';
 
 /// Single HTTP entry point for every feature.

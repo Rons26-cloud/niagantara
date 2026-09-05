@@ -7,7 +7,6 @@ import '../../core/utils/formatters.dart';
 import '../../shared/components/paginated_list_view.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
-import 'sales_detail_screen.dart';
 
 /// Sales history — GET /sales (latest 100, server-side filters).
 class SalesScreen extends StatefulWidget {

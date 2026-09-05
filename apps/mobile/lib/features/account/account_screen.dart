@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../app/localization.dart';
 import '../../core/auth/app_controller.dart';
-import '../../shared/components/async_gate.dart';
+import '../../core/models/org_context.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 import '../../shell/home_shell.dart' show openQuickActions;
@@ -24,6 +24,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final s = l(context);
     final app = context.watch<AppController>();
     final ctx = app.ctx;
+    final branches = ctx?.branches ?? const <BranchRef>[];
 
     return Scaffold(
       appBar: AppBar(title: Text(s.accountTitle)),
@@ -55,18 +56,18 @@ class _AccountScreenState extends State<AccountScreen> {
                         fontSize: 11.5, color: Theme.of(context).hintColor)),
               ])),
             ]),
-            if ((ctx?.permissions ?? const []).isNotEmpty) ...[
+            if (ctx != null && ctx.permissions.isNotEmpty) ...[
               const SizedBox(height: 16),
               Wrap(spacing: 6, runSpacing: 6, children: [
                 for (final role in {
-                  for (final c in ctx!.companies) c['role_key']?.toString() ?? ''
+                  for (final c in ctx.companies) c['role_key']?.toString() ?? ''
                 })
                   if (role.isNotEmpty) StatusChip(label: role, color: NgColors.blue),
               ]),
             ],
             const SizedBox(height: 18),
             SectionHeader(title: l(context).chooseBranch),
-            for (final b in (ctx?.branches ?? const []))
+            for (final b in branches)
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 dense: true,

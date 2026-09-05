@@ -37,7 +37,6 @@ class _PosScreenState extends State<PosScreen> {
   Map<String, dynamic>? _shift;
   Map<String, dynamic>? _warehouse;
   bool _contextLoading = true;
-  String? _barcodeBuffer;
 
   @override
   void initState() {
@@ -54,12 +53,6 @@ class _PosScreenState extends State<PosScreen> {
 
   ApiClient get _api => context.read<ApiClient>();
   AppController get _app => context.read<AppController>();
-
-  String get _branchId {
-    final id = _app.activeBranch?.id;
-    if (id == null) throw const Failure(FailureKind.server, code: 'NO_BRANCH');
-    return id;
-  }
 
   Future<void> _loadContext() async {
     setState(() => _contextLoading = true);
@@ -660,13 +653,13 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
                 const SizedBox(height: 14),
                 Row(children: [
                   ChoiceChip(
-                      label: Text('%'),
+                      label: const Text('%'),
                       selected: _txnType == discountPercent,
                       onSelected: (v) =>
                           setState(() => _txnType = v ? discountPercent : null)),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                      label: Text('Rp'),
+                      label: const Text('Rp'),
                       selected: _txnType == discountFixed,
                       onSelected: (v) =>
                           setState(() => _txnType = v ? discountFixed : null)),

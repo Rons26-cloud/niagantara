@@ -31,7 +31,7 @@ class OrgContext {
   String? get primaryRoleKey =>
       roleKeys.isNotEmpty ? roleKeys.first : null;
 
-  static OrgContext fromJson(Map<String, dynamic> json) {
+  factory OrgContext.fromJson(Map<String, dynamic> json) {
     final memberships = (json['companies'] as List<dynamic>? ?? [])
         .whereType<Map<String, dynamic>>()
         .toList();
@@ -71,7 +71,7 @@ class StoreRef {
   final String companyId;
   final String name;
 
-  static StoreRef.fromJson(Map<String, dynamic> json) => StoreRef(
+  static StoreRef fromJson(Map<String, dynamic> json) => StoreRef(
         id: json['id'].toString(),
         companyId: json['company_id']?.toString() ?? '',
         name: json['name']?.toString() ?? '',

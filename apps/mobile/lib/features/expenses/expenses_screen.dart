@@ -21,7 +21,7 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  int _generation = 0;
+  final int _generation = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ Future<void> showExpenseEntrySheet(BuildContext context) async {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             DropdownButtonFormField<String>(
-              value: categoryId,
+              initialValue: categoryId,
               decoration: InputDecoration(labelText: s.categoryOptional),
               items: [
                 for (final c in categories)

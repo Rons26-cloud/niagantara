@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../features/account/account_screen.dart';
+import '../features/attendance/attendance_screen.dart';
 import '../features/auth/screens/forgot_password_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';

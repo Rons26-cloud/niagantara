@@ -146,7 +146,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               ]),
               const SizedBox(height: 12),
               DropdownButtonFormField<String?>(
-                value: _categoryId,
+                initialValue: _categoryId,
                 decoration: InputDecoration(labelText: s.categoryOptional),
                 items: [
                   DropdownMenuItem<String?>(

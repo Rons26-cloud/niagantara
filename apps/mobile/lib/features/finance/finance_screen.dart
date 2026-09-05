@@ -45,10 +45,10 @@ class _FinanceScreenState extends State<FinanceScreen>
           Tab(text: s.tabReport),
         ]),
       ),
-      body: TabBarView(controller: _tabs, children: [
-        const _PartyTab(kind: _Kind.payable),
-        const _PartyTab(kind: _Kind.receivable),
-        const _ReportTab(),
+      body: TabBarView(controller: _tabs, children: const [
+        _PartyTab(kind: _Kind.payable),
+        _PartyTab(kind: _Kind.receivable),
+        _ReportTab(),
       ]),
     );
   }

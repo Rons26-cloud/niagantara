@@ -18,7 +18,7 @@ class ReportsScreen extends StatefulWidget {
 
 class _ReportsScreenState extends State<ReportsScreen> {
   int _days = 30;
-  int _generation = 0;
+  final int _generation = 0;
 
   @override
   Widget build(BuildContext context) {

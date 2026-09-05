@@ -6,7 +6,6 @@ import 'core/api/api_client.dart';
 import 'core/auth/app_controller.dart';
 import 'core/auth/auth_repository.dart';
 import 'core/auth/session_store.dart';
-import 'core/storage/app_preferences.dart';
 
 /// NIAGANTARA mobile entry point.
 ///

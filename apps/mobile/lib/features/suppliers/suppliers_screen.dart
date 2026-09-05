@@ -22,7 +22,10 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   int _generation = 0;
 
   @override
-  void dispose() => _search.dispose();
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

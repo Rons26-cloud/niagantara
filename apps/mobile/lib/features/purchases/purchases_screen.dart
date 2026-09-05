@@ -148,7 +148,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             DropdownButtonFormField<String>(
-              value: supplierId,
+              initialValue: supplierId,
               isExpanded: true,
               decoration: InputDecoration(labelText: l(ctx).suppliersTitle),
               items: [
@@ -162,7 +162,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: productId,
+              initialValue: productId,
               isExpanded: true,
               decoration: InputDecoration(labelText: l(ctx).productName),
               items: [

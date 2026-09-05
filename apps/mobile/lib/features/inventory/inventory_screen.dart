@@ -53,8 +53,8 @@ class _InventoryScreenState extends State<InventoryScreen>
       ),
       body: TabBarView(controller: _tabs, children: [
         _StockTab(canAdjust: canAdjust),
-        _LowStockTab(),
-        _MovementsTab(),
+        const _LowStockTab(),
+        const _MovementsTab(),
       ]),
     );
   }
@@ -112,8 +112,9 @@ class _StockTab extends StatelessWidget {
   }
 
   Future<void> _adjustDialog(
-      BuildContext context, String _, String productName) async {
+      BuildContext context, String productId, String productName) async {
     final s = l(context);
+    final api = context.read<ApiClient>();
     final delta = TextEditingController(text: '0');
     String type = 'STOCK_IN';
     final confirmed = await showModalBottomSheet<bool>(
@@ -160,13 +161,13 @@ class _StockTab extends StatelessWidget {
     );
     if (confirmed != true) return;
     try {
-      await context.read<ApiClient>().post('/inventory/adjust', body: {
-        'productId': _,
+      await api.post('/inventory/adjust', body: {
+        'productId': productId,
         'quantityDelta': double.tryParse(delta.text) ?? 0,
         'movementType': type,
       });
       if (!context.mounted) return;
-      Snack.success(context, l(context).saved);
+      Snack.success(context, s.saved);
     } on Failure catch (f) {
       if (!context.mounted) return;
       Snack.error(context, localizedFailure(context, f));

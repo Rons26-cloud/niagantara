@@ -22,7 +22,10 @@ class _CustomersScreenState extends State<CustomersScreen> {
   int _generation = 0;
 
   @override
-  void dispose() => _search.dispose();
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

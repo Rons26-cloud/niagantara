@@ -20,7 +20,7 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
-  int _generation = 0;
+  final int _generation = 0;
   String? _employeeId;
 
   @override
@@ -52,7 +52,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 24),
               children: [
                 DropdownButtonFormField<String>(
-                  value: _employeeId,
+                  initialValue: _employeeId,
                   isExpanded: true,
                   decoration: InputDecoration(labelText: s.employeesTitle),
                   items: [

@@ -18,6 +18,7 @@ DioException dioErr({
   return DioException(
     requestOptions: RequestOptions(path: '/'),
     response: response,
+    type: status == null ? DioExceptionType.unknown : DioExceptionType.badResponse,
     message: message,
   );
 }
@@ -56,7 +57,7 @@ void main() {
 
     test('connection timeout → timeout', () {
       expect(
-        mapToFailure(const DioException(
+        mapToFailure(DioException(
           requestOptions: RequestOptions(path: '/'),
           type: DioExceptionType.connectionTimeout,
         )).kind,
@@ -66,7 +67,7 @@ void main() {
 
     test('connection error → network', () {
       expect(
-        mapToFailure(const DioException(
+        mapToFailure(DioException(
           requestOptions: RequestOptions(path: '/'),
           type: DioExceptionType.connectionError,
         )).kind,

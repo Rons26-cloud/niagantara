@@ -1,5 +1,6 @@
 /// Non-secret user preferences (theme, language, last business context,
 /// notification toggles). Tokens live in [SessionStore] instead.
+library;
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ThemeModePref { light, blueDark }
