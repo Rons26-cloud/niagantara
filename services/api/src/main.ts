@@ -16,7 +16,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({
       bodyLimit: environment.bodyLimitBytes,
-      trustProxy: environment.trustProxy ? 1 : false,
+      trustProxy: environment.trustProxy,
       requestTimeout: environment.requestTimeoutMs,
     }),
   );

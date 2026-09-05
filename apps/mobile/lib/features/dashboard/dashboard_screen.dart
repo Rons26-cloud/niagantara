@@ -238,7 +238,7 @@ class _TrendCard extends StatelessWidget {
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               getTooltipItem: (_, __, bar, ___) => BarTooltipItem(
-                Fmt.rp(bar.top.round()),
+                Fmt.rp(bar.toY.round()),
                 const TextStyle(fontWeight: FontWeight.w700),
               ),
             ),

@@ -398,7 +398,7 @@ test('UsersService revoke-all preserves no active cashier assignments across bra
 });
 
 test('UsersService cannot revoke a cashier assignment in another company', async () => {
-  let suspended = false;
+  const suspended = false;
   const repo = {
     cashierMembership: async (requestedCompany: string) => {
       assert.equal(requestedCompany, companyId);

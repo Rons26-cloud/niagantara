@@ -5,6 +5,7 @@ import '../../app/localization.dart';
 import '../../core/api/api_client.dart';
 import '../../core/auth/app_controller.dart';
 import '../../core/errors/failure.dart';
+import '../../core/utils/formatters.dart';
 import '../../shared/components/async_gate.dart';
 import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';

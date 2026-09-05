@@ -80,7 +80,7 @@ class _HomeShellState extends State<HomeShell> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
-        onPressed: () => _openQuickActions(context),
+        onPressed: () => openQuickActions(context),
         child: const Icon(Icons.add_rounded, size: 28),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

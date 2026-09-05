@@ -17,7 +17,7 @@ class HelpScreen extends StatelessWidget {
       (Icons.timelapse_rounded, 'Shifts', 'Track opening/closing cash per cashier shift per branch.'),
       (Icons.inventory_outlined, 'Products', 'Maintain your catalog: names, SKU, cost and selling prices.'),
       (Icons.category_outlined, 'Categories', 'Group products so POS and reports stay organized.'),
-      (Icons.scan_line_rounded, 'Barcode', 'Look up products instantly by scanned code.'),
+      (Icons.qr_code_scanner_rounded, 'Barcode', 'Look up products instantly by scanned code.'),
       (Icons.inventory_2_outlined, 'Inventory', 'Watch stock levels per warehouse and record adjustments.'),
       (Icons.shopping_bag_outlined, 'Purchases', 'Record supplier orders; receiving updates stock automatically.'),
       (Icons.local_shipping_outlined, 'Suppliers', 'Manage vendor partners and their contacts.'),

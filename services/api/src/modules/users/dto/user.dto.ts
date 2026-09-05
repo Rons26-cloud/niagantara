@@ -8,6 +8,7 @@ import {
   MaxLength,
   MinLength,
   ValidateNested,
+  IsEmail,
 } from 'class-validator';
 
 export type CompanyMemberStatus = 'active' | 'invited' | 'suspended';
@@ -42,4 +43,22 @@ export class UpdateCompanyUserInput {
   @ValidateNested({ each: true })
   @Type(() => BranchMembershipInput)
   branches?: BranchMembershipInput[];
+}
+
+export class CreatePosCashierInput {
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(72)
+  password!: string;
+
+  @IsString()
+  @MinLength(2)
+  @MaxLength(120)
+  fullName!: string;
+
+  @IsUUID()
+  branchId!: string;
 }

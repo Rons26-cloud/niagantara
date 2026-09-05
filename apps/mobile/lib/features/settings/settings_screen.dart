@@ -5,6 +5,7 @@ import '../../app/localization.dart';
 import '../../core/auth/app_controller.dart';
 import '../../core/errors/failure.dart';
 import '../../shared/components/snack.dart' show confirmDialog;
+import '../../shared/constants/design.dart';
 
 /// Settings — app preferences that persist on-device.
 class SettingsScreen extends StatelessWidget {
