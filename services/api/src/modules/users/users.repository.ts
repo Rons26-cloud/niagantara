@@ -5,6 +5,19 @@ import { SupabaseService } from '../../integrations/supabase/supabase.service.js
 export class UsersRepository {
   constructor(private readonly db: SupabaseService) {}
 
+  createAuthUser(input: { email: string; password: string; fullName: string }) {
+    return this.db.client.auth.admin.createUser({
+      email: input.email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: { full_name: input.fullName },
+    });
+  }
+
+  deleteAuthUser(userId: string) {
+    return this.db.client.auth.admin.deleteUser(userId);
+  }
+
   list(companyId: string) {
     return this.db.client
       .from('company_members')
@@ -97,5 +110,54 @@ export class UsersRepository {
     return this.db.client
       .from('branch_members')
       .upsert(rows, { onConflict: 'branch_id,user_id' });
+  }
+
+  branch(companyId: string, branchId: string) {
+    return this.db.client
+      .from('branches')
+      .select('id,name')
+      .eq('company_id', companyId)
+      .eq('id', branchId)
+      .eq('status', 'active')
+      .maybeSingle();
+  }
+
+  insertProfile(values: { id: string; full_name: string }) {
+    return this.db.client.from('profiles').upsert(values, { onConflict: 'id' });
+  }
+
+  insertCompanyMember(values: Record<string, string>) {
+    return this.db.client
+      .from('company_members')
+      .insert(values)
+      .select('id')
+      .single();
+  }
+
+  insertBranchMember(values: Record<string, string>) {
+    return this.db.client
+      .from('branch_members')
+      .insert(values)
+      .select('id')
+      .single();
+  }
+
+  cashierMembership(companyId: string, userId: string) {
+    return this.db.client
+      .from('branch_members')
+      .select('id,branch_id,role_key,status')
+      .eq('company_id', companyId)
+      .eq('user_id', userId)
+      .eq('role_key', 'cashier');
+  }
+
+  suspendCashier(companyId: string, userId: string) {
+    return this.db.client
+      .from('branch_members')
+      .update({ status: 'suspended' })
+      .eq('company_id', companyId)
+      .eq('user_id', userId)
+      .eq('role_key', 'cashier')
+      .select('id');
   }
 }

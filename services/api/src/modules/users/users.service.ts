@@ -5,7 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { AuditService } from '../audit/audit.service.js';
-import type { UpdateCompanyUserInput } from './dto/user.dto.js';
+import type {
+  CreatePosCashierInput,
+  UpdateCompanyUserInput,
+} from './dto/user.dto.js';
 import { UsersRepository } from './users.repository.js';
 
 const UUID =
@@ -114,7 +117,7 @@ export class UsersService {
     }
     if (
       target.role_key === 'owner' &&
-      (input.status === 'suspended' ||
+      ((input.status && input.status !== 'active') ||
         (input.roleKey && input.roleKey !== 'owner'))
     ) {
       const { count } = await this.repo.activeOwnerCount(companyId);
@@ -123,6 +126,41 @@ export class UsersService {
           code: 'LAST_OWNER_REQUIRED',
           message: 'The final active owner cannot be removed.',
         });
+    }
+
+    // Validate all branch relations before mutating company membership so a
+    // rejected request cannot leave a partial authorization change behind.
+    if (input.branches) {
+      const ids = [...new Set(input.branches.map((item) => item.branchId))];
+      if (ids.some((id) => !UUID.test(id)))
+        throw new BadRequestException({
+          code: 'INVALID_BRANCH_ID',
+          message: 'Every branch ID must be a valid UUID.',
+        });
+      const roleKeys = [...new Set(input.branches.map((item) => item.roleKey))];
+      const [{ data: branches }, { data: roles }] = await Promise.all([
+        ids.length
+          ? this.repo.branches(companyId, ids)
+          : Promise.resolve({ data: [] }),
+        roleKeys.length
+          ? this.repo.branchRoles(roleKeys)
+          : Promise.resolve({ data: [] }),
+      ]);
+      if ((branches ?? []).length !== ids.length)
+        throw new BadRequestException({
+          code: 'TENANT_RELATION_INVALID',
+          message: 'A selected branch does not belong to the active company.',
+        });
+      if ((roles ?? []).length !== roleKeys.length)
+        throw new BadRequestException({
+          code: 'INVALID_BRANCH_ROLE',
+          message: 'Unknown branch role.',
+        });
+      const { error: existingError } = await this.repo.existingBranches(
+        companyId,
+        userId,
+      );
+      if (existingError) throw existingError;
     }
 
     const membershipValues: Record<string, string> = {};
@@ -224,5 +262,131 @@ export class UsersService {
     if (error) throw error;
     if (branchError) throw branchError;
     return data ? { ...data, branches: branches ?? [] } : data;
+  }
+
+  async createCashier(
+    actor: { id: string; companyRole?: string },
+    companyId: string,
+    input: CreatePosCashierInput,
+  ) {
+    if (!['owner', 'company_admin'].includes(actor.companyRole ?? '')) {
+      throw new ForbiddenException({
+        code: 'USER_MANAGEMENT_DENIED',
+        message:
+          'Only company owners and administrators can manage POS cashiers.',
+      });
+    }
+    const email = input.email.trim().toLowerCase();
+    const { data: branch, error: branchError } = await this.repo.branch(
+      companyId,
+      input.branchId,
+    );
+    if (branchError) throw branchError;
+    if (!branch)
+      throw new BadRequestException({
+        code: 'INVALID_BRANCH_ID',
+        message: 'The selected branch does not belong to the active company.',
+      });
+
+    const { data: authData, error: authError } = await this.repo.createAuthUser(
+      { email, password: input.password, fullName: input.fullName.trim() },
+    );
+    if (authError || !authData.user) {
+      throw new BadRequestException({
+        code: 'CASHIER_CREATE_FAILED',
+        message: authError?.message ?? 'Cashier account could not be created.',
+      });
+    }
+    const userId = authData.user.id;
+    try {
+      const { error: profileError } = await this.repo.insertProfile({
+        id: userId,
+        full_name: input.fullName.trim(),
+      });
+      if (profileError) throw profileError;
+      const { error: memberError } = await this.repo.insertCompanyMember({
+        company_id: companyId,
+        user_id: userId,
+        role_key: 'employee',
+        status: 'active',
+      });
+      if (memberError) throw memberError;
+      const { error: branchMemberError } = await this.repo.insertBranchMember({
+        company_id: companyId,
+        branch_id: input.branchId,
+        user_id: userId,
+        role_key: 'cashier',
+        status: 'active',
+      });
+      if (branchMemberError) throw branchMemberError;
+    } catch (error) {
+      await this.repo.deleteAuthUser(userId);
+      throw new BadRequestException({
+        code: 'CASHIER_PROVISIONING_FAILED',
+        message: 'Cashier account could not be provisioned.',
+      });
+    }
+    await this.audit.record({
+      action: 'pos_cashier.created',
+      resourceType: 'user',
+      resourceId: userId,
+      actorUserId: actor.id,
+      companyId,
+      metadata: { branch_id: input.branchId },
+    });
+    return {
+      userId,
+      email,
+      fullName: input.fullName.trim(),
+      branchId: input.branchId,
+      branchName: branch.name,
+      posPath: '/#pos',
+    };
+  }
+
+  async removeCashier(
+    actor: { id: string; companyRole?: string },
+    companyId: string,
+    userId: string,
+  ) {
+    if (!UUID.test(userId))
+      throw new BadRequestException({
+        code: 'INVALID_USER_ID',
+        message: 'User ID must be a valid UUID.',
+      });
+    if (!['owner', 'company_admin'].includes(actor.companyRole ?? ''))
+      throw new ForbiddenException({
+        code: 'USER_MANAGEMENT_DENIED',
+        message:
+          'Only company owners and administrators can manage POS cashiers.',
+      });
+    const { data: memberships, error } = await this.repo.cashierMembership(
+      companyId,
+      userId,
+    );
+    if (error) throw error;
+    if (!memberships?.length)
+      throw new NotFoundException({
+        code: 'CASHIER_NOT_FOUND',
+        message: 'POS cashier access was not found.',
+      });
+    const { error: suspendError } = await this.repo.suspendCashier(
+      companyId,
+      userId,
+    );
+    if (suspendError) throw suspendError;
+    await this.audit.record({
+      action: 'pos_cashier.removed',
+      resourceType: 'user',
+      resourceId: userId,
+      actorUserId: actor.id,
+      companyId,
+      metadata: {
+        branch_ids: memberships.map(
+          (membership: { branch_id: string }) => membership.branch_id,
+        ),
+      },
+    });
+    return { success: true };
   }
 }

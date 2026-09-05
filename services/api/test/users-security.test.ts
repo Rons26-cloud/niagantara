@@ -179,6 +179,249 @@ test('UsersService prevents removing the last active owner', async () => {
   );
 });
 
+for (const [status, label] of [
+  ['invited', 'invited'],
+  ['suspended', 'suspended'],
+] as const) {
+  test(`UsersService denies the last active owner becoming ${label}`, async () => {
+    let mutated = false;
+    const repo = {
+      get: async () => ({
+        data: {
+          id: 'm1',
+          user_id: userId,
+          role_key: 'owner',
+          status: 'active',
+        },
+        error: null,
+      }),
+      activeOwnerCount: async () => ({ count: 1 }),
+      updateCompanyMembership: async () => {
+        mutated = true;
+        return { data: { id: 'm1' }, error: null };
+      },
+    };
+    const service = new UsersService(repo as any, {} as any);
+    await assert.rejects(
+      () =>
+        service.update(
+          { id: userId, companyRole: 'owner' },
+          companyId,
+          userId,
+          { status },
+        ),
+      BadRequestException,
+    );
+    assert.equal(mutated, false);
+  });
+}
+
+test('UsersService denies the last active owner role downgrade', async () => {
+  let mutated = false;
+  const repo = {
+    get: async () => ({
+      data: { id: 'm1', user_id: userId, role_key: 'owner', status: 'active' },
+      error: null,
+    }),
+    activeOwnerCount: async () => ({ count: 1 }),
+    companyRole: async () => ({ data: { role_key: 'employee' } }),
+    updateCompanyMembership: async () => {
+      mutated = true;
+      return { data: { id: 'm1' }, error: null };
+    },
+  };
+  const service = new UsersService(repo as any, {} as any);
+  await assert.rejects(
+    () =>
+      service.update({ id: userId, companyRole: 'owner' }, companyId, userId, {
+        roleKey: 'employee',
+      }),
+    BadRequestException,
+  );
+  assert.equal(mutated, false);
+});
+
+test('UsersService allows an owner change when two active owners remain', async () => {
+  let updated: Record<string, string> | undefined;
+  const repo = {
+    get: async () => ({
+      data: { id: 'm1', user_id: userId, role_key: 'owner', status: 'active' },
+      error: null,
+    }),
+    activeOwnerCount: async () => ({ count: 2 }),
+    updateCompanyMembership: async (
+      _c: string,
+      _u: string,
+      values: Record<string, string>,
+    ) => {
+      updated = values;
+      return { data: { id: 'm1' }, error: null };
+    },
+    listBranchMemberships: async () => ({ data: [], error: null }),
+  };
+  const service = new UsersService(
+    repo as any,
+    { record: async () => undefined } as any,
+  );
+  await service.update(
+    { id: userId, companyRole: 'owner' },
+    companyId,
+    userId,
+    { status: 'invited' },
+  );
+  assert.deepEqual(updated, { status: 'invited' });
+});
+
+test('UsersService counts only active owners when protecting the last owner', async () => {
+  let mutated = false;
+  const repo = {
+    get: async () => ({
+      data: { id: 'm1', user_id: userId, role_key: 'owner', status: 'active' },
+      error: null,
+    }),
+    // The other owner is invited, so the active-owner count remains one.
+    activeOwnerCount: async () => ({ count: 1 }),
+    updateCompanyMembership: async () => {
+      mutated = true;
+      return { data: { id: 'm1' }, error: null };
+    },
+  };
+  const service = new UsersService(repo as any, {} as any);
+  await assert.rejects(
+    () =>
+      service.update({ id: userId, companyRole: 'owner' }, companyId, userId, {
+        status: 'invited',
+      }),
+    BadRequestException,
+  );
+  assert.equal(mutated, false);
+});
+
+for (const [name, input] of [
+  [
+    'invalid branch role',
+    {
+      roleKey: 'company_admin',
+      branches: [{ branchId, roleKey: 'not-a-role' }],
+    },
+  ],
+  [
+    'invalid UUID',
+    {
+      roleKey: 'company_admin',
+      branches: [{ branchId: 'not-a-uuid', roleKey: 'manager' }],
+    },
+  ],
+] as const) {
+  test(`UsersService leaves membership and audit unchanged on ${name}`, async () => {
+    const state = { role_key: 'staff', status: 'active' };
+    let membershipWrites = 0;
+    let branchWrites = 0;
+    let auditWrites = 0;
+    const repo = {
+      get: async () => ({
+        data: { id: 'm1', user_id: userId, ...state },
+        error: null,
+      }),
+      companyRole: async () => ({ data: { role_key: 'company_admin' } }),
+      branches: async () => ({ data: [{ id: branchId }], error: null }),
+      branchRoles: async () => ({ data: [], error: null }),
+      existingBranches: async () => ({
+        data: [{ branch_id: branchId, role_key: 'cashier' }],
+        error: null,
+      }),
+      updateCompanyMembership: async (
+        _c: string,
+        _u: string,
+        values: Record<string, string>,
+      ) => {
+        membershipWrites += 1;
+        Object.assign(state, values);
+        return { data: { id: 'm1' }, error: null };
+      },
+      upsertBranches: async () => {
+        branchWrites += 1;
+        return { error: null };
+      },
+    };
+    const service = new UsersService(
+      repo as any,
+      {
+        record: async () => {
+          auditWrites += 1;
+        },
+      } as any,
+    );
+    await assert.rejects(
+      () =>
+        service.update(
+          { id: userId, companyRole: 'owner' },
+          companyId,
+          userId,
+          input as any,
+        ),
+      BadRequestException,
+    );
+    assert.deepEqual(state, { role_key: 'staff', status: 'active' });
+    assert.equal(membershipWrites, 0);
+    assert.equal(branchWrites, 0);
+    assert.equal(auditWrites, 0);
+  });
+}
+
+test('UsersService revoke-all preserves no active cashier assignments across branches', async () => {
+  let suspendedCompany = '';
+  let suspended = 0;
+  const memberships = [
+    { id: 'a', branch_id: 'branch-a', role_key: 'cashier', status: 'active' },
+    { id: 'b', branch_id: 'branch-b', role_key: 'cashier', status: 'active' },
+  ];
+  const repo = {
+    cashierMembership: async () => ({ data: memberships, error: null }),
+    suspendCashier: async (requestedCompany: string) => {
+      suspendedCompany = requestedCompany;
+      suspended = memberships.length;
+      return { data: memberships.map(({ id }) => ({ id })), error: null };
+    },
+  };
+  const service = new UsersService(
+    repo as any,
+    { record: async () => undefined } as any,
+  );
+  await service.removeCashier(
+    { id: userId, companyRole: 'owner' },
+    companyId,
+    userId,
+  );
+  assert.equal(suspendedCompany, companyId);
+  assert.equal(suspended, 2);
+});
+
+test('UsersService cannot revoke a cashier assignment in another company', async () => {
+  let suspended = false;
+  const repo = {
+    cashierMembership: async (requestedCompany: string) => {
+      assert.equal(requestedCompany, companyId);
+      return { data: [], error: null };
+    },
+    suspendCashier: async () => {
+      suspended = true;
+      return { data: [], error: null };
+    },
+  };
+  const service = new UsersService(repo as any, {} as any);
+  await assert.rejects(
+    () =>
+      service.removeCashier(
+        { id: userId, companyRole: 'owner' },
+        companyId,
+        userId,
+      ),
+    NotFoundException,
+  );
+  assert.equal(suspended, false);
+});
+
 test('UsersService generates an audit log on privileged mutation', async () => {
   const audits: any[] = [];
   const repo = {
