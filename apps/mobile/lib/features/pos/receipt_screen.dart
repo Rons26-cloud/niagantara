@@ -9,8 +9,6 @@ import '../../shared/components/async_gate.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Receipt view for a completed sale — GET /sales/:id
-/// (items, payment, history, refunds, branch/store/cashier).
 class ReceiptScreen extends StatelessWidget {
   const ReceiptScreen({super.key, required this.saleId});
 

@@ -8,7 +8,6 @@ import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 import '../../shell/home_shell.dart' show openQuickActions;
 
-/// Account — identity, active branch switcher, theme/language shortcuts.
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
 

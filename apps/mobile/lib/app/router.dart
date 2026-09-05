@@ -31,7 +31,6 @@ import '../features/settings/settings_screen.dart';
 import '../features/shifts/shifts_screen.dart';
 import '../features/suppliers/suppliers_screen.dart';
 
-/// All route names in one place.
 class Routes {
   Routes._();
 
@@ -70,7 +69,6 @@ class Routes {
   static const account = '/account';
 }
 
-/// Central route table with platform-adaptive transitions.
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final Widget page;
   switch (settings.name) {

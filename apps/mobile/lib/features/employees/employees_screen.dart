@@ -5,8 +5,6 @@ import '../../app/localization.dart';
 import '../../core/api/api_client.dart';
 import '../../shared/components/paginated_list_view.dart';
 
-/// Employee directory — GET /employees (read-only on mobile; management
-/// stays on web until the API exposes mobile-safe mutation flows).
 class EmployeesScreen extends StatelessWidget {
   const EmployeesScreen({super.key});
 

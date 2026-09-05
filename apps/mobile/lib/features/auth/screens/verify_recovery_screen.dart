@@ -8,8 +8,6 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/components/failure_message.dart';
 import '../../../shared/components/snack.dart';
 
-/// Step 2 of recovery: POST /auth/verify-recovery exchanges the emailed OTP
-/// for single-use recovery tokens, then routes to the reset form.
 class VerifyRecoveryScreen extends StatefulWidget {
   const VerifyRecoveryScreen({super.key, required this.email});
 

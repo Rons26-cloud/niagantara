@@ -5,7 +5,6 @@ import '../l10n/app_localizations.dart';
 
 export '../l10n/app_localizations.dart';
 
-/// Supported locales: Bahasa Indonesia (default) and English.
 const List<Locale> kSupportedLocales = [Locale('id'), Locale('en')];
 
 const List<LocalizationsDelegate<dynamic>> kLocalizationDelegates = [
@@ -15,5 +14,4 @@ const List<LocalizationsDelegate<dynamic>> kLocalizationDelegates = [
   GlobalCupertinoLocalizations.delegate,
 ];
 
-/// Convenience: `l(context).todaySales`.
 AppLocalizations l(BuildContext context) => AppLocalizations.of(context);

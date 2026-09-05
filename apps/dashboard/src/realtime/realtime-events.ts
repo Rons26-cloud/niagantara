@@ -18,6 +18,12 @@ export const REALTIME_EVENTS = [
   'organization.updated',
   'shift.updated',
   'team.updated',
+  'audit_logs.updated',
+  'refunds.updated',
+  'refund_items.updated',
+  'payables.updated',
+  'receivables.updated',
+  'financial_transactions.updated',
   'sheet.updated',
 ] as const;
 
@@ -58,6 +64,10 @@ export function resourcesForEvent(event: string): InvalidationResource[] {
   if (event.startsWith('organization.')) return ['organization'];
   if (event.startsWith('shift.')) return ['shifts', 'sales', 'finance'];
   if (event.startsWith('team.')) return ['team', 'attendance'];
+  if (event === 'audit_logs.updated') return ['team'];
+  if (event === 'refunds.updated' || event === 'refund_items.updated') return ['sales', 'finance'];
+  if (event === 'payables.updated' || event === 'receivables.updated') return ['finance'];
+  if (event === 'financial_transactions.updated') return ['finance'];
   if (event.startsWith('sheet.')) return ['sheets'];
   return ['sheets'];
 }

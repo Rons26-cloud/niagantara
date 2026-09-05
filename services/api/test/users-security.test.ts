@@ -249,13 +249,9 @@ test('UsersService allows an owner change when two active owners remain', async 
       error: null,
     }),
     activeOwnerCount: async () => ({ count: 2 }),
-    updateCompanyMembership: async (
-      _c: string,
-      _u: string,
-      values: Record<string, string>,
-    ) => {
-      updated = values;
-      return { data: { id: 'm1' }, error: null };
+    updateAccessAtomic: async (input: any) => {
+      updated = { status: input.status };
+      return { data: { role_key: 'owner', status: 'invited' }, error: null };
     },
     listBranchMemberships: async () => ({ data: [], error: null }),
   };
@@ -279,9 +275,8 @@ test('UsersService counts only active owners when protecting the last owner', as
       data: { id: 'm1', user_id: userId, role_key: 'owner', status: 'active' },
       error: null,
     }),
-    // The other owner is invited, so the active-owner count remains one.
     activeOwnerCount: async () => ({ count: 1 }),
-    updateCompanyMembership: async () => {
+    updateAccessAtomic: async () => {
       mutated = true;
       return { data: { id: 'm1' }, error: null };
     },
@@ -330,11 +325,7 @@ for (const [name, input] of [
         data: [{ branch_id: branchId, role_key: 'cashier' }],
         error: null,
       }),
-      updateCompanyMembership: async (
-        _c: string,
-        _u: string,
-        values: Record<string, string>,
-      ) => {
+      updateAccessAtomic: async () => {
         membershipWrites += 1;
         Object.assign(state, values);
         return { data: { id: 'm1' }, error: null };
@@ -377,11 +368,10 @@ test('UsersService revoke-all preserves no active cashier assignments across bra
     { id: 'b', branch_id: 'branch-b', role_key: 'cashier', status: 'active' },
   ];
   const repo = {
-    cashierMembership: async () => ({ data: memberships, error: null }),
-    suspendCashier: async (requestedCompany: string) => {
+    revokeCashierAccess: async (requestedCompany: string) => {
       suspendedCompany = requestedCompany;
       suspended = memberships.length;
-      return { data: memberships.map(({ id }) => ({ id })), error: null };
+      return { data: { revoked_count: memberships.length }, error: null };
     },
   };
   const service = new UsersService(
@@ -400,13 +390,9 @@ test('UsersService revoke-all preserves no active cashier assignments across bra
 test('UsersService cannot revoke a cashier assignment in another company', async () => {
   const suspended = false;
   const repo = {
-    cashierMembership: async (requestedCompany: string) => {
+    revokeCashierAccess: async (requestedCompany: string) => {
       assert.equal(requestedCompany, companyId);
-      return { data: [], error: null };
-    },
-    suspendCashier: async () => {
-      suspended = true;
-      return { data: [], error: null };
+      return { data: null, error: { message: 'CASHIER_NOT_FOUND' } };
     },
   };
   const service = new UsersService(repo as any, {} as any);
@@ -423,7 +409,7 @@ test('UsersService cannot revoke a cashier assignment in another company', async
 });
 
 test('UsersService generates an audit log on privileged mutation', async () => {
-  const audits: any[] = [];
+  let atomicPayload: any;
   const repo = {
     get: async () => ({
       data: {
@@ -434,27 +420,26 @@ test('UsersService generates an audit log on privileged mutation', async () => {
       },
       error: null,
     }),
-    updateCompanyMembership: async () => ({ data: { id: 'm1' }, error: null }),
+    updateAccessAtomic: async (payload: any) => {
+      atomicPayload = payload;
+      return {
+        data: { role_key: 'finance', status: 'suspended' },
+        error: null,
+      };
+    },
     listBranchMemberships: async () => ({ data: [], error: null }),
   };
-  const service = new UsersService(
-    repo as any,
-    {
-      record: async (entry: any) => {
-        audits.push(entry);
-      },
-    } as any,
-  );
+  const service = new UsersService(repo as any, {} as any);
   await service.update(
     { id: userId, companyRole: 'owner' },
     companyId,
     userId,
     { status: 'suspended' },
   );
-  assert.equal(audits.length, 1);
-  assert.equal(audits[0].action, 'company_user.updated');
-  assert.equal(audits[0].companyId, companyId);
-  assert.equal(audits[0].metadata.target_user_id, userId);
+  assert.equal(atomicPayload.companyId, companyId);
+  assert.equal(atomicPayload.userId, userId);
+  assert.equal(atomicPayload.actorId, userId);
+  assert.equal(atomicPayload.status, 'suspended');
 });
 
 test('UsersService rejects a non-UUID user ID', async () => {
@@ -483,6 +468,9 @@ test('UsersService rejects an unknown company role on update', async () => {
       error: null,
     }),
     companyRole: async () => ({ data: null }),
+    updateAccessAtomic: async () => ({
+      error: { message: 'INVALID_COMPANY_ROLE' },
+    }),
   };
   const service = new UsersService(repo as any, {} as any);
   await assert.rejects(
@@ -507,13 +495,9 @@ test('UsersService allows an owner to reassign owner role to another user', asyn
       error: null,
     }),
     companyRole: async () => ({ data: { role_key: 'owner' } }),
-    updateCompanyMembership: async (
-      _cid: string,
-      _uid: string,
-      values: Record<string, string>,
-    ) => {
+    updateAccessAtomic: async (_input: any) => {
       membershipUpdated = true;
-      return { data: { id: 'm1' }, error: null };
+      return { data: { role_key: 'owner', status: 'active' }, error: null };
     },
     listBranchMemberships: async () => ({ data: [], error: null }),
   };

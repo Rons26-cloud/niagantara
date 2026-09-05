@@ -9,9 +9,6 @@ import '../../shared/components/paginated_list_view.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 
-/// Master product catalog — paginated GET /products.
-/// Cursor pagination follows the API contract: `lt` = created_at of the
-/// oldest row already loaded.
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
@@ -72,7 +69,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 }) as List<dynamic>;
                 final casted = rows.cast<Map<String, dynamic>>();
                 if (casted.isNotEmpty && loaded == 0) {
-                  // fresh query — reset cursor from scratch
                 }
                 return casted;
               },

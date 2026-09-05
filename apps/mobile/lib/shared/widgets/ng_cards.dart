@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../constants/design.dart';
 
-/// Card-based KPI tile used on the dashboard and finance screens.
 class KpiCard extends StatelessWidget {
   const KpiCard({
     super.key,
@@ -78,7 +77,6 @@ class KpiCard extends StatelessWidget {
   }
 }
 
-/// Section header with optional trailing action.
 class SectionHeader extends StatelessWidget {
   const SectionHeader({super.key, required this.title, this.actionLabel, this.onAction});
 
@@ -111,7 +109,6 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
-/// Rounded status chip (PAID / PENDING / …).
 class StatusChip extends StatelessWidget {
   const StatusChip({super.key, required this.label, this.color});
 
@@ -159,7 +156,6 @@ class StatusChip extends StatelessWidget {
   }
 }
 
-/// Compact search field with leading icon.
 class SearchField extends StatelessWidget {
   const SearchField({
     super.key,

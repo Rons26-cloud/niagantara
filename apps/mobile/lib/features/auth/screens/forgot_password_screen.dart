@@ -8,7 +8,6 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/components/failure_message.dart';
 import '../../../shared/components/snack.dart';
 
-/// Step 1 of recovery: POST /auth/forgot-password sends the one-time code.
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 

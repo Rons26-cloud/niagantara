@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Small feedback helpers so snackbars/dialogs stay consistent.
 class Snack {
   Snack._();
 

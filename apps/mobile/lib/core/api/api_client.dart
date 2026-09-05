@@ -5,11 +5,6 @@ import '../config/app_config.dart';
 import '../errors/failure.dart';
 import 'error_mapper.dart';
 
-/// Single HTTP entry point for every feature.
-///
-/// - Attaches `Authorization: Bearer` and tenant headers automatically.
-/// - On 401, clears the stored session and notifies listeners so the app can
-///   return to the login screen (expired session handling).
 class ApiClient {
   ApiClient({Dio? dio, SessionStore? sessionStore})
       : _dio = dio ??
@@ -18,8 +13,6 @@ class ApiClient {
               connectTimeout: AppConfig.connectTimeout,
               receiveTimeout: AppConfig.receiveTimeout,
               headers: {'content-type': 'application/json'},
-              // Make 4xx responses enter the error path so a 401 clears the
-              // invalid local session instead of being returned as success.
               validateStatus: (status) =>
                   status != null && status >= 200 && status < 300,
             )),
@@ -48,8 +41,6 @@ class ApiClient {
 
   void Function(Failure failure)? onUnauthorized;
 
-  /// Escape hatch for endpoints that must run without tenant context
-  /// (e.g. /auth/login). Returns the raw response body decoded JSON.
   Future<T> get<T>(
     String path, {
     Map<String, dynamic>? query,

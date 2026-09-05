@@ -7,7 +7,6 @@ import '../../core/errors/failure.dart';
 import '../../shared/components/snack.dart' show confirmDialog;
 import '../../shared/constants/design.dart';
 
-/// Settings — app preferences that persist on-device.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -81,7 +80,6 @@ class SettingsScreen extends StatelessWidget {
               try {
                 await context.read<AppController>().logout();
               } on Failure {
-                // Session cleared locally regardless; silent.
               }
             },
             icon: const Icon(Icons.logout_rounded, size: 18),

@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,6 +22,51 @@ export class UsersService {
     private readonly repo: UsersRepository,
     private readonly audit: AuditService,
   ) {}
+
+  private mapAccessMutationError(error: unknown): Error {
+    const value = error as { code?: string; message?: string } | null;
+    const raw = `${value?.message ?? ''} ${value?.code ?? ''}`;
+    const messages: Record<string, string> = {
+      LAST_OWNER_REQUIRED: 'The final active owner cannot be removed.',
+      PERMISSION_DENIED:
+        'You do not have permission to manage this company user.',
+      MEMBERSHIP_NOT_FOUND: 'User does not belong to the active company.',
+      CASHIER_NOT_FOUND: 'POS cashier access was not found.',
+      BRANCH_ACCESS_DENIED:
+        'A selected branch does not belong to the active company.',
+      INVALID_BRANCH_ROLE: 'Unknown branch role.',
+      INVALID_MEMBER_STATUS: 'Unknown membership status.',
+      INVALID_COMPANY_ROLE: 'Unknown company role.',
+      DUPLICATE_BRANCH_ASSIGNMENT: 'A branch may only be assigned once.',
+    };
+    const code = Object.keys(messages).find((candidate) =>
+      raw.includes(candidate),
+    );
+    if (!code)
+      return new InternalServerErrorException({
+        code: 'ACCESS_MUTATION_FAILED',
+        message: 'Access changes could not be saved.',
+      });
+    if (code === 'MEMBERSHIP_NOT_FOUND')
+      return new NotFoundException({
+        code: 'USER_NOT_FOUND',
+        message: messages[code],
+      });
+    if (code === 'CASHIER_NOT_FOUND')
+      return new NotFoundException({
+        code: 'CASHIER_NOT_FOUND',
+        message: messages[code],
+      });
+    if (code === 'PERMISSION_DENIED')
+      return new ForbiddenException({
+        code,
+        message: messages[code],
+      });
+    return new BadRequestException({
+      code,
+      message: messages[code] ?? 'Access changes could not be saved.',
+    });
+  }
 
   async list(
     companyId: string,
@@ -128,8 +175,6 @@ export class UsersService {
         });
     }
 
-    // Validate all branch relations before mutating company membership so a
-    // rejected request cannot leave a partial authorization change behind.
     if (input.branches) {
       const ids = [...new Set(input.branches.map((item) => item.branchId))];
       if (ids.some((id) => !UUID.test(id)))
@@ -163,97 +208,28 @@ export class UsersService {
       if (existingError) throw existingError;
     }
 
-    const membershipValues: Record<string, string> = {};
     if (input.roleKey) {
-      const { data: role } = await this.repo.companyRole(input.roleKey);
+      const { data: role, error: roleError } = await this.repo.companyRole(
+        input.roleKey,
+      );
+      if (roleError) throw roleError;
       if (!role)
         throw new BadRequestException({
           code: 'INVALID_COMPANY_ROLE',
           message: 'Unknown company role.',
         });
-      membershipValues.role_key = input.roleKey;
-    }
-    if (input.status) membershipValues.status = input.status;
-    if (Object.keys(membershipValues).length) {
-      const { data, error } = await this.repo.updateCompanyMembership(
-        companyId,
-        userId,
-        membershipValues,
-      );
-      if (error) throw error;
-      if (!data)
-        throw new NotFoundException({
-          code: 'USER_NOT_FOUND',
-          message: 'User does not belong to the active company.',
-        });
     }
 
-    if (input.branches) {
-      const ids = [...new Set(input.branches.map((item) => item.branchId))];
-      if (ids.some((id) => !UUID.test(id)))
-        throw new BadRequestException({
-          code: 'INVALID_BRANCH_ID',
-          message: 'Every branch ID must be a valid UUID.',
-        });
-      const roleKeys = [...new Set(input.branches.map((item) => item.roleKey))];
-      const [{ data: branches }, { data: roles }] = await Promise.all([
-        ids.length
-          ? this.repo.branches(companyId, ids)
-          : Promise.resolve({ data: [] }),
-        roleKeys.length
-          ? this.repo.branchRoles(roleKeys)
-          : Promise.resolve({ data: [] }),
-      ]);
-      if ((branches ?? []).length !== ids.length)
-        throw new BadRequestException({
-          code: 'TENANT_RELATION_INVALID',
-          message: 'A selected branch does not belong to the active company.',
-        });
-      if ((roles ?? []).length !== roleKeys.length)
-        throw new BadRequestException({
-          code: 'INVALID_BRANCH_ROLE',
-          message: 'Unknown branch role.',
-        });
-      const { data: existing, error: existingError } =
-        await this.repo.existingBranches(companyId, userId);
-      if (existingError) throw existingError;
-      const requested = new Map(
-        input.branches.map((item) => [item.branchId, item]),
-      );
-      const rows = [
-        ...input.branches.map((item) => ({
-          company_id: companyId,
-          branch_id: item.branchId,
-          user_id: userId,
-          role_key: item.roleKey,
-          status: item.status ?? 'active',
-        })),
-        ...(existing ?? [])
-          .filter(
-            (item: { branch_id: string }) => !requested.has(item.branch_id),
-          )
-          .map((item: { branch_id: string; role_key: string }) => ({
-            company_id: companyId,
-            branch_id: item.branch_id,
-            user_id: userId,
-            role_key: item.role_key,
-            status: 'suspended',
-          })),
-      ];
-      if (rows.length) {
-        const { error } = await this.repo.upsertBranches(rows);
-        if (error) throw error;
-      }
-    }
-
-    await this.audit.record({
-      action: 'company_user.updated',
-      resourceType: 'company_member',
-      resourceId: target.id,
-      actorUserId: actor.id,
+    const { error: accessError } = await this.repo.updateAccessAtomic({
       companyId,
-      metadata: { target_user_id: userId, fields: Object.keys(input) },
+      userId,
+      actorId: actor.id,
+      roleKey: input.roleKey,
+      status: input.status,
+      branches: input.branches,
     });
+    if (accessError) throw this.mapAccessMutationError(accessError);
+
     const [{ data, error }, { data: branches, error: branchError }] =
       await Promise.all([
         this.repo.get(companyId, userId),
@@ -299,41 +275,23 @@ export class UsersService {
     }
     const userId = authData.user.id;
     try {
-      const { error: profileError } = await this.repo.insertProfile({
-        id: userId,
-        full_name: input.fullName.trim(),
+      const { error: accessError } = await this.repo.provisionCashierAccess({
+        companyId,
+        userId,
+        branchId: input.branchId,
+        fullName: input.fullName.trim(),
+        actorId: actor.id,
       });
-      if (profileError) throw profileError;
-      const { error: memberError } = await this.repo.insertCompanyMember({
-        company_id: companyId,
-        user_id: userId,
-        role_key: 'employee',
-        status: 'active',
-      });
-      if (memberError) throw memberError;
-      const { error: branchMemberError } = await this.repo.insertBranchMember({
-        company_id: companyId,
-        branch_id: input.branchId,
-        user_id: userId,
-        role_key: 'cashier',
-        status: 'active',
-      });
-      if (branchMemberError) throw branchMemberError;
+      if (accessError) throw this.mapAccessMutationError(accessError);
     } catch (error) {
       await this.repo.deleteAuthUser(userId);
+      if (error instanceof HttpException && error.getStatus() >= 500)
+        throw error;
       throw new BadRequestException({
         code: 'CASHIER_PROVISIONING_FAILED',
         message: 'Cashier account could not be provisioned.',
       });
     }
-    await this.audit.record({
-      action: 'pos_cashier.created',
-      resourceType: 'user',
-      resourceId: userId,
-      actorUserId: actor.id,
-      companyId,
-      metadata: { branch_id: input.branchId },
-    });
     return {
       userId,
       email,
@@ -360,33 +318,12 @@ export class UsersService {
         message:
           'Only company owners and administrators can manage POS cashiers.',
       });
-    const { data: memberships, error } = await this.repo.cashierMembership(
+    const { data, error } = await this.repo.revokeCashierAccess(
       companyId,
       userId,
+      actor.id,
     );
-    if (error) throw error;
-    if (!memberships?.length)
-      throw new NotFoundException({
-        code: 'CASHIER_NOT_FOUND',
-        message: 'POS cashier access was not found.',
-      });
-    const { error: suspendError } = await this.repo.suspendCashier(
-      companyId,
-      userId,
-    );
-    if (suspendError) throw suspendError;
-    await this.audit.record({
-      action: 'pos_cashier.removed',
-      resourceType: 'user',
-      resourceId: userId,
-      actorUserId: actor.id,
-      companyId,
-      metadata: {
-        branch_ids: memberships.map(
-          (membership: { branch_id: string }) => membership.branch_id,
-        ),
-      },
-    });
-    return { success: true };
+    if (error) throw this.mapAccessMutationError(error);
+    return data ?? { success: true };
   }
 }

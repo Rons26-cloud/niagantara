@@ -84,18 +84,52 @@ export class UsersRepository {
       .eq('status', 'active');
   }
 
-  updateCompanyMembership(
-    companyId: string,
-    userId: string,
-    values: Record<string, string>,
-  ) {
-    return this.db.client
-      .from('company_members')
-      .update(values)
-      .eq('company_id', companyId)
-      .eq('user_id', userId)
-      .select('id')
-      .maybeSingle();
+  updateAccessAtomic(input: {
+    companyId: string;
+    userId: string;
+    actorId: string;
+    roleKey?: string;
+    status?: string;
+    branches?: Array<{ branchId: string; roleKey: string; status?: string }>;
+  }) {
+    return this.db.client.rpc('update_company_user_access', {
+      target_company_id: input.companyId,
+      target_user_id: input.userId,
+      actor_id: input.actorId,
+      target_role_key: input.roleKey ?? null,
+      target_status: input.status ?? null,
+      branch_assignments: input.branches
+        ? input.branches.map((branch) => ({
+            branch_id: branch.branchId,
+            role_key: branch.roleKey,
+            status: branch.status ?? 'active',
+          }))
+        : null,
+    });
+  }
+
+  provisionCashierAccess(input: {
+    companyId: string;
+    userId: string;
+    branchId: string;
+    fullName: string;
+    actorId: string;
+  }) {
+    return this.db.client.rpc('provision_cashier_access', {
+      target_company_id: input.companyId,
+      target_user_id: input.userId,
+      target_branch_id: input.branchId,
+      target_full_name: input.fullName,
+      actor_id: input.actorId,
+    });
+  }
+
+  revokeCashierAccess(companyId: string, userId: string, actorId: string) {
+    return this.db.client.rpc('revoke_cashier_access', {
+      target_company_id: companyId,
+      target_user_id: userId,
+      actor_id: actorId,
+    });
   }
 
   existingBranches(companyId: string, userId: string) {
@@ -106,12 +140,6 @@ export class UsersRepository {
       .eq('user_id', userId);
   }
 
-  upsertBranches(rows: Record<string, string>[]) {
-    return this.db.client
-      .from('branch_members')
-      .upsert(rows, { onConflict: 'branch_id,user_id' });
-  }
-
   branch(companyId: string, branchId: string) {
     return this.db.client
       .from('branches')
@@ -120,44 +148,5 @@ export class UsersRepository {
       .eq('id', branchId)
       .eq('status', 'active')
       .maybeSingle();
-  }
-
-  insertProfile(values: { id: string; full_name: string }) {
-    return this.db.client.from('profiles').upsert(values, { onConflict: 'id' });
-  }
-
-  insertCompanyMember(values: Record<string, string>) {
-    return this.db.client
-      .from('company_members')
-      .insert(values)
-      .select('id')
-      .single();
-  }
-
-  insertBranchMember(values: Record<string, string>) {
-    return this.db.client
-      .from('branch_members')
-      .insert(values)
-      .select('id')
-      .single();
-  }
-
-  cashierMembership(companyId: string, userId: string) {
-    return this.db.client
-      .from('branch_members')
-      .select('id,branch_id,role_key,status')
-      .eq('company_id', companyId)
-      .eq('user_id', userId)
-      .eq('role_key', 'cashier');
-  }
-
-  suspendCashier(companyId: string, userId: string) {
-    return this.db.client
-      .from('branch_members')
-      .update({ status: 'suspended' })
-      .eq('company_id', companyId)
-      .eq('user_id', userId)
-      .eq('role_key', 'cashier')
-      .select('id');
   }
 }

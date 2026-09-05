@@ -8,7 +8,6 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/components/failure_message.dart';
 import '../../../shared/components/snack.dart';
 
-/// Registration — POST /auth/register creates the user AND the first company.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 

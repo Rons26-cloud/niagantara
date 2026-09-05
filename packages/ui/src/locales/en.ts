@@ -81,6 +81,7 @@ export const en = {
   pages: {
     dashboard: 'Home',
     pos: 'POS / Cashier',
+    'pos-cashiers': 'Manage POS Cashiers',
     sales: 'Sales',
     shifts: 'Cashier Shift',
     products: 'Products',
@@ -252,7 +253,7 @@ export const en = {
   },
 
   website: {
-    eyebrow: 'MODERN BUSINESS OPERATIONS PLATFORM',
+    eyebrow: 'BUSINESS CONTROL PLATFORM',
     stripLabel: 'DESIGNED FOR MORE CONTROLLED OPERATIONS',
     seeMore: 'See more',
     hero: {

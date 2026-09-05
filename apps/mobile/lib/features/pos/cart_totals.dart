@@ -1,7 +1,3 @@
-/// Pure POS cart math — an exact Dart mirror of the server-side
-/// `checkout_sale` SQL function (supabase/migrations/20260821135954,
-/// lines 222-242). The client uses it to preview totals before checkout;
-/// the backend remains the source of truth.
 library;
 
 const String discountPercent = 'PERCENT';
@@ -43,8 +39,6 @@ class CartTotals {
   final int itemCount;
 }
 
-/// Rounds exactly like PostgreSQL `round(numeric, 2)` for the non-negative
-/// values used here: half away from zero.
 double round2(num v) {
   final scaled = v * 100;
   final floorV = scaled.floor();
@@ -102,7 +96,6 @@ class PosCartMath {
   void remove(String productId) => _lines.removeWhere((l) => l.productId == productId);
   void clear() => _lines.clear();
 
-  /// Mirrors the SQL loop: gross → line discount → line total.
   ({double gross, double discount, double total}) lineBreakdown(CartLine l) {
     final qty = double.parse(l.quantity.toStringAsFixed(3));
     final gross = round2(l.unitPrice * qty);
@@ -158,7 +151,6 @@ class PosCartMath {
     );
   }
 
-  /// Cash change per the SQL rule: INSUFFICIENT_PAYMENT when below grand.
   ({bool sufficient, double change}) cashChange(double amountReceived, double grandTotal) {
     if (amountReceived < grandTotal) return (sufficient: false, change: 0);
     return (sufficient: true, change: amountReceived - grandTotal);

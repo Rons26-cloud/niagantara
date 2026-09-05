@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/errors/failure.dart';
 import '../components/failure_message.dart';
 
-/// Consistent async-state building blocks used by every screen.
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key, this.label});
 

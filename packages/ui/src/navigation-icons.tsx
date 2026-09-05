@@ -73,6 +73,7 @@ export const USER_NAV_ICONS: Record<string, IconType> = {
   branches: GitBranch,
   stores: Store,
   users: UsersRound,
+  'pos-cashiers': UsersRound,
   settings: Settings,
   help: CircleHelp,
 };

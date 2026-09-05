@@ -1592,3 +1592,353 @@
     text-overflow: ellipsis;
   }
 }
+
+.shell {
+  --sidebar-width: 264px;
+  --content-max: 1560px;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+}
+
+.sidebar {
+  padding: 16px;
+  box-shadow: 8px 0 24px rgb(15 23 42 / 8%);
+}
+
+.sidebar nav button {
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.sidebar nav button.active {
+  box-shadow: 0 5px 12px rgb(37 99 235 / 25%);
+}
+
+.workspace {
+  max-width: var(--content-max);
+  padding: 0 clamp(20px, 2.6vw, 40px) 40px;
+}
+
+.workspace > header {
+  min-height: 76px;
+  margin-inline: calc(clamp(20px, 2.6vw, 40px) * -1);
+  padding-inline: clamp(20px, 2.6vw, 40px);
+  margin-bottom: 24px;
+}
+
+.workspace > header h1 {
+  font-size: clamp(1.25rem, 1.5vw, 1.55rem);
+  font-weight: 800;
+}
+
+.ng-filterbar {
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 5px 18px rgb(15 23 42 / 4%);
+}
+
+.ng-filterbar input,
+.ctx-select select {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+.metrics,
+.dash-columns {
+  gap: 18px;
+}
+
+.metrics {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin-bottom: 18px;
+}
+
+.dash-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.ng-card,
+.ng-stat,
+.panel,
+.metrics article {
+  border-color: color-mix(in srgb, var(--border-color) 82%, transparent);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 5%);
+}
+
+.ng-card {
+  padding: 20px;
+}
+
+.ng-stat {
+  min-height: 126px;
+  padding: 18px;
+}
+
+.ng-stat strong,
+.metrics strong {
+  font-size: 21px;
+}
+
+.mini-list li {
+  min-height: 44px;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.dist-list {
+  gap: 10px;
+}
+
+.quick-actions {
+  gap: 10px;
+}
+
+@media (max-width: 1023px) {
+  .shell,
+  .shell.sidebar-collapsed {
+    display: block;
+    grid-template-columns: none;
+  }
+
+  .workspace {
+    padding: 0 16px 82px;
+  }
+
+  .workspace > header {
+    display: none;
+  }
+
+  .sidebar,
+  .shell.sidebar-collapsed .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: min(310px, 88vw);
+    height: 100dvh;
+    padding: 16px;
+    transform: translateX(-105%);
+    transition: transform var(--transition-base);
+  }
+
+  .shell.nav-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: block;
+    background: rgb(2 6 23 / 55%);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dash-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .workspace {
+    padding-inline: 12px;
+  }
+
+  .metrics {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .dash-columns {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .ng-filterbar {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .ng-card {
+    padding: 16px;
+  }
+}
+
+.dash-columns:has(.minibars--line) > .ng-card:first-child {
+  min-height: 360px;
+}
+
+.minibars--line {
+  display: block;
+  height: auto;
+  min-height: 270px;
+  padding: 0;
+}
+
+.minibars__plot {
+  position: relative;
+  width: 100%;
+  min-height: 270px;
+}
+
+.minibars__plot svg {
+  display: block;
+  width: 100%;
+  height: 270px;
+  overflow: visible;
+}
+
+.minibars__grid {
+  stroke: color-mix(in srgb, var(--border-color) 72%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.minibars__axis,
+.minibars__label {
+  fill: var(--text-muted, #64748b);
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.minibars__area {
+  fill: url(#revenue-area-fill);
+}
+
+.minibars__line {
+  fill: none;
+  stroke: var(--accent-primary, #2563eb);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.minibars__point {
+  fill: var(--surface, #fff);
+  stroke: var(--accent-primary, #2563eb);
+  stroke-width: 2;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, r 150ms ease;
+}
+
+.minibars__point:hover,
+.minibars__point:focus,
+.minibars__point.is-active {
+  opacity: 1;
+  outline: none;
+}
+
+.minibars__tooltip {
+  position: absolute;
+  top: 8px;
+  z-index: 2;
+  display: grid;
+  min-width: 148px;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 11px;
+  background: var(--surface, #fff);
+  box-shadow: 0 10px 26px rgb(15 23 42 / 12%);
+  color: var(--text-primary, #0f172a);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.minibars__tooltip b {
+  font-size: 12px;
+}
+
+.minibars__tooltip span {
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+}
+
+.minibars__tooltip strong {
+  color: var(--accent-primary, #2563eb);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.minibars-chart-state {
+  display: grid;
+  min-height: 270px;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  color: var(--text-muted, #64748b);
+  text-align: center;
+}
+
+.minibars-chart-state p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.minibars-chart-state--loading {
+  grid-template-columns: repeat(5, minmax(24px, 1fr));
+  align-items: end;
+  align-content: center;
+  width: 100%;
+  padding: 24px 8%;
+}
+
+.minibars-chart-state--loading span {
+  display: block;
+  height: 42%;
+  border-radius: 8px 8px 3px 3px;
+  background: color-mix(in srgb, var(--accent-primary, #2563eb) 14%, var(--surface));
+  animation: dashboard-chart-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.minibars-chart-state--loading span:nth-child(2) { height: 68%; animation-delay: 120ms; }
+.minibars-chart-state--loading span:nth-child(3) { height: 52%; animation-delay: 240ms; }
+.minibars-chart-state--loading span:nth-child(4) { height: 78%; animation-delay: 360ms; }
+.minibars-chart-state--loading span:nth-child(5) { height: 60%; animation-delay: 480ms; }
+
+@keyframes dashboard-chart-pulse {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 560px) {
+  .dash-columns:has(.minibars--line) > .ng-card:first-child {
+    min-height: 330px;
+  }
+
+  .minibars--line,
+  .minibars__plot {
+    min-height: 238px;
+  }
+
+  .minibars-chart-state {
+    min-height: 238px;
+  }
+
+  .minibars__plot svg {
+    height: 238px;
+  }
+
+  .minibars__axis,
+  .minibars__label {
+    font-size: 9px;
+  }
+
+  .minibars__tooltip {
+    min-width: 132px;
+    padding: 8px 10px;
+  }
+}

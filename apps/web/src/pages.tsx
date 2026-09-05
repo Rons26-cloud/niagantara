@@ -40,6 +40,7 @@ import {
   Store,
   GitBranch,
   Minus,
+  ChevronDown,
   Activity,
   Blocks,
   Home,
@@ -1074,8 +1075,8 @@ export function FaqSection() {
                     onClick={() => setOpen(expanded ? null : i)}
                   >
                     <span>{item.q}</span>
-                    <span className="faq-icon" aria-hidden="true">
-                      {expanded ? <Minus size={16} /> : <Plus size={16} />}
+                    <span className={`faq-icon${expanded ? ' is-open' : ''}`} aria-hidden="true">
+                      <ChevronDown size={19} strokeWidth={1.8} />
                     </span>
                   </button>
                 </h3>

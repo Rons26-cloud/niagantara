@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import './finance.css';
 import { ApiError, api, apiDownload } from '../api';
 import {
   Button,

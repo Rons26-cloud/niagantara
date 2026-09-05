@@ -4,3 +4,6 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: true
+overrides:
+  fastify: '>=5.12.1'
+  fast-uri: '>=4.1.3'

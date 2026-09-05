@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../shared/constants/design.dart';
 
-/// NIAGANTARA themes: LIGHT (white/navy/blue) and BLUE (dark navy/white/cyan),
-/// mirroring the web `data-theme` system.
 class NgTheme {
   NgTheme._();
 

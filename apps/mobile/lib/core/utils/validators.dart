@@ -1,4 +1,3 @@
-/// Pure validation predicates (no messages — screens localize the failures).
 class Validators {
   Validators._();
 
@@ -6,7 +5,6 @@ class Validators {
 
   static bool isValidEmail(String v) => _emailRe.hasMatch(v.trim());
 
-  /// Server enforces min 12 chars on register/reset payloads.
   static bool isStrongPassword(String v, {int min = 12}) => v.length >= min;
 
   static bool isNotBlank(String? v) => v != null && v.trim().isNotEmpty;
@@ -19,7 +17,6 @@ class Validators {
     return true;
   }
 
-  /// Recovery OTP length accepted by POST /auth/verify-recovery (6..8).
   static bool isValidOtp(String v) {
     final t = v.trim();
     return t.length >= 6 && t.length <= 8;

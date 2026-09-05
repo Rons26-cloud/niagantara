@@ -8,8 +8,6 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/components/failure_message.dart';
 import '../../../shared/components/snack.dart';
 
-/// Final recovery step: POST /auth/reset-password with the single-use
-/// refresh token from verify-recovery.
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({
     super.key,

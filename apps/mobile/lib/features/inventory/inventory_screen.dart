@@ -12,10 +12,6 @@ import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 
-/// Inventory hub — three real tabs:
-///   Stock    GET /inventory?branchId
-///   Low      GET /inventory/low-stock
-///   History  GET /inventory/movements
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
 

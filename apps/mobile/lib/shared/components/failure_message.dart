@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../app/localization.dart';
 import '../../core/errors/failure.dart';
 
-/// Maps a [Failure] to the localized user-facing message.
 String localizedFailure(BuildContext context, Failure failure) {
   final l = AppLocalizations.of(context);
   switch (failure.kind) {

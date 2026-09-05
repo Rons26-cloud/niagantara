@@ -1,7 +1,3 @@
-/// Typed failures surfaced to the UI layer.
-///
-/// Mapping from transport-level errors (Dio) and API error codes happens in
-/// [mapToFailure] so widgets never deal with raw exceptions.
 enum FailureKind {
   network,
   timeout,

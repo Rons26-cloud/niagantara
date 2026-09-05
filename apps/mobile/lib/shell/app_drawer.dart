@@ -24,8 +24,6 @@ class _Item {
 
 const _assetsLogo = 'assets/branding/niagantara-logo.png';
 
-/// Secondary navigation drawer: every operational module, grouped,
-/// hidden when the active permission set does not allow it.
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 

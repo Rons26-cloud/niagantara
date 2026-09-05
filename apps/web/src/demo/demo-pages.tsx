@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   Card,
+  StatCard,
   Button,
   Input,
   Select,
@@ -385,6 +386,47 @@ export function DemoPOS() {
       </Modal>
     </div>
   );
+}
+
+export function DemoPosCashiers() {
+  const { branches, selectedBranch } = useDemoStore();
+  const [open, setOpen] = useState(false);
+  const [cashiers, setCashiers] = useState([
+    { id: 'demo-cashier-1', name: 'Siti Rahma', email: 'siti@makmur.test', branch: 'Main Branch / Medan', status: 'active' },
+    { id: 'demo-cashier-2', name: 'Andi Saputra', email: 'andi@makmur.test', branch: 'Cabang Pematangsiantar', status: 'active' },
+  ]);
+  const [created, setCreated] = useState<{ email: string; password: string; link: string } | null>(null);
+  const [form, setForm] = useState({ name: '', email: '', password: '', branchId: selectedBranch });
+  const branchName = (id: string) => branches.find((branch) => branch.id === id)?.name ?? id;
+  const addCashier = () => {
+    if (!form.name || !form.email || form.password.length < 8) return;
+    setCashiers((rows) => [...rows, { id: `demo-cashier-${Date.now()}`, name: form.name, email: form.email, branch: branchName(form.branchId), status: 'active' }]);
+    setCreated({ email: form.email, password: form.password, link: `${window.location.origin}/demo/pos` });
+    setOpen(false); setForm({ name: '', email: '', password: '', branchId: selectedBranch });
+    toast('Kasir demo berhasil ditambahkan', 'success');
+  };
+  const copyCredentials = async () => {
+    if (!created) return;
+    try {
+      await navigator.clipboard?.writeText(`${created.email}\n${created.password}\n${created.link}`);
+      toast('Link dan kredensial berhasil disalin', 'success');
+    } catch {
+      toast('Salin otomatis tidak tersedia, salin link secara manual.', 'danger');
+    }
+  };
+  return <div className="demo-page demo-pos-cashiers">
+    <Card title="Kelola Kasir POS" actions={<Button onClick={() => setOpen(true)}>+ Tambah Kasir</Button>}>
+      <p className="muted">Demo simulasi: perubahan tidak tersimpan ke server.</p>
+      {created && <div className="demo-created-credentials"><div><b>Akun kasir siap digunakan</b><small>Simpan data ini untuk simulasi akses pegawai.</small></div><label>Email<Input readOnly value={created.email} /></label><label>Kata sandi sementara<Input readOnly value={created.password} /></label><label>Link POS<Input readOnly value={created.link} /></label><div className="demo-table-actions"><Button variant="secondary" onClick={() => void copyCredentials()}>Salin link &amp; kredensial</Button><Button variant="ghost" onClick={() => setCreated(null)}>Tutup</Button></div></div>}
+      <div className="demo-table">
+        <div className="demo-table-header demo-cols-4"><span>Kasir</span><span>Email</span><span>Cabang</span><span>Status</span></div>
+        {cashiers.map((cashier) => <div className="demo-table-row demo-cols-4" key={cashier.id}><span><b>{cashier.name}</b></span><span>{cashier.email}</span><span>{cashier.branch}</span><span><StatusBadge status={cashier.status} /></span></div>)}
+      </div>
+    </Card>
+    <Modal open={open} onClose={() => setOpen(false)} title="Tambah kasir POS" footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Batal</Button><Button onClick={addCashier}>Buat akun kasir</Button></>}>
+      <div className="demo-form-grid"><label>Nama lengkap<Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label><label>Gmail / email<Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label><label>Kata sandi sementara<Input type="password" minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label><label>Cabang POS<Select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })}>{branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}</Select></label></div>
+    </Modal>
+  </div>;
 }
 
 export function DemoSales() {
@@ -1379,6 +1421,7 @@ export function DemoAttendance() {
   const { attendance, employees, branches, selectedBranch, clockIn, clockOut } =
     useDemoStore();
   const [employeeId, setEmployeeId] = useState('');
+  const [detail, setDetail] = useState<(typeof attendance)[number] | null>(null);
 
   const branchName = branches.find((b) => b.id === selectedBranch)?.name ?? '';
 
@@ -1429,7 +1472,7 @@ export function DemoAttendance() {
             <span>{t('common.actions')}</span>
           </div>
           {attendance.map((att) => (
-            <div key={att.id} className="demo-table-row demo-cols-6">
+            <div key={att.id} className="demo-table-row demo-cols-6 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetail(att)} onKeyDown={(event) => event.key === 'Enter' && setDetail(att)}>
               <span>{att.employeeName}</span>
               <span>{att.date}</span>
               <span>{att.clockIn}</span>
@@ -1439,7 +1482,7 @@ export function DemoAttendance() {
                 {!att.clockOut && (
                   <Button
                     variant="secondary"
-                    onClick={() => handleClockOut(att.id)}
+                    onClick={(event) => { event.stopPropagation(); handleClockOut(att.id); }}
                   >
                     ○ {t('demo.clockOut')}
                   </Button>
@@ -1449,6 +1492,9 @@ export function DemoAttendance() {
           ))}
         </div>
       </Card>
+      <Modal open={!!detail} onClose={() => setDetail(null)} title={`Detail Absensi · ${detail?.employeeName ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetail(null)}>Tutup</Button>}>
+        {detail && <div className="def-grid"><dt>Karyawan</dt><dd>{detail.employeeName}</dd><dt>Tanggal</dt><dd>{detail.date}</dd><dt>Cabang</dt><dd>{detail.branch}</dd><dt>Clock In</dt><dd>{detail.clockIn}</dd><dt>Clock Out</dt><dd>{detail.clockOut ?? 'Belum clock out'}</dd><dt>Status</dt><dd><StatusBadge status={detail.clockOut ? 'PRESENT' : 'ACTIVE'} /></dd></div>}
+      </Modal>
     </div>
   );
 }
@@ -1464,6 +1510,11 @@ export function DemoExpenses() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const branchName = branches.find((b) => b.id === selectedBranch)?.name ?? '';
+  const today = todayISO();
+  const totalToday = expenses.filter((expense) => expense.date === today).reduce((sum, expense) => sum + expense.amount, 0);
+  const totalAll = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const categoryTotals = expenses.reduce<Record<string, number>>((totals, expense) => ({ ...totals, [expense.category]: (totals[expense.category] ?? 0) + expense.amount }), {});
+  const topCategories = Object.entries(categoryTotals).sort(([, a], [, b]) => b - a).slice(0, 4);
 
   const save = () => {
     if (!amount) return;
@@ -1481,6 +1532,13 @@ export function DemoExpenses() {
 
   return (
     <div className="demo-expenses">
+      <div className="demo-metrics-grid demo-expense-metrics">
+        <StatCard label="Pengeluaran hari ini" value={fmtCurrency(totalToday)} note={branchName} />
+        <StatCard label="Total pengeluaran" value={fmtCurrency(totalAll)} note={`${expenses.length} transaksi`} />
+        <StatCard label="Kategori aktif" value={String(Object.keys(categoryTotals).length)} note="kategori biaya" />
+        <StatCard label="Rata-rata transaksi" value={fmtCurrency(expenses.length ? totalAll / expenses.length : 0)} note="per transaksi" />
+      </div>
+      <div className="demo-expense-overview"><Card title="Komposisi pengeluaran"><div className="demo-dist-list">{topCategories.length ? topCategories.map(([name, value]) => <div className="demo-expense-category" key={name}><span>{name}</span><span className="demo-dist-track"><i className="demo-dist-fill" style={{ width: `${Math.max(8, (value / Math.max(totalAll, 1)) * 100)}%` }} /></span><b>{fmtCurrency(value)}</b></div>) : <p className="muted">Belum ada data pengeluaran.</p>}</div></Card><Card title="Konteks laporan"><div className="demo-expense-context"><span>Cabang aktif <b>{branchName}</b></span><span>Periode <b>{today}</b></span><span>Status <Badge tone="success">TERCATAT</Badge></span></div></Card></div>
       <Card title={t('demo.addExpense')}>
         <form
           className="demo-inline-form"
@@ -1615,6 +1673,16 @@ export function DemoFinance() {
           <span>{t('demo.finance.profit')}</span>
           <b>{fmtCurrency(finance.profit)}</b>
         </div>
+      </div>
+      <div className="demo-finance-detail-grid">
+        <Card title={t('demo.finance.payable')}>
+          <div className="demo-finance-detail-row"><span>Hutang supplier berjalan</span><b>{fmtCurrency(finance.payable * 0.72)}</b><Badge tone="warning">OPEN</Badge></div>
+          <div className="demo-finance-detail-row"><span>Sudah dibayar periode ini</span><b>{fmtCurrency(finance.payable * 0.28)}</b><Badge tone="success">PAID</Badge></div>
+        </Card>
+        <Card title={t('demo.finance.receivable')}>
+          <div className="demo-finance-detail-row"><span>Piutang pelanggan berjalan</span><b>{fmtCurrency(finance.receivable * 0.64)}</b><Badge tone="warning">OPEN</Badge></div>
+          <div className="demo-finance-detail-row"><span>Sudah diterima periode ini</span><b>{fmtCurrency(finance.receivable * 0.36)}</b><Badge tone="success">PAID</Badge></div>
+        </Card>
       </div>
     </div>
   );
@@ -1775,6 +1843,7 @@ export function DemoInventory() {
     useDemoStore();
   const [tab, setTab] = useState('overview');
   const [movementFilter, setMovementFilter] = useState('ALL');
+  const [detailProduct, setDetailProduct] = useState<(typeof products)[number] | null>(null);
 
   const lowStockProducts = products.filter((p) => p.stock <= p.minimumStock);
   const movements = stockMovements.filter(
@@ -1803,7 +1872,7 @@ export function DemoInventory() {
               <span>{t('common.status')}</span>
             </div>
             {products.map((product) => (
-              <div key={product.id} className="demo-table-row demo-cols-5">
+              <div key={product.id} className="demo-table-row demo-cols-5 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetailProduct(product)} onKeyDown={(event) => event.key === 'Enter' && setDetailProduct(product)}>
                 <span>{product.name}</span>
                 <span>
                   <Badge tone="neutral">{product.category}</Badge>
@@ -1927,6 +1996,9 @@ export function DemoInventory() {
           </div>
         </Card>
       )}
+      <Modal open={!!detailProduct} onClose={() => setDetailProduct(null)} title={`Detail Stok · ${detailProduct?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetailProduct(null)}>Tutup</Button>}>
+        {detailProduct && <div className="def-grid"><dt>Produk</dt><dd>{detailProduct.name}</dd><dt>Kategori</dt><dd>{detailProduct.category}</dd><dt>Stok tersedia</dt><dd>{detailProduct.stock} {detailProduct.unit}</dd><dt>Minimum stok</dt><dd>{detailProduct.minimumStock} {detailProduct.unit}</dd><dt>Status</dt><dd><StatusBadge status={detailProduct.stock <= detailProduct.minimumStock ? 'LOW_STOCK' : 'ACTIVE'} /></dd><dt>Aktivitas terakhir</dt><dd>{stockMovements.find((movement) => movement.productId === detailProduct.id)?.date ?? 'Belum ada aktivitas'}</dd></div>}
+      </Modal>
     </div>
   );
 }
@@ -2059,6 +2131,7 @@ export function DemoStockTransfer() {
 export function DemoCategories() {
   const { t } = useTranslation();
   const { categories, products } = useDemoStore();
+  const [detail, setDetail] = useState<(typeof categories)[number] | null>(null);
   return (
     <div className="demo-categories">
       <Card title={t('pages.categories')}>
@@ -2069,7 +2142,7 @@ export function DemoCategories() {
             <span>{t('common.product')}</span>
           </div>
           {categories.map((cat) => (
-            <div key={cat.id} className="demo-table-row demo-cols-3">
+            <div key={cat.id} className="demo-table-row demo-cols-3 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetail(cat)} onKeyDown={(event) => event.key === 'Enter' && setDetail(cat)}>
               <span>{cat.name}</span>
               <span>{cat.description}</span>
               <span className="demo-num">
@@ -2079,16 +2152,25 @@ export function DemoCategories() {
           ))}
         </div>
       </Card>
+      <Modal open={!!detail} onClose={() => setDetail(null)} title={`Detail Kategori · ${detail?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetail(null)}>Tutup</Button>}>
+        {detail && <div className="def-grid"><dt>Nama</dt><dd>{detail.name}</dd><dt>Deskripsi</dt><dd>{detail.description || 'Belum ada deskripsi'}</dd><dt>Jumlah Produk</dt><dd>{products.filter((product) => product.category === detail.name).length}</dd><dt>Status</dt><dd><StatusBadge status="ACTIVE" /></dd></div>}
+      </Modal>
     </div>
   );
 }
 
 export function DemoWarehouses() {
   const { t } = useTranslation();
-  const { warehouses, branches, stores } = useDemoStore();
+  const { warehouses, branches, stores, products, stockMovements } = useDemoStore();
+  const [selected, setSelected] = useState<(typeof warehouses)[number] | null>(null);
+  const selectedBranch = selected ? branches.find((b) => b.id === selected.branchId) : null;
+  const selectedStore = selected ? stores.find((s) => s.id === selected.storeId) : null;
+  const totalUnits = products.reduce((sum, product) => sum + product.stock, 0);
+  const lowStock = products.filter((product) => product.stock <= product.minimumStock).length;
   return (
     <div className="demo-warehouses">
       <Card title={t('pages.warehouses')}>
+        <p className="muted">Pilih gudang untuk melihat ringkasan stok, kapasitas, dan aktivitas terakhir.</p>
         <div className="demo-table">
           <div className="demo-table-header demo-cols-4">
             <span>{t('common.name')}</span>
@@ -2097,7 +2179,7 @@ export function DemoWarehouses() {
             <span>{t('context.branch')}</span>
           </div>
           {warehouses.map((wh) => (
-            <div key={wh.id} className="demo-table-row demo-cols-4">
+            <div key={wh.id} className="demo-table-row demo-cols-4 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setSelected(wh)} onKeyDown={(event) => event.key === 'Enter' && setSelected(wh)}>
               <span>{wh.name}</span>
               <span className="demo-mono">{wh.code}</span>
               <span>
@@ -2110,6 +2192,14 @@ export function DemoWarehouses() {
           ))}
         </div>
       </Card>
+      <Modal open={!!selected} onClose={() => setSelected(null)} title={`Detail Gudang · ${selected?.name ?? ''}`}>
+        {selected && <div className="demo-warehouse-detail">
+          <div className="demo-warehouse-detail-head"><div><span className="demo-mono">{selected.code}</span><h3>{selected.name}</h3><p className="muted">{selectedStore?.name ?? '—'} · {selectedBranch?.name ?? '—'}</p></div><StatusBadge status="ACTIVE" /></div>
+          <div className="demo-kpi-row"><div className="demo-kpi"><span>Total unit stok</span><b>{totalUnits.toLocaleString('id-ID')}</b><small>seluruh produk</small></div><div className="demo-kpi"><span>Jenis produk</span><b>{products.length}</b><small>terdaftar</small></div><div className="demo-kpi"><span>Stok menipis</span><b>{lowStock}</b><small>perlu perhatian</small></div></div>
+          <section><h4>Aktivitas stok terbaru</h4><div className="demo-mini-list">{stockMovements.slice(0, 5).map((movement) => <div className="demo-mini-list-item" key={movement.id}><span><b>{movement.productName}</b><small>{movement.type} · {movement.date}</small></span><strong className={movement.quantity < 0 ? 'demo-negative' : 'demo-positive'}>{movement.quantity > 0 ? '+' : ''}{movement.quantity}</strong></div>)}</div></section>
+          <p className="muted demo-warehouse-note">Demo detail gudang bersifat simulasi. Data operasional asli mengikuti stok dan transaksi cabang yang dipilih.</p>
+        </div>}
+      </Modal>
     </div>
   );
 }
@@ -2117,6 +2207,7 @@ export function DemoWarehouses() {
 export function DemoBranches() {
   const { t } = useTranslation();
   const { branches, stores } = useDemoStore();
+  const [detail, setDetail] = useState<(typeof branches)[number] | null>(null);
   return (
     <div className="demo-branches">
       <Card title={t('pages.branches')}>
@@ -2128,7 +2219,7 @@ export function DemoBranches() {
             <span>{t('common.status')}</span>
           </div>
           {branches.map((branch) => (
-            <div key={branch.id} className="demo-table-row demo-cols-4">
+            <div key={branch.id} className="demo-table-row demo-cols-4 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetail(branch)} onKeyDown={(event) => event.key === 'Enter' && setDetail(branch)}>
               <span>{branch.name}</span>
               <span className="demo-mono">{branch.code}</span>
               <span>
@@ -2139,6 +2230,7 @@ export function DemoBranches() {
           ))}
         </div>
       </Card>
+      <Modal open={!!detail} onClose={() => setDetail(null)} title={`Detail Cabang · ${detail?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetail(null)}>Tutup</Button>}>{detail && <div className="def-grid"><dt>Nama</dt><dd>{detail.name}</dd><dt>Kode</dt><dd>{detail.code}</dd><dt>Toko</dt><dd>{stores.find((store) => store.id === detail.storeId)?.name ?? '—'}</dd><dt>Status</dt><dd><StatusBadge status="ACTIVE" /></dd></div>}</Modal>
     </div>
   );
 }
@@ -2146,6 +2238,7 @@ export function DemoBranches() {
 export function DemoStores() {
   const { t } = useTranslation();
   const { stores, branches } = useDemoStore();
+  const [detail, setDetail] = useState<(typeof stores)[number] | null>(null);
   return (
     <div className="demo-stores">
       <Card title={t('pages.stores')}>
@@ -2156,7 +2249,7 @@ export function DemoStores() {
             <span>{t('common.status')}</span>
           </div>
           {stores.map((store) => (
-            <div key={store.id} className="demo-table-row demo-cols-3">
+            <div key={store.id} className="demo-table-row demo-cols-3 demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetail(store)} onKeyDown={(event) => event.key === 'Enter' && setDetail(store)}>
               <span>{store.name}</span>
               <span>
                 {branches.filter((b) => b.storeId === store.id).length}
@@ -2166,6 +2259,7 @@ export function DemoStores() {
           ))}
         </div>
       </Card>
+      <Modal open={!!detail} onClose={() => setDetail(null)} title={`Detail Toko · ${detail?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetail(null)}>Tutup</Button>}>{detail && <div className="def-grid"><dt>Nama Toko</dt><dd>{detail.name}</dd><dt>Status</dt><dd><StatusBadge status="ACTIVE" /></dd><dt>Jumlah Cabang</dt><dd>{branches.filter((branch) => branch.storeId === detail.id).length}</dd><dt>Cabang</dt><dd>{branches.filter((branch) => branch.storeId === detail.id).map((branch) => branch.name).join(', ') || 'Belum ada cabang'}</dd></div>}</Modal>
     </div>
   );
 }

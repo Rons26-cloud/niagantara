@@ -9,7 +9,6 @@ import '../../shared/components/paginated_list_view.dart';
 import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 
-/// Suppliers directory — GET /suppliers, POST /suppliers.
 class SuppliersScreen extends StatefulWidget {
   const SuppliersScreen({super.key});
 

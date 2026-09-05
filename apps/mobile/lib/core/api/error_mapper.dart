@@ -2,10 +2,6 @@ import 'package:dio/dio.dart';
 
 import '../errors/failure.dart';
 
-/// Pure mapping from any thrown error to a [Failure].
-///
-/// Kept free of Flutter/network dependencies so it can be unit-tested
-/// without mocks (see test/failure_mapping_test.dart).
 Failure mapToFailure(Object error) {
   if (error is Failure) return error;
   if (error is DioException) {
@@ -25,7 +21,6 @@ Failure mapToFailure(Object error) {
       default:
         break;
     }
-    // Some platforms surface socket errors as `unknown`.
     final inner = error.error?.toString() ?? '';
     if (inner.contains('Failed host lookup') ||
         inner.contains('Network is unreachable') ||

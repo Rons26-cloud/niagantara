@@ -11,8 +11,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Sale detail — GET /sales/:id with cancel (sale.cancel) and refunds
-/// (sale.refund → POST /sales/:id/refunds).
 class SalesDetailScreen extends StatelessWidget {
   const SalesDetailScreen({super.key, required this.saleId});
 
@@ -160,7 +158,6 @@ class _Detail extends StatelessWidget {
     final s = l(context);
     final reason = TextEditingController();
     final items = (sale['items'] as List? ?? []);
-    // Full-quantity refund of every line; partial refunds stay a web feature.
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

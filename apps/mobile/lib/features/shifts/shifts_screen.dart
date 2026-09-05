@@ -11,7 +11,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Cashier shifts — GET /shifts, POST /shifts/open, POST /shifts/:id/close.
 class ShiftsScreen extends StatefulWidget {
   const ShiftsScreen({super.key});
 

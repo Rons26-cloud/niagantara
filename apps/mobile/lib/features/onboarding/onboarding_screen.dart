@@ -9,11 +9,6 @@ import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 import '../../app/router.dart' as routes;
 
-/// Guided setup for brand-new companies:
-/// company → store → branch → first product → POS → (optional) Sheets.
-///
-/// Steps backed by real endpoints are executed live; anything the API cannot
-/// support yet shows an explicit BACKEND_GAP banner instead of faking success.
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -63,7 +58,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           failure.kind == FailureKind.forbidden
               ? l(context).backendGap
               : failure.message ?? l(context).unknownError);
-      // Stay on the same step — no fake progression.
       return;
     } finally {
       if (mounted) setState(() => _busy = false);

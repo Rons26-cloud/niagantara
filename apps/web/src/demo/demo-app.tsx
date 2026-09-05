@@ -25,6 +25,7 @@ import {
   DemoStores,
   DemoSettings,
   DemoHelp,
+  DemoPosCashiers,
 } from './demo-pages';
 import { usePath } from '../router';
 import './demo-styles.css';
@@ -32,6 +33,7 @@ import './demo-styles.css';
 const DEMO_PAGES = [
   'dashboard',
   'pos',
+  'pos-cashiers',
   'sales',
   'shifts',
   'products',
@@ -76,6 +78,8 @@ export function DemoPageContent({ currentPage }: { currentPage: DemoPage }) {
       return <DemoProducts />;
     case 'pos':
       return <DemoPOS />;
+    case 'pos-cashiers':
+      return <DemoPosCashiers />;
     case 'sales':
       return <DemoSales />;
     case 'inventory':

@@ -1,5 +1,3 @@
-/// Non-secret user preferences (theme, language, last business context,
-/// notification toggles). Tokens live in [SessionStore] instead.
 library;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,8 +47,6 @@ class AppPreferences {
   Future<void> setNotifySyncErrors(bool v) => _prefs.setBool(_kPrefSyncErrors, v);
 }
 
-/// Resolves the app start destination from persisted state.
-/// Pure function so it is unit-testable (see test/start_route_test.dart).
 String resolveStartRoute({
   required bool hasSession,
   required bool hasCompanyContext,

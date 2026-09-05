@@ -9,8 +9,6 @@ import '../../shared/components/async_gate.dart';
 import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 
-/// Product categories — GET /categories, POST /categories {name}
-/// (category.manage required for creation).
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
 

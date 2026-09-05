@@ -7,10 +7,6 @@ import 'core/auth/app_controller.dart';
 import 'core/auth/auth_repository.dart';
 import 'core/auth/session_store.dart';
 
-/// NIAGANTARA mobile entry point.
-///
-/// Boot order: bindings → storage/session singletons → restore persisted
-/// session & preferences (`boot()`) → runApp.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

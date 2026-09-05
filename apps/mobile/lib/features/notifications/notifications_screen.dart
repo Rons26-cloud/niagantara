@@ -7,9 +7,6 @@ import '../../core/utils/formatters.dart';
 import '../../shared/components/async_gate.dart';
 import '../../shared/constants/design.dart';
 
-/// Inbox. Push notifications are not wired to a delivery service yet —
-/// this screen shows live low-stock alerts instead and says so plainly
-/// (BACKEND_GAP for FCM-style push).
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 

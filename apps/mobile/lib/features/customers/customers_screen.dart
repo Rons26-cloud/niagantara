@@ -9,7 +9,6 @@ import '../../shared/components/paginated_list_view.dart';
 import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 
-/// Customers directory — GET /customers, POST /customers.
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
 

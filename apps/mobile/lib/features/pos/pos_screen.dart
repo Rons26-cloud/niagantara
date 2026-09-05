@@ -14,12 +14,6 @@ import '../../shared/widgets/ng_cards.dart';
 import '../../shared/widgets/state_views.dart';
 import 'cart_totals.dart';
 
-/// Point of Sale. Real endpoints only:
-///   GET  /pos/products        (branch-scoped catalog)
-///   GET  /shifts              (open shift for this branch/cashier)
-///   POST /shifts/open         ({storeId, branchId, openingCash})
-///   GET  /warehouses          (active warehouse for the branch)
-///   POST /pos/checkout        (server is the source of truth)
 class PosScreen extends StatefulWidget {
   const PosScreen({super.key});
 
@@ -156,7 +150,6 @@ class _PosScreenState extends State<PosScreen> {
     if (match != null) {
       _addToCart(match);
     } else {
-      // Server lookup covers products beyond the loaded page.
       try {
         final rows = await _api.get('/barcodes/lookup',
             query: {'code': code}) as List<dynamic>;
@@ -199,7 +192,7 @@ class _PosScreenState extends State<PosScreen> {
         shiftId: _shift!['id'].toString(),
       ),
     );
-    setState(() {}); // refresh cart after sheet closes
+    setState(() {});
   }
 
   @override
@@ -491,7 +484,7 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
   String _idempotencyKey() {
     final ts = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
     final rand = DateTime.now().millisecondsSinceEpoch.remainder(99991);
-    return 'mob-$ts-$rand'; // length ≥ 8 per INVALID_CHECKOUT rule
+    return 'mob-$ts-$rand';
   }
 
   Future<void> _submit() async {

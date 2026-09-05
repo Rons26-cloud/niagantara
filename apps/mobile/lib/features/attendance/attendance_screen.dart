@@ -10,8 +10,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Attendance — GET /attendance, POST /attendance/clock.
-/// ClockInput = {employeeId, branchId, action: CLOCK_IN|CLOCK_OUT, notes?}
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
 

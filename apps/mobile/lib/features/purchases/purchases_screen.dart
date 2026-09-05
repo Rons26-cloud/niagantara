@@ -11,7 +11,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Purchase orders — GET /purchases, POST /purchases, POST /purchases/:id/receive.
 class PurchasesScreen extends StatefulWidget {
   const PurchasesScreen({super.key});
 
@@ -110,7 +109,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
     try {
       await context.read<ApiClient>().post('/purchases/$id/receive', body: {
         'idempotencyKey': 'recv-$id-${DateTime.now().millisecondsSinceEpoch}',
-        'items': [], // server receives all pending lines when omitted
+        'items': [],
       });
       if (!context.mounted) return;
       Snack.success(context, l(context).saved);

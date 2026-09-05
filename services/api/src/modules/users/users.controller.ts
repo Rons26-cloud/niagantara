@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
   Patch,
+  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -12,7 +14,7 @@ import { RequirePermission } from '../../common/decorators/permission.decorator.
 import { AuthGuard } from '../../common/guards/auth.guard.js';
 import { PermissionGuard } from '../../common/guards/permission.guard.js';
 import { TenantGuard } from '../../common/guards/tenant.guard.js';
-import type { UpdateCompanyUserInput } from './dto/user.dto.js';
+import { CreatePosCashierInput, UpdateCompanyUserInput } from './dto/user.dto.js';
 import { UsersService } from './users.service.js';
 
 @Controller('users')
@@ -46,6 +48,34 @@ export class UsersController {
       companyId,
       userId,
       input,
+    );
+  }
+
+  @Post('cashiers')
+  @RequirePermission('user.manage')
+  createCashier(
+    @Req() request: any,
+    @Headers('x-company-id') companyId: string,
+    @Body() input: CreatePosCashierInput,
+  ) {
+    return this.service.createCashier(
+      { id: request.user.id, companyRole: request.authz?.companyRole },
+      companyId,
+      input,
+    );
+  }
+
+  @Delete('cashiers/:userId')
+  @RequirePermission('user.manage')
+  removeCashier(
+    @Req() request: any,
+    @Headers('x-company-id') companyId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.service.removeCashier(
+      { id: request.user.id, companyRole: request.authz?.companyRole },
+      companyId,
+      userId,
     );
   }
 }

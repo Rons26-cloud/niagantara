@@ -12,10 +12,6 @@ import '../features/inventory/transfers_screen.dart' show TransferFormScreen;
 import '../features/sales/sales_screen.dart';
 import '../app/router.dart';
 
-/// App chrome: Beranda · Penjualan · [+] · Inbox · Akun.
-///
-/// The center button opens the quick-action sheet; secondary modules live in
-/// the drawer reachable from every tab's app bar.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -59,7 +55,7 @@ class _HomeShellState extends State<HomeShell> {
     final pages = [
       const DashboardScreen(embedded: true),
       const SalesScreen(),
-      null, // occupied by the + button
+      null,
       const NotificationsScreen(),
       const AccountScreen(),
     ];
@@ -134,7 +130,6 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-/// Quick-action sheet behind the center [+].
 void openQuickActions(BuildContext context) {
   final app = context.read<AppController>();
   final can = app.ctx?.can ?? (_) => false;

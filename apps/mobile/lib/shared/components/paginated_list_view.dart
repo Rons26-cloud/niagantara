@@ -4,9 +4,6 @@ import '../../app/localization.dart';
 import '../../core/api/error_mapper.dart';
 import '../widgets/state_views.dart';
 
-/// Infinite-scroll list with pull-to-refresh, built for array APIs.
-///
-/// [fetchPage] returns the next page; an empty list marks the end.
 class PaginatedListView<T> extends StatefulWidget {
   const PaginatedListView({
     super.key,
@@ -17,14 +14,11 @@ class PaginatedListView<T> extends StatefulWidget {
     this.onLoaded,
   });
 
-  /// Loads the next chunk. Receives the count already loaded.
   final Future<List<T>> Function(int loadedCount) fetchPage;
   final Widget Function(BuildContext context, T item) itemBuilder;
   final Widget? separator;
   final EdgeInsetsGeometry padding;
 
-  /// Called after every page load with ALL items accumulated so far —
-  /// lets screens derive cursors (e.g. `lt: last.created_at`).
   final void Function(List<T> allItems)? onLoaded;
 
   @override

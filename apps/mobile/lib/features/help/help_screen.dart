@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../app/localization.dart';
 
-/// Help & guidance screen — short tips for each platform area.
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
 

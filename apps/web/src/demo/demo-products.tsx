@@ -25,6 +25,7 @@ export function DemoProducts() {
     null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<DemoProduct | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     open: boolean;
     product: DemoProduct | null;
@@ -123,7 +124,7 @@ export function DemoProducts() {
             <span>{t('common.actions')}</span>
           </div>
           {filteredProducts.map((product) => (
-            <div key={product.id} className="demo-table-row">
+            <div key={product.id} className="demo-table-row demo-table-row--clickable" role="button" tabIndex={0} onClick={() => setDetailProduct(product)} onKeyDown={(event) => event.key === 'Enter' && setDetailProduct(product)}>
               <span className="demo-product-name">{product.name}</span>
               <span className="demo-product-sku">{product.sku}</span>
               <span>{product.category}</span>
@@ -137,7 +138,7 @@ export function DemoProducts() {
                 {product.stock} {product.unit}
               </span>
               <StatusBadge status={product.status} />
-              <div className="demo-table-actions">
+              <div className="demo-table-actions" onClick={(event) => event.stopPropagation()}>
                 <Button variant="ghost" onClick={() => openEditModal(product)}>
                   {t('common.edit')}
                 </Button>
@@ -167,6 +168,9 @@ export function DemoProducts() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
       />
+      <Modal open={!!detailProduct} onClose={() => setDetailProduct(null)} title={`Detail Produk · ${detailProduct?.name ?? ''}`} footer={<Button variant="ghost" onClick={() => setDetailProduct(null)}>Tutup</Button>}>
+        {detailProduct && <div className="def-grid"><dt>Nama</dt><dd>{detailProduct.name}</dd><dt>SKU</dt><dd><code>{detailProduct.sku}</code></dd><dt>Kategori</dt><dd>{detailProduct.category}</dd><dt>Barcode</dt><dd><code>{detailProduct.sku}</code></dd><dt>Harga Modal</dt><dd>{formatCurrency(detailProduct.costPrice)}</dd><dt>Harga Jual</dt><dd>{formatCurrency(detailProduct.sellingPrice)}</dd><dt>Stok</dt><dd>{detailProduct.stock} {detailProduct.unit}</dd><dt>Minimum Stok</dt><dd>{detailProduct.minimumStock} {detailProduct.unit}</dd><dt>Status</dt><dd><StatusBadge status={detailProduct.status} /></dd></div>}
+      </Modal>
 
       <ConfirmDialog
         open={deleteConfirm.open}

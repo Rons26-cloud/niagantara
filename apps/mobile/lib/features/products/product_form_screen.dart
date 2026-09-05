@@ -8,9 +8,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Create / edit a product.
-/// POST /products {name,sku,costPrice?,sellingPrice?,barcode?,description?}
-/// PATCH /products/:id (same shape, partial)
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({super.key, this.existing});
 
@@ -57,7 +54,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       if (!mounted) return;
       setState(() => _categories = rows);
     } on Failure {
-      // Category picker stays empty — not fatal for product creation.
     }
   }
 

@@ -1,5 +1,3 @@
-/// Models shared across features. Kept intentionally permissive (dynamic
-/// payloads from the API) while giving the UI typed accessors.
 library;
 
 class OrgContext {
@@ -16,7 +14,6 @@ class OrgContext {
   });
 
   final String userId;
-  /// Memberships: {company_id, role_key, status}
   final List<Map<String, dynamic>> companies;
   final String? activeCompanyId;
   final List<String> roleKeys;

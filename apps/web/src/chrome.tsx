@@ -115,6 +115,9 @@ export function Navbar() {
             height={157}
             loading="eager"
           />
+          <span className="navbar-brand-label" aria-hidden="true">
+            NIAGANTARA
+          </span>
         </Link>
         <nav aria-label={t('nav.primary')}>
           {items.map(([to, label]) => (
@@ -336,9 +339,6 @@ export function Heading({
   );
 }
 
-/** Render the tiny, controlled formatting vocabulary used by locale titles.
- * All text remains React-escaped; arbitrary HTML is never interpreted.
- */
 export function renderSafeTitle(title: string): ReactNode[] {
   const parts = title.split(/(<br\s*\/?\s*>|<span>|<\/span>)/gi);
   let highlighted = false;

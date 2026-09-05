@@ -7,8 +7,6 @@ import '../../core/utils/formatters.dart';
 import '../../shared/components/async_gate.dart';
 import '../../shared/constants/design.dart';
 
-/// Reports — mobile view over GET /finance/reports with quick periods.
-/// File exports (PDF/XLSX) remain web-only; noted honestly below.
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
 

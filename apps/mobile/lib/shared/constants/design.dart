@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-/// Brand palette — mirrors packages/ui design tokens. Never invent new blues.
 class NgColors {
   NgColors._();
 
@@ -18,7 +17,6 @@ class NgColors {
   static const Color danger = Color(0xFFDC2626);
 }
 
-/// Spacing scale used by all screens (4pt grid).
 class Spacing {
   Spacing._();
 
@@ -30,5 +28,4 @@ class Spacing {
   static const double xxl = 32;
 }
 
-/// Minimum touch target per accessibility guidance.
 const double kMinTouchTarget = 48;

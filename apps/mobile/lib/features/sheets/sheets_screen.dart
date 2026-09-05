@@ -12,8 +12,6 @@ import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 import '../../core/utils/formatters.dart';
 
-/// Google Sheets integration — status, OAuth connect, sync history and
-/// recovery. Workbook/column management stays on web (complex schema UI).
 class SheetsScreen extends StatefulWidget {
   const SheetsScreen({super.key});
 
@@ -169,7 +167,6 @@ class _SheetsScreenState extends State<SheetsScreen> {
     try {
       final res = await context.read<ApiClient>().post('/google-sheets/oauth/start',
           body: {'replace': false});
-      // res carries {authUrl} — open externally; the callback lands server-side.
       final url = res is Map ? res['authUrl']?.toString() : null;
       if (!context.mounted) return;
       if (url == null || url.isEmpty) throw const Failure(FailureKind.server);

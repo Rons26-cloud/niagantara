@@ -12,7 +12,6 @@ import 'localization.dart';
 import 'router.dart';
 import 'theme.dart';
 
-/// Root widget: wires the [AppController], theme, locale and route table.
 class NgApp extends StatelessWidget {
   const NgApp({super.key, required this.controller});
 
@@ -49,7 +48,6 @@ class NgApp extends StatelessWidget {
   }
 }
 
-/// Start-destination guard driven by [AppController] state.
 class _RootSwitch extends StatelessWidget {
   const _RootSwitch();
 
@@ -57,7 +55,6 @@ class _RootSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppController>();
     if (!app.booted) {
-      // Native splash already ran; this covers async session restore.
       return const _Splash();
     }
     if (!app.loggedIn) return const LoginScreen();

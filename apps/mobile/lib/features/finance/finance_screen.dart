@@ -11,11 +11,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Finance hub — payables, receivables and the period report.
-///   GET  /finance/payables            (payable.read)
-///   POST /finance/payables/:id/payments {amount,paymentMethod,idempotencyKey}
-///   GET  /finance/receivables         (receivable.read)
-///   POST /finance/receivables/:id/payments
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({super.key});
 

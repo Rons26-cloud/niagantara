@@ -81,6 +81,7 @@ export const id = {
   pages: {
     dashboard: 'Beranda',
     pos: 'POS / Kasir',
+    'pos-cashiers': 'Kelola Kasir POS',
     sales: 'Penjualan',
     shifts: 'Shift Kasir',
     products: 'Produk',
@@ -251,7 +252,7 @@ export const id = {
   },
 
   website: {
-    eyebrow: 'PLATFORM OPERASIONAL BISNIS MODERN',
+    eyebrow: 'PLATFORM KENDALI BISNIS',
     stripLabel: 'DIRANCANG UNTUK OPERASIONAL YANG LEBIH TERKENDALI',
     seeMore: 'Lihat Selengkapnya',
     footer: {
@@ -365,8 +366,8 @@ export const id = {
     },
     solutions: {
       pos: {
-        kicker: 'TRANSAKSI LEBIH CEPAT',
-        title: 'POS / Kasir<br /><span>Terintegrasi</span>',
+        kicker: 'TRANSAKSI LEBIH EFISIEN',
+        title: 'POS & Kasir<br /><span>Terintegrasi</span>',
         text: 'Berikan pengalaman transaksi yang cepat untuk tim Anda. Setiap penjualan langsung tercatat dan stok otomatis diperbarui.',
         bullets: [
           'Pencarian produk & barcode scanner',

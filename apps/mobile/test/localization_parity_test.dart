@@ -10,7 +10,6 @@ void main() {
     test('unknown object → network/server failure with fallback message', () {
       final f = mapToFailure(Exception('boom'));
       expect(f, isA<Failure>());
-      // Exception without dio context lands in the generic bucket.
       expect(f.kind, isNot(FailureKind.unauthorized));
       expect(f.kind, isNot(FailureKind.forbidden));
     });
@@ -51,7 +50,7 @@ Map<String, String> loadArb(String name) {
   const root = String.fromEnvironment('NIAGANTARA_ROOT');
   final arbDir = root.isNotEmpty
       ? '$root/apps/mobile/lib/l10n'
-      : 'lib/l10n'; // flutter test runs with CWD = package root
+      : 'lib/l10n';
   final file = File('$arbDir/$name');
   if (!file.existsSync()) {
     fail('Cannot locate ARB file: ${file.path}');

@@ -1551,10 +1551,16 @@ td:first-child {
   margin-top: 18px;
 }
 .faq-item {
-  border-top: 1px solid #dbe4ef;
+  border: 1px solid #dbe4ef;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
 }
-.faq-item:last-child {
-  border-bottom: 1px solid #dbe4ef;
+.faq-item.open {
+  border-color: #c7d5e5;
+  box-shadow: 0 8px 22px rgba(15, 35, 65, 0.06);
 }
 .faq-item button {
   width: 100%;
@@ -1562,21 +1568,38 @@ td:first-child {
   justify-content: space-between;
   border: 0;
   background: transparent;
-  padding: 18px 2px;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
   text-align: left;
   font-weight: 700;
   font-size: 13px;
+  color: #0f2341;
+  cursor: pointer;
 }
-.faq-item button i {
-  font-style: normal;
+.faq-item button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -3px;
+  border-radius: 11px;
+}
+.faq-item button > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.faq-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
   color: var(--blue);
-  font-size: 20px;
+  transition: transform 200ms ease;
+}
+.faq-icon.is-open {
+  transform: rotate(180deg);
 }
 .faq-item p {
   color: #64748b;
   font-size: 12px;
   line-height: 1.7;
-  padding: 0 35px 19px 2px;
+  padding: 0 52px 20px 20px;
 }
 .cta {
   padding: 35px 0 120px;

@@ -4,9 +4,6 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../app/localization.dart';
 import '../../shared/constants/design.dart';
 
-/// Barcode scanner returning the decoded string to the caller via
-/// Navigator.pop(context, code). Includes a manual-entry fallback so the
-/// flow never dead-ends on damaged barcodes or emulator builds.
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
 

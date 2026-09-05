@@ -13,9 +13,6 @@ import '../../shell/app_drawer.dart';
 
 const Set<String> _countedStatuses = {'PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'};
 
-/// Beranda — realtime operational snapshot for the active store/branch.
-///
-/// Every number comes from the API; nothing is mocked.
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, this.embedded = true});
 
@@ -117,8 +114,6 @@ class _DashboardBody extends StatelessWidget {
         0,
         (n, x) => n + ((x['items'] as List?) ?? []).fold<num>(
             0, (m, it) => m + Fmt.numOrZero(it['quantity'])));
-    // The API exposes no per-day cost basis; the honest money figure is the
-    // operating cash result from /finance/reports — never a fabricated margin.
     final operating =
         finance is Map ? Fmt.numOrZero(finance['operatingCashResult']) : null;
     final connection = sheets['connection'] as Map?;

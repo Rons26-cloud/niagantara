@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 
-/// Currency & date formatting helpers (id-ID business locale by default).
 class Fmt {
   Fmt._();
 

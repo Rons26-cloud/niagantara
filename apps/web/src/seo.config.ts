@@ -339,6 +339,7 @@ export const SEO_DATA: Record<string, SeoMeta> = {
   '/demo': demo,
   '/demo/dashboard': demoPage,
   '/demo/pos': demoPage,
+  '/demo/pos-cashiers': demoPage,
   '/demo/products': demoPage,
   '/demo/categories': demoPage,
   '/demo/barcode': demoPage,

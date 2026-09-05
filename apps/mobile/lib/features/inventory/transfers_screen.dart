@@ -10,9 +10,6 @@ import '../../shared/components/failure_message.dart';
 import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 
-/// Stock transfer list + creation.
-///   GET  /warehouses  (pick source & destination)
-///   POST /inventory/transfer {sourceWarehouseId,destinationWarehouseId,productId,quantity}
 class TransfersScreen extends StatelessWidget {
   const TransfersScreen({super.key});
 
@@ -64,7 +61,6 @@ class TransfersScreen extends StatelessWidget {
   }
 }
 
-/// Modal-style form pushed from quick actions (/transfers/new).
 class TransferFormScreen extends StatefulWidget {
   const TransferFormScreen({super.key});
 

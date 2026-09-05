@@ -8,7 +8,6 @@ import '../../shared/components/paginated_list_view.dart';
 import '../../shared/constants/design.dart';
 import '../../shared/widgets/ng_cards.dart';
 
-/// Sales history — GET /sales (latest 100, server-side filters).
 class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
 
@@ -86,7 +85,6 @@ class _SalesScreenState extends State<SalesScreen> {
           Expanded(
             child: PaginatedListView<Map<String, dynamic>>(
               fetchPage: (_) async {
-                // /sales caps at 100 rows; single page is the honest contract.
                 final rows = await api.get('/sales', query: {
                   if (_search.text.isNotEmpty) 'search': _search.text,
                   if (_method != null) 'paymentMethod': _method!,

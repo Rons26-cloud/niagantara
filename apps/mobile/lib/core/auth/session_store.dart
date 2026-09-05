@@ -1,10 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Persistent session storage backed by the platform secure store
-/// (Keystore-encrypted on Android, Keychain on iOS).
-///
-/// Only tokens and lightweight identifiers are stored here — never secrets
-/// beyond what the API itself issues to this client.
 class SessionStore {
   SessionStore({FlutterSecureStorage? storage})
       : _storage = storage ??
@@ -47,7 +42,6 @@ class SessionStore {
   Future<void> setActiveBranch(String branchId) =>
       _storage.write(key: _kBranchId, value: branchId);
 
-  /// Removes everything — used by logout and by expired-session handling.
   Future<void> clear() async {
     for (final key in [_kAccess, _kRefresh, _kUserId, _kUserEmail, _kCompanyId, _kBranchId]) {
       await _storage.delete(key: key);

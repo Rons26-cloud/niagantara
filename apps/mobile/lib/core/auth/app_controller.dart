@@ -13,10 +13,6 @@ import '../storage/app_preferences.dart';
 export '../storage/app_preferences.dart'
     show AppPreferences, ThemeModePref, LanguagePref;
 
-/// Root application state: session, business context, theme and language.
-///
-/// Single ChangeNotifier so the shell can react to login/logout/context
-/// changes without a heavy state framework.
 class AppController extends ChangeNotifier {
   AppController({
     required ApiClient api,
@@ -26,7 +22,6 @@ class AppController extends ChangeNotifier {
   })  : _api = api,
         _session = session,
         _auth = auth {
-    // 401 anywhere in the app → drop session and surface the login screen.
     _api.onUnauthorized = (_) {
       ctx = null;
       loggedIn = false;
@@ -40,7 +35,6 @@ class AppController extends ChangeNotifier {
   final AuthRepository _auth;
   final AppPreferences prefs;
 
-  /// Exposed for Provider wiring of feature repositories.
   ApiClient get apiClient => _api;
   AuthRepository get auth => _auth;
 
@@ -49,7 +43,6 @@ class AppController extends ChangeNotifier {
   bool sessionExpired = false;
   OrgContext? ctx;
 
-  /// company_id → display name (from GET /companies).
   Map<String, String> companyNames = {};
 
   String get activeCompanyName {
@@ -61,18 +54,15 @@ class AppController extends ChangeNotifier {
   ThemeModePref get theme => prefs.theme;
   LanguagePref get localePref => prefs.locale;
 
-  /// Convenience for MaterialApp.themeMode.
   ThemeMode get themeMode =>
       prefs.theme == ThemeModePref.blueDark ? ThemeMode.dark : ThemeMode.light;
 
-  /// The branch all operational calls are scoped to.
   BranchRef? get activeBranch => _activeBranch;
   BranchRef? _activeBranch;
   StoreRef? get activeStore => ctx?.stores
       .where((s) => s.id == (_activeBranch?.storeId ?? ''))
       .firstOrNull ?? (ctx != null && ctx!.stores.isNotEmpty ? ctx!.stores.first : null);
 
-  /// Boot: restore persisted preferences + session, then /auth/me.
   Future<void> boot() async {
     final hasToken = await _session.hasSession();
     if (hasToken) {
@@ -100,8 +90,6 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Best-effort: names for the context switcher. Fails soft because
-  /// company.read may be absent for some roles.
   Future<void> loadCompanyNames() async {
     try {
       final rows = await _api.get('/companies') as List<dynamic>;
@@ -112,7 +100,7 @@ class AppController extends ChangeNotifier {
       notifyListeners();
     } on Failure catch (f) {
       if (f.isUnauthorized) rethrow;
-    } catch (_) {/* keep ids as fallback */}
+    } catch (_) {}
   }
 
   Future<void> _applyPersistedContext() async {

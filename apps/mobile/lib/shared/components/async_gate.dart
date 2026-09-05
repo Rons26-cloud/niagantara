@@ -5,11 +5,6 @@ import '../../core/api/error_mapper.dart';
 import '../../core/errors/failure.dart';
 import 'failure_message.dart';
 
-/// Wraps a future-producing function with the four canonical async states:
-/// loading / error(+retry) / empty / success.
-///
-/// Takes a *factory* so Retry can produce a fresh request. Every async
-/// screen uses this — no screen can silently fail.
 class AsyncGate<T> extends StatefulWidget {
   const AsyncGate({
     super.key,
@@ -21,7 +16,6 @@ class AsyncGate<T> extends StatefulWidget {
   final Future<T> Function() future;
   final Widget Function(BuildContext context, T data) builder;
 
-  /// Optional emptiness probe; when true an EmptyView is shown.
   final bool Function(T data)? isEmpty;
 
   @override

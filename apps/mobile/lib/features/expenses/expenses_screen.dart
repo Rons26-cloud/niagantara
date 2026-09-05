@@ -11,8 +11,6 @@ import '../../shared/components/snack.dart';
 import '../../shared/constants/design.dart';
 import '../../core/utils/formatters.dart';
 
-/// Expense tracking — GET /expenses, GET /expenses/categories,
-/// POST /expenses (ExpenseInput incl. idempotencyKey).
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
 
@@ -88,7 +86,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 }
 
-/// Shared entry sheet — also used by the home quick-action FAB.
 Future<void> showExpenseEntrySheet(BuildContext context) async {
   final s = l(context);
   final api = context.read<ApiClient>();
@@ -101,7 +98,6 @@ Future<void> showExpenseEntrySheet(BuildContext context) async {
   try {
     categories = await api.get('/expenses/categories') as List<dynamic>;
   } on Failure {
-    // fallthrough — creation requires a category, so empty list surfaces below.
   }
 
   if (!context.mounted) return;

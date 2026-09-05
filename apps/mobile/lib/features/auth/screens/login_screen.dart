@@ -8,7 +8,6 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/components/failure_message.dart';
 import '../../../shared/components/snack.dart';
 
-/// Sign-in screen using POST /auth/login.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

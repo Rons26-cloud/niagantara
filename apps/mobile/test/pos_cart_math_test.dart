@@ -4,7 +4,7 @@ import 'package:niagantara_mobile/features/pos/cart_totals.dart';
 void main() {
   group('round2 (PostgreSQL numeric round semantics)', () {
     test('keeps two decimals', () {
-      expect(round2(10.005), 10.01); // half away from zero
+      expect(round2(10.005), 10.01);
       expect(round2(10.004), 10.00);
       expect(round2(33.333), 33.33);
       expect(round2(100), 100.0);
@@ -33,7 +33,6 @@ void main() {
             discountValue: 12.5),
       ]);
       final b = math.lineBreakdown(math.lines.first);
-      // gross = 29997 ; discount = round(29997*12.5/100)=3749.63 (SQL half-up)
       expect(b.gross, 29997);
       expect(b.discount, 3749.63);
       expect(b.total, 26247.37);
@@ -84,9 +83,6 @@ void main() {
           transactionDiscountType: discountPercent,
           transactionDiscountValue: 10,
           taxRate: 11);
-      // subtotal = 58000 ; itemDisc = 800 ; afterItems = 57200
-      // txn = 5720 ; tax = round((57200-5720)*11/100)=5662.80
-      // grand = 57200 - 5720 + 5662.80 = 57142.80
       expect(t.subtotal, 58000);
       expect(t.itemDiscountTotal, 800);
       expect(t.transactionDiscount, 5720);

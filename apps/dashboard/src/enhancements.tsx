@@ -554,7 +554,21 @@ export function DashboardHome({
             </span>
           }
         >
-          {dailySeries.length > 1 ? (
+          {sales.loading ? (
+            <div className="minibars-chart-state minibars-chart-state--loading" aria-label="Memuat grafik">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          ) : sales.error ? (
+            <div className="minibars-chart-state">
+              <TrendingUp size={24} aria-hidden="true" />
+              <p>Gagal memuat data grafik.</p>
+              <Button variant="ghost" onClick={sales.reload}>Coba lagi</Button>
+            </div>
+          ) : dailySeries.length > 1 ? (
             <>
               <MiniBars
                 data={dailySeries.map((d) => ({
@@ -1203,19 +1217,88 @@ export function MiniBars({
 }: {
   data: { label: string; value: number }[];
 }) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const width = 720;
+  const height = 248;
+  const padding = { top: 18, right: 18, bottom: 34, left: 58 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
   const max = Math.max(...data.map((d) => d.value), 1);
+  const min = Math.min(...data.map((d) => d.value), 0);
+  const range = Math.max(max - min, 1);
+  const points = data.map((item, index) => ({
+    ...item,
+    x:
+      padding.left +
+      (data.length === 1 ? plotWidth / 2 : (index / (data.length - 1)) * plotWidth),
+    y: padding.top + plotHeight - ((item.value - min) / range) * plotHeight,
+  }));
+  const linePath = points.reduce((path, point, index) => {
+    if (index === 0) return `M ${point.x} ${point.y}`;
+    const previous = points[index - 1];
+    const controlOffset = (point.x - previous.x) / 3;
+    return `${path} C ${previous.x + controlOffset} ${previous.y}, ${point.x - controlOffset} ${point.y}, ${point.x} ${point.y}`;
+  }, '');
+  const areaPath = `${linePath} L ${padding.left + plotWidth} ${padding.top + plotHeight} L ${padding.left} ${padding.top + plotHeight} Z`;
+  const compactCurrency = (value: number) => {
+    const absolute = Math.abs(value);
+    if (absolute >= 1_000_000) return `Rp${(value / 1_000_000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+    if (absolute >= 1_000) return `Rp${(value / 1_000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
+    return `Rp${Math.round(value).toLocaleString('id-ID')}`;
+  };
+  const fullCurrency = (value: number) => `Rp ${Math.round(value).toLocaleString('id-ID')}`;
+  const yTicks = [0, 1, 2, 3].map((step) => min + (range * step) / 3);
+  const selected = activeIndex == null ? null : points[activeIndex];
+
   return (
-    <div className="minibars" role="img" aria-label="Sales chart">
-      {data.map((d) => (
-        <div
-          key={d.label}
-          className="minibars__col"
-          title={`${d.label}: ${d.value}`}
-        >
-          <i style={{ height: `${Math.max((d.value / max) * 100, 2)}%` }} />
-          <span>{d.label}</span>
-        </div>
-      ))}
+    <div className="minibars minibars--line" role="img" aria-label="Tren pendapatan">
+      <div className="minibars__plot">
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="revenue-area-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--accent-primary, #2563eb)" stopOpacity="0.16" />
+              <stop offset="100%" stopColor="var(--accent-primary, #2563eb)" stopOpacity="0.01" />
+            </linearGradient>
+          </defs>
+          {yTicks.map((tick, index) => {
+            const y = padding.top + plotHeight - (index / 3) * plotHeight;
+            return (
+              <g key={index}>
+                <line className="minibars__grid" x1={padding.left} x2={padding.left + plotWidth} y1={y} y2={y} />
+                <text className="minibars__axis" x={padding.left - 10} y={y + 4} textAnchor="end">{compactCurrency(tick)}</text>
+              </g>
+            );
+          })}
+          <path className="minibars__area" d={areaPath} />
+          <path className="minibars__line" d={linePath} />
+          {points.map((point, index) => (
+            <circle
+              key={`${point.label}-${index}`}
+              className={`minibars__point${activeIndex === index ? ' is-active' : ''}`}
+              cx={point.x}
+              cy={point.y}
+              r={activeIndex === index ? 4.5 : 3}
+              tabIndex={0}
+              role="button"
+              aria-label={`${point.label}: ${fullCurrency(point.value)}`}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+              onFocus={() => setActiveIndex(index)}
+              onBlur={() => setActiveIndex(null)}
+            />
+          ))}
+          {points.map((point, index) => (
+            <text key={`label-${point.label}-${index}`} className="minibars__label" x={point.x} y={height - 10} textAnchor="middle">{point.label}</text>
+          ))}
+        </svg>
+        {selected && (
+          <div className="minibars__tooltip" style={{ left: `${(selected.x / width) * 100}%` }} role="status">
+            <b>{selected.label}</b>
+            <span>Pendapatan</span>
+            <strong>{fullCurrency(selected.value)}</strong>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

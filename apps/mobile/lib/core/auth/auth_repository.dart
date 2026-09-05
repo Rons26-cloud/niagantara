@@ -3,8 +3,6 @@ import '../errors/failure.dart';
 import '../models/org_context.dart';
 import 'session_store.dart';
 
-/// Talks to the existing NIAGANTARA auth endpoints. No parallel auth system —
-/// the mobile app consumes exactly the same contracts as the web dashboard.
 class AuthRepository {
   AuthRepository(this._api, this._session);
 
@@ -19,7 +17,6 @@ class AuthRepository {
     final session = res['session'] as Map<String, dynamic>?;
     final token = session?['access_token']?.toString();
     if (token == null || token.isEmpty) {
-      // Server reachable but no Supabase session in payload.
       throw const Failure(FailureKind.server, code: 'LOGIN_NO_SESSION');
     }
     final user = res['user'];
@@ -31,8 +28,6 @@ class AuthRepository {
     );
   }
 
-  /// Registration creates the first company in one call.
-  /// Password policy: minimum 12 characters (server-enforced).
   Future<void> register({
     required String email,
     required String password,
@@ -54,7 +49,6 @@ class AuthRepository {
     }, withTenantHeaders: false);
   }
 
-  /// Returns the recovery tokens issued after a valid OTP.
   Future<({String accessToken, String refreshToken})> verifyRecovery(
       String email, String otp) async {
     final res = await _api.post('/auth/verify-recovery', body: {
@@ -82,7 +76,6 @@ class AuthRepository {
       },
       withTenantHeaders: false,
     );
-    // Recovery tokens are single-use; never persist them.
   }
 
   Future<void> logout() async {
@@ -93,7 +86,6 @@ class AuthRepository {
     }
   }
 
-  /// GET /auth/me → full org context (companies, permissions, stores, branches).
   Future<OrgContext> me() async {
     final res = await _api.get('/auth/me') as Map<String, dynamic>;
     return OrgContext.fromJson(res);
